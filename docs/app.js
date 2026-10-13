@@ -44,6 +44,9 @@ const i18nData = {
     tabWaveforms: "🌊 暫態響應與頻寬 (Response)",
     tabSchematic: "📐 晶片電路圖與架構 (Schematic)",
     tabSpice: "💻 SPICE 網表與導出 (Export)",
+    tabGlossary: "📖 術語字典 (Glossary)",
+    glossaryTitle: "射頻前端積體電路核心術語字典 (RF Front-End Glossary)",
+    glossarySubtitle: "包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義",
     // PA labels
     fomPout: "輸出功率 Pout",
     fomPae: "功率附加效率 PAE",
@@ -203,6 +206,9 @@ const i18nData = {
     tabWaveforms: "🌊 Transient & Frequency Response",
     tabSchematic: "📐 Circuit Schematic & BOM",
     tabSpice: "💻 SPICE Deck & Export",
+    tabGlossary: "📖 RF Glossary",
+    glossaryTitle: "RF Front-End Integrated Circuits Glossary",
+    glossarySubtitle: "Fundamental physical definitions, formulations, and FOMs for PA, LNA, VCO, Mixer, Switch & Antenna",
     // PA
     fomPout: "Output Power Pout",
     fomPae: "Power Added Eff. (PAE)",
@@ -2601,7 +2607,8 @@ function initApp() {
     tab1: document.getElementById("tabContent1"),
     tab2: document.getElementById("tabContent2"),
     tab3: document.getElementById("tabContent3"),
-    tab4: document.getElementById("tabContent4")
+    tab4: document.getElementById("tabContent4"),
+    tab5: document.getElementById("tabContent5")
   };
 
   navTabs.forEach(tab => {
@@ -2611,8 +2618,8 @@ function initApp() {
       navTabs.forEach(t => t.className = "nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap");
       tab.className = "nav-tab px-4 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
       Object.keys(tabContents).forEach(k => {
-        if (k === target) tabContents[k].classList.remove("hidden");
-        else tabContents[k].classList.add("hidden");
+        if (k === target) tabContents[k]?.classList.remove("hidden");
+        else tabContents[k]?.classList.add("hidden");
       });
       if (target === "tab1") drawSmithChart();
       else if (target === "tab2") drawWaveforms();
@@ -2665,8 +2672,397 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
     downloadFile(`autorf_${state.session}_${state.freq_ghz}ghz.json`, JSON.stringify(currentDesign, null, 2));
   });
 
+  // Init Glossary
+  initGlossary();
+
   // First run
   runSynthesis();
+}
+
+// --- 11. Comprehensive RF Terms Glossary (術語字典) ---
+const RF_GLOSSARY = [
+  // PA terms
+  {
+    term: "Ropt (Optimum Load Resistance)",
+    category: "pa",
+    module: "PA",
+    badgeColor: "cyan",
+    zh: {
+      name: "最佳負載電阻 Ropt",
+      formula: "Ropt = (2 · (Vdd - Vknee)²) / Pout",
+      desc: "功率放大器在給定電源電壓 Vdd 與汲極膝電壓 Vknee 拘束下，依據 Cripps 理論計算出能將最大射頻功率傳遞至負載之最佳汲極實部電阻阻抗。"
+    },
+    en: {
+      name: "Optimum Load Resistance",
+      formula: "Ropt = (2 · (Vdd - Vknee)²) / Pout",
+      desc: "Based on Cripps loadline theory, the optimum real impedance presented to the transistor drain that extracts the maximum RF output power under supply Vdd and knee voltage limits."
+    }
+  },
+  {
+    term: "PAE (Power-Added Efficiency)",
+    category: "pa",
+    module: "PA",
+    badgeColor: "cyan",
+    zh: {
+      name: "功率附加效率 PAE",
+      formula: "PAE = (Pout,rf - Pin,rf) / Pdc = η_drain · (1 - 1 / Gain)",
+      desc: "衡量放大器整體能源轉換效率的關鍵指標，扣除輸入驅動功率 Pin，唯有當增益 Gain 足夠高時，PAE 才會趨近汲極效率 η_drain。"
+    },
+    en: {
+      name: "Power-Added Efficiency",
+      formula: "PAE = (Pout,rf - Pin,rf) / Pdc = η_drain · (1 - 1 / Gain)",
+      desc: "Figure of merit representing net RF power generated per unit DC power consumed. Scales towards drain efficiency when power gain is sufficiently large."
+    }
+  },
+  {
+    term: "P1dB (1-dB Compression Point)",
+    category: "pa",
+    module: "PA / Switch / LNA",
+    badgeColor: "cyan",
+    zh: {
+      name: "1-dB 增益壓縮點",
+      formula: "Pout(P1dB) = Pout,linear - 1.0 dB",
+      desc: "放大器或開關從小訊號線性放大進入大訊號非線性飽和時，功率增益相較線性小訊號增益下降 1 dB 的輸出 (或輸入) 功率界限。"
+    },
+    en: {
+      name: "1-dB Gain Compression Point",
+      formula: "Pout(P1dB) = Pout,linear - 1.0 dB",
+      desc: "The output or input power level at which the circuit's gain drops by 1 dB from its small-signal linear value, denoting the linear dynamic range boundary."
+    }
+  },
+  {
+    term: "Rollett Stability Factor (K-Factor)",
+    category: "pa",
+    module: "PA / LNA",
+    badgeColor: "cyan",
+    zh: {
+      name: "羅勒特穩定係數 K",
+      formula: "K = (1 - |S11|² - |S22|² + |Δ|²) / (2 · |S12 · S21|) > 1 且 |Δ| < 1",
+      desc: "高頻放大器無條件穩定判定標準。當 K > 1 且行列式 |Δ| < 1 時，無論輸入與輸出端接上何種被動複數負載，放大器皆絕不產生寄生振盪。"
+    },
+    en: {
+      name: "Rollett Stability Factor",
+      formula: "K = (1 - |S11|² - |S22|² + |Δ|²) / (2 · |S12 · S21|) > 1 & |Δ| < 1",
+      desc: "Criterion for unconditional stability. Guarantees that the two-port network will not oscillate under any passive source and load terminations."
+    }
+  },
+  {
+    term: "Neutralization Capacitor (Cneu)",
+    category: "pa",
+    module: "PA",
+    badgeColor: "cyan",
+    zh: {
+      name: "交叉中和電容 Cneu",
+      formula: "Cneu ≈ Cgd",
+      desc: "在差動放大器中，將對稱反相節點的電容跨接至閘極，產生極性相反的負回授電流，完美抵消 Cgd 引起的彌勒效應 (Miller Effect) 與逆向傳輸 S12。"
+    },
+    en: {
+      name: "Neutralization Capacitor",
+      formula: "Cneu ≈ Cgd",
+      desc: "Cross-connected capacitors in differential amplifiers providing antiphase feedforward current to cancel parasitic gate-drain feedback Cgd, boosting isolation and stability."
+    }
+  },
+
+  // LNA terms
+  {
+    term: "NF (Noise Figure)",
+    category: "lna",
+    module: "LNA / Mixer",
+    badgeColor: "emerald",
+    zh: {
+      name: "雜訊指數 (NF)",
+      formula: "NF = 10 · log10( SNR_in / SNR_out )",
+      desc: "衡量接收機前端電路將訊號訊雜比劣化的程度。理想無雜訊放大器 NF = 0 dB；在現代 CMOS 奈米製程中，毫米波 LNA 之 NF 約介於 1.5 ~ 4.0 dB。"
+    },
+    en: {
+      name: "Noise Figure",
+      formula: "NF = 10 · log10( SNR_in / SNR_out )",
+      desc: "Measure of degradation of signal-to-noise ratio caused by the circuit. An ideal noiseless amplifier has NF = 0 dB; modern mmWave CMOS LNAs achieve 1.5 - 4.0 dB."
+    }
+  },
+  {
+    term: "Ls Inductive Degeneration (SNIM)",
+    category: "lna",
+    module: "LNA",
+    badgeColor: "emerald",
+    zh: {
+      name: "電感源極退化匹配 (SNIM)",
+      formula: "Zin ≈ s(Lg + Ls) + 1/(s·Cgs) + (gm / Cgs) · Ls ≈ 50 + j0 Ω",
+      desc: "在共源極電晶體源極串聯微小電感 Ls，利用回授將純虛數的 Cgs 轉換為實數輸入阻抗 50Ω，不需引入任何有雜訊的實體電阻，達成同時雜訊與功率共軛匹配。"
+    },
+    en: {
+      name: "Inductive Source Degeneration",
+      formula: "Zin ≈ s(Lg + Ls) + 1/(s·Cgs) + (gm / Cgs) · Ls ≈ 50 + j0 Ω",
+      desc: "A technique using source degeneration inductor Ls to generate a purely noiseless 50Ω real input impedance, achieving simultaneous noise and power matching (SNIM)."
+    }
+  },
+  {
+    term: "IIP3 (Input Third-Order Intercept Point)",
+    category: "lna",
+    module: "LNA / Mixer",
+    badgeColor: "emerald",
+    zh: {
+      name: "輸入三階截波點 IIP3",
+      formula: "IIP3 ≈ IP1dB + 9.6 dB",
+      desc: "衡量電路抵抗雙音互調失真 (IMD3) 線性度的理論交點。IIP3 越高，代表接收機在強干擾或相鄰頻道阻塞信號下越不易產生虛假干擾。"
+    },
+    en: {
+      name: "Input Third-Order Intercept",
+      formula: "IIP3 ≈ IP1dB + 9.6 dB",
+      desc: "Theoretical input power at which third-order intermodulation products equal the linear fundamental output, characterizing receiver intermodulation tolerance."
+    }
+  },
+
+  // VCO terms
+  {
+    term: "Phase Noise L(Δf) (Leeson's Formula)",
+    category: "vco",
+    module: "VCO",
+    badgeColor: "amber",
+    zh: {
+      name: "振盪器相位雜訊 (Leeson 公式)",
+      formula: "L(Δf) = 10·log10[ (2F·k·T / P_sig) · (1 + (f0 / (2Q·Δf))²) · (1 + f_corner / Δf) ]",
+      desc: "振盪器頻譜純度的絕對指標，表示在載波偏置頻率 Δf 處，1Hz 頻寬內的單邊帶雜訊功率與載波總功率之比 (單位 dBc/Hz)。"
+    },
+    en: {
+      name: "Phase Noise (Leeson-Cutler)",
+      formula: "L(Δf) = 10·log10[ (2F·k·T / P_sig) · (1 + (f0 / (2Q·Δf))²) · (1 + f_corner / Δf) ]",
+      desc: "Spectral purity metric describing phase fluctuations in a 1-Hz bandwidth at an offset frequency Δf relative to total carrier power (dBc/Hz)."
+    }
+  },
+  {
+    term: "Barkhausen Oscillation Criterion",
+    category: "vco",
+    module: "VCO",
+    badgeColor: "amber",
+    zh: {
+      name: "巴克豪森振盪啟振準則",
+      formula: "|Loop Gain| = |gm,core · Rp| ≥ α_startup (α ≥ 2.5 ~ 3.0)",
+      desc: "封閉回授振盪迴路的啟振物理條件：環路相位差為 360° (正回授)，且核心負電導 |gm,core| 必須大於等於諧振槽等效損耗電導的 2.5~3 倍以確保可靠起振。"
+    },
+    en: {
+      name: "Barkhausen Criterion",
+      formula: "|Loop Gain| = |gm,core · Rp| ≥ α_startup (α ≥ 2.5 ~ 3.0)",
+      desc: "Conditions for self-sustained oscillation: 360-degree loop phase shift and negative transconductance exceeding tank loss by a startup margin factor α."
+    }
+  },
+  {
+    term: "FTR (Frequency Tuning Range) & Kvco",
+    category: "vco",
+    module: "VCO",
+    badgeColor: "amber",
+    zh: {
+      name: "頻率調諧範圍 (FTR) 與調諧增益 (Kvco)",
+      formula: "FTR = 2 · (fmax - fmin) / (fmax + fmin) · 100% ; Kvco = ∂f / ∂Vctrl",
+      desc: "變容二極體 (Varactor) 或切換電容陣列在控制電壓調諧範圍內所能涵蓋的頻率百分比，Kvco 則為控制電壓每變化 1V 引起的頻率變化量 (GHz/V)。"
+    },
+    en: {
+      name: "Frequency Tuning Range & Kvco",
+      formula: "FTR = 2 · (fmax - fmin) / (fmax + fmin) · 100% ; Kvco = ∂f / ∂Vctrl",
+      desc: "Fractional frequency span achievable across varactor tuning voltage range, and tuning sensitivity slope in GHz/V."
+    }
+  },
+
+  // Mixer terms
+  {
+    term: "Gc (Conversion Gain)",
+    category: "mixer",
+    module: "Mixer",
+    badgeColor: "purple",
+    zh: {
+      name: "混頻轉換增益 Gc",
+      formula: "Gc = (2 / π) · gm,rf · RL",
+      desc: "降頻或升頻混頻器中，中頻 IF 輸出信號功率 (或電壓) 與輸入射頻 RF 信號功率之比值。主動式吉爾伯特混頻單元可提供 8 ~ 15 dB 之轉換增益。"
+    },
+    en: {
+      name: "Conversion Gain",
+      formula: "Gc = (2 / π) · gm,rf · RL",
+      desc: "Ratio of IF output power to RF input power in active mixers, determined by input transconductance gm, switching efficiency (2/π), and load impedance."
+    }
+  },
+  {
+    term: "Gilbert Cell Quad Commutation",
+    category: "mixer",
+    module: "Mixer",
+    badgeColor: "purple",
+    zh: {
+      name: "吉爾伯特雙平衡電流換向",
+      formula: "I_IF(t) = sgn(V_LO(t)) · I_RF(t)",
+      desc: "由 4 顆高速電晶體組成的雙平衡開關對，在差動本振 LO 方波驅動下高速切換，天然對稱抵消本振至射頻 (LO-RF) 與本振至中頻 (LO-IF) 的直通洩漏。"
+    },
+    en: {
+      name: "Gilbert Cell Commutation",
+      formula: "I_IF(t) = sgn(V_LO(t)) · I_RF(t)",
+      desc: "Four switching transistors driven by differential LO that alternate polarity of RF current, providing intrinsic balance against LO leakage feedthrough."
+    }
+  },
+
+  // Switch terms
+  {
+    term: "IL (Insertion Loss) & ISO (Isolation)",
+    category: "switch",
+    module: "Switch",
+    badgeColor: "rose",
+    zh: {
+      name: "開關插入損耗 (IL) 與隔離度 (ISO)",
+      formula: "IL ≈ 10·log10(1 + 2·Ron/Z0) ; ISO ≈ 10·log10(1 + 1/(2ω·Coff·Z0)²)",
+      desc: "IL 為開關在導通狀態下的信號衰減量 (越小越佳，典型 0.8~1.5 dB)；ISO 為關斷狀態下未選通信道的信號抑制度 (越大越佳，典型 25~45 dB)。"
+    },
+    en: {
+      name: "Insertion Loss & Isolation",
+      formula: "IL ≈ 10·log10(1 + 2·Ron/Z0) ; ISO ≈ 10·log10(1 + 1/(2ω·Coff·Z0)²)",
+      desc: "IL characterizes transmission attenuation through ON-path, while ISO measures RF leakage attenuation through OFF-path."
+    }
+  },
+  {
+    term: "Ron · Coff Figure-of-Merit",
+    category: "switch",
+    module: "Switch",
+    badgeColor: "rose",
+    zh: {
+      name: "開關品質因數 (Ron · Coff)",
+      formula: "FOM_switch = Ron · Coff (典型先進製程 100 ~ 200 fs)",
+      desc: "衡量半導體製程製造高頻開關效能的根本物理常數。Ron 決定導通插損，Coff 決定高頻隔離度，兩者乘積越小代表開關綜合性能越高。"
+    },
+    en: {
+      name: "Switch FOM (Ron · Coff)",
+      formula: "FOM_switch = Ron · Coff (typically 100 - 200 fs)",
+      desc: "Fundamental semiconductor switch figure-of-merit representing the inescapable tradeoff between series conduction resistance and off-state capacitance."
+    }
+  },
+  {
+    term: "Stacked FETs & Body-Floating",
+    category: "switch",
+    module: "Switch",
+    badgeColor: "rose",
+    zh: {
+      name: "FET 串疊堆疊與浮體電阻技術",
+      formula: "N_stack = ceil( V_peak,rf / Vdd,max ) ; R_body ≥ 10 kΩ",
+      desc: "在高功率發射 (TX) 狀態下，單顆電晶體會因過大電壓擺幅產生擊穿；採用 N 級電晶體串聯並透過高阻值浮體電阻接地，可均勻分壓以耐受數瓦功率。"
+    },
+    en: {
+      name: "Stacked FETs & Body-Floating",
+      formula: "N_stack = ceil( V_peak,rf / Vdd,max ) ; R_body ≥ 10 kΩ",
+      desc: "Stacking multiple series FETs divides large RF voltage swings across channels, combined with high-value body resistors to prevent substrate leakage and premature breakdown."
+    }
+  },
+
+  // Antenna terms
+  {
+    term: "Microstrip Patch Resonant Length (L)",
+    category: "antenna",
+    module: "Antenna",
+    badgeColor: "sky",
+    zh: {
+      name: "微帶貼片天線諧振長度",
+      formula: "L = c / (2·f0·√ε_eff) - 2·ΔL",
+      desc: "微帶貼片天線為半波長 (λ/2) 諧振腔輻射結構，考慮介質等效介電常數 ε_eff 與電磁場邊緣開路延伸長度 ΔL 進行修正。"
+    },
+    en: {
+      name: "Patch Resonant Length",
+      formula: "L = c / (2·f0·√ε_eff) - 2·ΔL",
+      desc: "Physical length required for half-wavelength cavity resonance, corrected for fringing electric field extensions ΔL and effective permittivity ε_eff."
+    }
+  },
+  {
+    term: "Inset-Fed Depth y0 (50Ω Matching)",
+    category: "antenna",
+    module: "Antenna",
+    badgeColor: "sky",
+    zh: {
+      name: "內凹饋電深度 y0 (50Ω 匹配)",
+      formula: "y0 = (L / π) · arccos( √(50 / Rin(0)) )",
+      desc: "貼片邊緣輸入阻抗高達 200~300Ω，透過在貼片中央向內挖槽深 y0 處饋入微帶線，使輸入阻抗精確下降至標準 50Ω，免除外加阻抗變壓器。"
+    },
+    en: {
+      name: "Inset Feed Notch Depth",
+      formula: "y0 = (L / π) · arccos( √(50 / Rin(0)) )",
+      desc: "Notch depth cut into the patch radiator where impedance matches 50Ω directly from the higher edge impedance (~250Ω), avoiding external matching networks."
+    }
+  },
+  {
+    term: "AiP (Antenna-in-Package)",
+    category: "antenna",
+    module: "Antenna",
+    badgeColor: "sky",
+    zh: {
+      name: "天線封裝整合技術 (AiP)",
+      formula: "G_dBi = 10 · log10( D · η_rad )",
+      desc: "在毫米波頻段 (如 28 GHz / 77 GHz)，將天線直接製造於晶片封裝基板 (如有機微通孔或 LTCC) 上，大幅縮短晶片至天線的射頻走線損耗並提升輻射效率。"
+    },
+    en: {
+      name: "Antenna-in-Package (AiP)",
+      formula: "G_dBi = 10 · log10( D · η_rad )",
+      desc: "Packaging architecture embedding radiating elements directly inside the package substrate (e.g. organic/LTCC), eliminating lossy board transitions at mmWave frequencies."
+    }
+  }
+];
+
+function initGlossary() {
+  const grid = document.getElementById("glossaryGrid");
+  const searchInput = document.getElementById("glossarySearchInput");
+  const filterBtns = document.querySelectorAll(".glossary-filter-btn");
+
+  let activeCategory = "all";
+  let searchKeyword = "";
+
+  function render() {
+    if (!grid) return;
+    const isZh = currentLang === "zh";
+
+    const filtered = RF_GLOSSARY.filter(item => {
+      const matchCat = activeCategory === "all" || item.category === activeCategory;
+      const termText = `${item.term} ${item.zh.name} ${item.zh.desc} ${item.en.name} ${item.en.desc}`.toLowerCase();
+      const matchSearch = !searchKeyword || termText.includes(searchKeyword.toLowerCase());
+      return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full py-12 text-center text-slate-500 text-xs">
+          🔍 未找到相符的術語 (No matching glossary terms found)
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(item => {
+      const info = isZh ? item.zh : item.en;
+      return `
+        <div class="card-panel rounded-xl p-4 shadow border border-slate-700/60 hover:border-cyan-500/50 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="font-bold text-slate-200 text-sm tracking-wide text-cyan-400">${item.term}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-${item.badgeColor}-500/20 text-${item.badgeColor}-400 border border-${item.badgeColor}-500/30">
+                ${item.module}
+              </span>
+            </div>
+            <div class="text-xs font-semibold text-slate-300 mb-1.5">${info.name}</div>
+            <div class="p-2 rounded bg-slate-950/80 border border-slate-800 text-[11px] font-mono text-amber-300 mb-2 overflow-x-auto">
+              ${info.formula}
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">${info.desc}</p>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  searchInput?.addEventListener("input", e => {
+    searchKeyword = e.target.value.trim();
+    render();
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeCategory = btn.getAttribute("data-category");
+      filterBtns.forEach(b => b.className = "glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700");
+      btn.className = "glossary-filter-btn px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold";
+      render();
+    });
+  });
+
+  render();
 }
 
 function applyLanguage() {
@@ -2676,6 +3072,8 @@ function applyLanguage() {
     if (dict[key]) el.innerText = dict[key];
   });
   updateUI();
+  initGlossary();
 }
 
 window.addEventListener("DOMContentLoaded", initApp);
+

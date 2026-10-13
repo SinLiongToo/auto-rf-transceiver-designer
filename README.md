@@ -61,6 +61,10 @@
    - **內凹微帶饋電 (Inset Notch Feed)**: 精確合成內凹饋電深度 $y_0$，實現對 $50\,\Omega$ 傳輸線的完美阻抗匹配 ($S_{11} < -20\text{ dB}$)。
    - **封裝介質材料適配 (Substrates)**: 支援高密度有機有機封裝材料 (Organic AiP, $\varepsilon_r = 3.2$)、低溫共燒陶瓷 (LTCC, $\varepsilon_r = 5.9$)、石英玻璃 (Fused Silica, $\varepsilon_r = 3.78$) 與晶片片上 (On-Chip $\text{SiO}_2$)。
 
+7. **📖 互動式射頻術語字典 (RF Front-End Glossary)**:
+   - **術語分類篩選與即時搜尋**: 內建 PA, LNA, VCO, Mixer, Switch, Antenna 核心術語卡片（含 $R_{opt}$, PAE, $P_{1\text{dB}}$, Rollett $K$, $C_{neu}$, NF, SNIM, $IIP_3$, Leeson $L(\Delta f)$, Barkhausen, $G_c$, $R_{on}C_{off}$, AiP 等）。
+   - **物理公式與中英雙語對照**: 每一術語皆提供標準數學公式、電路設計意義及中英雙語詳細說明。
+
 ---
 
 ## 🛠️ PDK 製程庫支援 (Process Design Kit)

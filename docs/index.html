@@ -364,6 +364,9 @@
           <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn4" data-tab="tab4" data-i18n="tabSpice">
             💻 SPICE 網表與導出 (Export)
           </button>
+          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn5" data-tab="tab5" data-i18n="tabGlossary">
+            📖 術語字典 (Glossary)
+          </button>
         </div>
 
         <!-- Tab 1: Smith Chart (Load-Pull for PA / Noise Circles for LNA) -->
@@ -479,6 +482,39 @@
           </div>
 
           <pre id="spiceCodeBlock" class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono overflow-x-auto max-h-[420px] select-all"></pre>
+        </div>
+
+        <!-- Tab 5: RF Terms Glossary (術語字典) -->
+        <div id="tabContent5" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>📖</span> <span data-i18n="glossaryTitle">射頻前端積體電路核心術語字典 (RF Front-End Glossary)</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="glossarySubtitle">包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義</p>
+            </div>
+            <!-- Search / Filter input -->
+            <div class="relative w-full sm:w-64">
+              <input type="text" id="glossarySearchInput" placeholder="搜尋術語 (Search term e.g. IIP3, PAE)..." class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-cyan-500">
+              <span class="absolute left-2.5 top-2 text-xs text-slate-400">🔍</span>
+            </div>
+          </div>
+
+          <!-- Module category pills filter -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs" id="glossaryFilterBar">
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold" data-category="all">全部 (All)</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="pa">🚀 PA</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="lna">📡 LNA</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="vco">⚡ VCO</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="mixer">🔀 Mixer</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="switch">🔌 Switch</button>
+            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="antenna">📶 Antenna</button>
+          </div>
+
+          <!-- Glossary Terms Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 max-h-[580px] overflow-y-auto pr-1" id="glossaryGrid">
+            <!-- Dynamically populated glossary cards -->
+          </div>
         </div>
 
       </div>
