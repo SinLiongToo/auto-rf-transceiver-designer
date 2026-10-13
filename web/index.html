@@ -61,10 +61,10 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-xl md:text-2xl font-bold tracking-tight" id="mainHeaderTitle" data-i18n="appTitle">AutoRF 射頻前端積體電路自動化設計系統</h1>
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">v1.2.0</span>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight" id="mainHeaderTitle" data-i18n="appTitle">AutoRF 射頻前端積體電路設計與合成指引 (RF Front-End Design Guide)</h1>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">v1.3.0</span>
           </div>
-          <p class="text-xs md:text-sm text-slate-400" id="mainHeaderSubtitle" data-i18n="appSubtitle">整合式 CMOS 功率放大器 (PA) 與低雜訊放大器 (LNA) 端到端合成與模擬引擎</p>
+          <p class="text-xs md:text-sm text-slate-400" id="mainHeaderSubtitle" data-i18n="appSubtitle">全方位射頻前端收發機指引：PA 功率放大器、LNA 低雜訊放大器、VCO 壓控振盪器、Mixer 混頻器、Switch 雙工開關與 Antenna 封裝天線</p>
         </div>
       </div>
 
@@ -93,8 +93,8 @@
         </button>
 
         <!-- RF Glossary Top Action Button -->
-        <button id="topGlossaryBtn" class="px-3.5 py-2 text-xs font-bold rounded-lg border border-cyan-500/50 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap">
-          <span>📖</span> <span data-i18n="topGlossaryBtn">術語字典</span>
+        <button id="topGlossaryBtn" class="px-3.5 py-2 text-xs font-bold rounded-lg border border-amber-500/40 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap">
+          <span>📖</span> <span data-i18n="topGlossaryBtn">射頻前端術語字典 (Glossary)</span>
         </button>
       </div>
     </header>
@@ -121,15 +121,54 @@
         <button id="sessionAntennaBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
           <span>📶</span> <span data-i18n="sessionAntenna">Antenna</span>
         </button>
-        <!-- Highlighting Glossary in Top Common Bar as Well -->
         <span class="w-px h-5 bg-slate-700 mx-1 hidden sm:inline"></span>
-        <button id="sessionGlossaryBtn" class="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center gap-1.5 transition-all">
+        <button id="sessionGlossaryBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center gap-1.5 transition-all">
           <span>📖</span> <span data-i18n="tabGlossary">術語字典 (Glossary)</span>
         </button>
       </div>
       <div class="text-xs text-slate-400 font-mono hidden md:flex items-center gap-2 pr-3">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="sessionStatusBadge">CURRENT: CMOS POWER AMPLIFIER (PA)</span>
+      </div>
+    </div>
+
+    <!-- Top Dedicated RF Terms Glossary Panel (Placed at Top Common Area) -->
+    <div id="topGlossaryPanel" class="card-panel rounded-2xl p-5 shadow-2xl space-y-4 border-2 border-amber-500/40 hidden bg-slate-900/95">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+            <span>📖</span> <span data-i18n="glossaryTitle">射頻前端積體電路核心術語字典 (RF Front-End Glossary)</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">全模組通用</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="glossarySubtitle">包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式、FOM 指標與物理定義</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Search / Filter input -->
+          <div class="relative w-full sm:w-64">
+            <input type="text" id="glossarySearchInput" placeholder="搜尋術語 (Search term e.g. IIP3, PAE)..." class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-500">
+            <span class="absolute left-2.5 top-2 text-xs text-slate-400">🔍</span>
+          </div>
+          <!-- Close button -->
+          <button id="closeGlossaryBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 text-xs font-bold transition-all" title="收起字典">
+            ✕ 收起
+          </button>
+        </div>
+      </div>
+
+      <!-- Module category pills filter -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs" id="glossaryFilterBar">
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold" data-category="all">全部 (All)</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="pa">🚀 PA</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="lna">📡 LNA</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="vco">⚡ VCO</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="mixer">🔀 Mixer</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="switch">🔌 Switch</button>
+        <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="antenna">📶 Antenna</button>
+      </div>
+
+      <!-- Glossary Terms Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[520px] overflow-y-auto pr-1" id="glossaryGrid">
+        <!-- Dynamically populated glossary cards -->
       </div>
     </div>
 
@@ -374,9 +413,6 @@
           <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn4" data-tab="tab4" data-i18n="tabSpice">
             💻 SPICE 網表與導出 (Export)
           </button>
-          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn5" data-tab="tab5" data-i18n="tabGlossary">
-            📖 術語字典 (Glossary)
-          </button>
         </div>
 
         <!-- Tab 1: Smith Chart (Load-Pull for PA / Noise Circles for LNA) -->
@@ -492,39 +528,6 @@
           </div>
 
           <pre id="spiceCodeBlock" class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono overflow-x-auto max-h-[420px] select-all"></pre>
-        </div>
-
-        <!-- Tab 5: RF Terms Glossary (術語字典) -->
-        <div id="tabContent5" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-            <div>
-              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                <span>📖</span> <span data-i18n="glossaryTitle">射頻前端積體電路核心術語字典 (RF Front-End Glossary)</span>
-              </h3>
-              <p class="text-xs text-slate-400 mt-0.5" data-i18n="glossarySubtitle">包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義</p>
-            </div>
-            <!-- Search / Filter input -->
-            <div class="relative w-full sm:w-64">
-              <input type="text" id="glossarySearchInput" placeholder="搜尋術語 (Search term e.g. IIP3, PAE)..." class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 border border-slate-700 focus:outline-none focus:border-cyan-500">
-              <span class="absolute left-2.5 top-2 text-xs text-slate-400">🔍</span>
-            </div>
-          </div>
-
-          <!-- Module category pills filter -->
-          <div class="flex flex-wrap items-center gap-1.5 text-xs" id="glossaryFilterBar">
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold" data-category="all">全部 (All)</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="pa">🚀 PA</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="lna">📡 LNA</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="vco">⚡ VCO</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="mixer">🔀 Mixer</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="switch">🔌 Switch</button>
-            <button class="glossary-filter-btn px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-category="antenna">📶 Antenna</button>
-          </div>
-
-          <!-- Glossary Terms Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 max-h-[580px] overflow-y-auto pr-1" id="glossaryGrid">
-            <!-- Dynamically populated glossary cards -->
-          </div>
         </div>
 
       </div>

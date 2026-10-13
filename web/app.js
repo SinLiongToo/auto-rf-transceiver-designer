@@ -6,8 +6,8 @@
 // --- 1. Bilingual i18n Translation Dictionary ---
 const i18nData = {
   zh: {
-    appTitle: "AutoRF 射頻前端積體電路自動化設計系統",
-    appSubtitle: "整合式 CMOS 功率放大器 (PA) 與低雜訊放大器 (LNA) 端到端合成與模擬引擎",
+    appTitle: "AutoRF 射頻前端積體電路設計與合成指引 (RF Front-End Design Guide)",
+    appSubtitle: "全方位射頻前端收發機指引：PA 功率放大器、LNA 低雜訊放大器、VCO 壓控振盪器、Mixer 混頻器、Switch 雙工開關與 Antenna 封裝天線",
     circuitSession: "設計模組",
     sessionPa: "功率放大器 (PA)",
     sessionLna: "低雜訊放大器 (LNA)",
@@ -169,8 +169,8 @@ const i18nData = {
     footCol4Desc: "吉爾伯特雙平衡架構提供天然的 LO-RF 與 LO-IF 隔離度，高速電流切換開關實現轉換增益 Gc 與高線性度 IIP3。"
   },
   en: {
-    appTitle: "AutoRF Integrated CMOS RF PA & LNA Design Suite",
-    appSubtitle: "End-to-End Synthesis & Simulation Engine for CMOS Power Amplifiers & Low-Noise Amplifiers",
+    appTitle: "AutoRF Integrated CMOS RF Front-End Design & Synthesis Guide",
+    appSubtitle: "Comprehensive RF Front-End Transceiver Synthesis Guide: PA, LNA, VCO, Mixer, Switch & On-Package Antenna",
     circuitSession: "Circuit Session",
     sessionPa: "PA",
     sessionLna: "LNA",
@@ -2769,9 +2769,23 @@ function initApp() {
     tab1: document.getElementById("tabContent1"),
     tab2: document.getElementById("tabContent2"),
     tab3: document.getElementById("tabContent3"),
-    tab4: document.getElementById("tabContent4"),
-    tab5: document.getElementById("tabContent5")
+    tab4: document.getElementById("tabContent4")
   };
+
+  const topGlossaryPanel = document.getElementById("topGlossaryPanel");
+
+  function toggleTopGlossary(forceOpen) {
+    if (!topGlossaryPanel) return;
+    const isHidden = topGlossaryPanel.classList.contains("hidden");
+    const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
+    if (shouldOpen) {
+      topGlossaryPanel.classList.remove("hidden");
+      topGlossaryPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("glossarySearchInput")?.focus();
+    } else {
+      topGlossaryPanel.classList.add("hidden");
+    }
+  }
 
   function switchToTab(target) {
     state.activeTab = target;
@@ -2789,9 +2803,6 @@ function initApp() {
     if (target === "tab1") drawSmithChart();
     else if (target === "tab2") drawWaveforms();
     else if (target === "tab3") drawSchematicSvg();
-    else if (target === "tab5") {
-      tabContents.tab5?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
   }
 
   navTabs.forEach(tab => {
@@ -2800,12 +2811,15 @@ function initApp() {
     });
   });
 
-  // Top Bar Glossary Buttons (Header & Session bar)
+  // Top Bar Glossary Buttons (Header, Session bar, and Close button)
   const topGlossaryBtn = document.getElementById("topGlossaryBtn");
-  topGlossaryBtn?.addEventListener("click", () => switchToTab("tab5"));
+  topGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
 
   const sessionGlossaryBtn = document.getElementById("sessionGlossaryBtn");
-  sessionGlossaryBtn?.addEventListener("click", () => switchToTab("tab5"));
+  sessionGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
+
+  const closeGlossaryBtn = document.getElementById("closeGlossaryBtn");
+  closeGlossaryBtn?.addEventListener("click", () => toggleTopGlossary(false));
 
   // Theme Toggle
   document.getElementById("themeToggleBtn").addEventListener("click", () => {
