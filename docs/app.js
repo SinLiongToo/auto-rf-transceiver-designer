@@ -1020,7 +1020,61 @@ function updateUI() {
   document.getElementById("valVdd").innerText = `${d.vdd.toFixed(2)} V`;
   document.getElementById("valIndQ").innerText = `${state.inductor_q}`;
 
-  if (d.session === "pa") {
+  if (state.session === "link") {
+    document.getElementById("fomLabel1").innerText = currentLang === "zh" ? "RX 鏈路增益 (Gain_rx)" : "RX Total Gain (Gain_rx)";
+    document.getElementById("fomVal1").innerText = "+24.5 dB";
+    document.getElementById("fomSub1").innerText = "LNA + Mixer - IL";
+
+    document.getElementById("fomLabel2").innerText = currentLang === "zh" ? "Friis 級聯雜訊 (NF_rx)" : "Cascaded NF (NF_rx)";
+    document.getElementById("fomVal2").innerText = "2.65 dB";
+    document.getElementById("fomSub2").innerText = currentLang === "zh" ? "全鏈路雜訊指數" : "Total Noise Figure";
+
+    document.getElementById("fomLabel3").innerText = currentLang === "zh" ? "級聯輸入截點 (IIP3)" : "Cascaded IIP3";
+    document.getElementById("fomVal3").innerText = "-6.8 dBm";
+    document.getElementById("fomSub3").innerText = currentLang === "zh" ? "抗強干擾線性度" : "Intermodulation Linearity";
+
+    document.getElementById("fomLabel4").innerText = currentLang === "zh" ? "接收靈敏度 (Sensitivity)" : "RX Sensitivity";
+    document.getElementById("fomVal4").innerText = "-88.3 dBm";
+    document.getElementById("fomSub4").innerText = "BW=20MHz, SNR=10dB";
+
+    document.getElementById("fomLabel5").innerText = currentLang === "zh" ? "TX 單元 EIRP" : "TX Single EIRP";
+    document.getElementById("fomVal5").innerText = `+${(state.pout_dbm + 4.3).toFixed(1)} dBm`;
+    document.getElementById("fomSub5").innerText = "含天線 5.2 dBi";
+
+    document.getElementById("fomLabel6").innerText = currentLang === "zh" ? "相控陣列合成 EIRP" : "Array EIRP Boost";
+    const boost = state.array_size > 1 ? 10 * Math.log10(state.array_size) + 10 * Math.log10(state.array_size) : 0;
+    document.getElementById("fomVal6").innerText = `+${(state.pout_dbm + 4.3 + boost).toFixed(1)} dBm`;
+    document.getElementById("fomSub6").innerText = `${state.array_size}-Elements 合成`;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
+  } else if (state.session === "match") {
+    document.getElementById("fomLabel1").innerText = currentLang === "zh" ? "信號源實部 Rs" : "Source Rs";
+    document.getElementById("fomVal1").innerText = `${state.match_rs.toFixed(1)} Ω`;
+    document.getElementById("fomSub1").innerText = `Xs: ${state.match_xs.toFixed(1)} Ω`;
+
+    document.getElementById("fomLabel2").innerText = currentLang === "zh" ? "負載端實部 RL" : "Load RL";
+    document.getElementById("fomVal2").innerText = `${state.match_rl.toFixed(1)} Ω`;
+    document.getElementById("fomSub2").innerText = `XL: ${state.match_xl.toFixed(1)} Ω`;
+
+    document.getElementById("fomLabel3").innerText = currentLang === "zh" ? "匹配拓樸架構" : "Matching Topology";
+    document.getElementById("fomVal3").innerText = state.match_topology.includes("pi") ? "Π-Match" : (state.match_topology.includes("t_") ? "T-Match" : "L-Match");
+    document.getElementById("fomSub3").innerText = state.match_topology.includes("low") ? "Low-pass" : "High-pass";
+
+    document.getElementById("fomLabel4").innerText = currentLang === "zh" ? "有載品質因子 Q" : "Loaded Q";
+    const qLoaded = Math.sqrt(Math.max(0.1, (Math.max(state.match_rs, state.match_rl) / Math.min(state.match_rs, state.match_rl)) - 1));
+    document.getElementById("fomVal4").innerText = `${qLoaded.toFixed(2)}`;
+    document.getElementById("fomSub4").innerText = `相對頻寬: ${(100 / (qLoaded || 1)).toFixed(0)}%`;
+
+    document.getElementById("fomLabel5").innerText = currentLang === "zh" ? "元件有限 Q 挿損" : "Insertion Loss (IL)";
+    const il = (qLoaded / (state.match_qind || 15)) * 4.34;
+    document.getElementById("fomVal5").innerText = `${il.toFixed(2)} dB`;
+    document.getElementById("fomSub5").innerText = `電感 Q=${state.match_qind}`;
+
+    document.getElementById("fomLabel6").innerText = currentLang === "zh" ? "功率傳輸效率" : "Power Transfer Eff.";
+    const eff = Math.pow(10, -il / 10) * 100;
+    document.getElementById("fomVal6").innerText = `${eff.toFixed(1)} %`;
+    document.getElementById("fomSub6").innerText = eff > 85 ? "✓ 高效率匹配" : "⚠ 注意插損";
+    document.getElementById("fomSub6").className = eff > 85 ? "text-xs text-green-400 font-semibold" : "text-xs text-amber-400 font-semibold";
+  } else if (d.session === "pa") {
     document.getElementById("valPout").innerText = `${d.pout.toFixed(1)} dBm (${d.poutMw.toFixed(0)} mW)`;
 
     // Top Cards for PA
@@ -3098,6 +3152,110 @@ function initApp() {
     match: matchBtn
   };
 
+  // Tabs
+  const navTabs = document.querySelectorAll(".nav-tab");
+  const tabContents = {
+    tab1: document.getElementById("tabContent1"),
+    tab2: document.getElementById("tabContent2"),
+    tab3: document.getElementById("tabContent3"),
+    tab4: document.getElementById("tabContent4"),
+    tab5: document.getElementById("tabContent5"),
+    tab6: document.getElementById("tabContent6"),
+    tab7: document.getElementById("tabContent7"),
+    tab8: document.getElementById("tabContent8")
+  };
+
+  const SESSION_TABS = {
+    pa: ["tab1", "tab2", "tab3", "tab6", "tab8", "tab4"],
+    lna: ["tab1", "tab2", "tab3", "tab6", "tab8", "tab4"],
+    vco: ["tab3", "tab2", "tab8", "tab4"],
+    mixer: ["tab3", "tab2", "tab8", "tab4"],
+    switch: ["tab3", "tab2", "tab8", "tab4"],
+    antenna: ["tab3", "tab2", "tab4"],
+    link: ["tab5", "tab7", "tab8", "tab4"],
+    match: ["tab6", "tab4"]
+  };
+
+  function switchToTab(target) {
+    state.activeTab = target;
+    navTabs.forEach(t => {
+      if (t.getAttribute("data-tab") === target) {
+        t.className = "nav-tab px-3 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
+      } else {
+        t.className = "nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap";
+      }
+    });
+    Object.keys(tabContents).forEach(k => {
+      if (k === target) tabContents[k]?.classList.remove("hidden");
+      else tabContents[k]?.classList.add("hidden");
+    });
+    if (target === "tab1") drawSmithChart();
+    else if (target === "tab2") drawWaveforms();
+    else if (target === "tab3") drawSchematicSvg();
+    else if (target === "tab5") drawLinkBudget();
+    else if (target === "tab6") drawMatchingSynthesizer();
+    else if (target === "tab7") drawDieAreaFloorplan();
+    else if (target === "tab8") drawPvtCorners();
+  }
+
+  function updateTabsForSession(sessionName) {
+    const allowed = SESSION_TABS[sessionName] || ["tab1", "tab2", "tab3", "tab4"];
+
+    // Update tab visibility
+    navTabs.forEach(t => {
+      const tabId = t.getAttribute("data-tab");
+      if (allowed.includes(tabId)) {
+        t.classList.remove("hidden");
+      } else {
+        t.classList.add("hidden");
+      }
+    });
+
+    // Update contextual tab labels
+    const isZh = currentLang === "zh";
+    const t2 = document.getElementById("tabBtn2");
+    if (t2) {
+      if (sessionName === "pa") t2.innerText = isZh ? "🌊 暫態波形 (Response)" : "🌊 Waveforms (Response)";
+      else if (sessionName === "lna") t2.innerText = isZh ? "🌊 頻率響應 (Response)" : "🌊 S-Params (Response)";
+      else if (sessionName === "mixer") t2.innerText = isZh ? "🌊 混頻響應 (Response)" : "🌊 Conversion (Response)";
+      else if (sessionName === "vco") t2.innerText = isZh ? "🌊 振盪響應 (Response)" : "🌊 Tuning & PN (Response)";
+      else if (sessionName === "switch") t2.innerText = isZh ? "🌊 開關響應 (Response)" : "🌊 IL & ISO (Response)";
+      else if (sessionName === "antenna") t2.innerText = isZh ? "🌊 輻射響應 (Response)" : "🌊 S11 & Pattern (Response)";
+    }
+
+    const t3 = document.getElementById("tabBtn3");
+    if (t3) {
+      if (sessionName === "antenna") t3.innerText = isZh ? "📐 天線微米結構 (Geometry)" : "📐 Geometry (Patch)";
+      else t3.innerText = isZh ? "📐 電路圖 (Schematic)" : "📐 Schematic";
+    }
+
+    const t6 = document.getElementById("tabBtn6");
+    if (t6) {
+      if (sessionName === "pa") t6.innerText = isZh ? "🎛️ 輸出匹配 (PA Match)" : "🎛️ PA Match";
+      else if (sessionName === "lna") t6.innerText = isZh ? "🎛️ 輸入匹配 (LNA Match)" : "🎛️ LNA Match";
+      else t6.innerText = isZh ? "🎛️ 匹配網路 (Matching)" : "🎛️ Matching";
+    }
+
+    const t4 = document.getElementById("tabBtn4");
+    if (t4) {
+      if (sessionName === "link") t4.innerText = isZh ? "📄 規格書導出 (Export)" : "📄 Export Report";
+      else t4.innerText = isZh ? "💻 網表導出 (Export)" : "💻 SPICE Export";
+    }
+
+    // Auto-switch to first allowed tab if current activeTab is not allowed in this session
+    if (!allowed.includes(state.activeTab)) {
+      switchToTab(allowed[0]);
+    } else {
+      switchToTab(state.activeTab);
+    }
+  }
+
+  navTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      switchToTab(tab.getAttribute("data-tab"));
+    });
+  });
+
   function setSession(sessionName) {
     state.session = sessionName;
     allGroups.forEach(id => document.getElementById(id)?.classList.add("hidden"));
@@ -3146,14 +3304,13 @@ function initApp() {
       logo.innerText = "LNK";
       logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white font-bold text-xl shadow-lg";
       statusBadge.innerText = "CURRENT: FULL TRANSCEIVER LINK BUDGET & BEAMFORMING";
-      switchToTab("tab5");
     } else if (sessionName === "match") {
       logo.innerText = "MAT";
       logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-700 flex items-center justify-center text-white font-bold text-xl shadow-lg";
       statusBadge.innerText = "CURRENT: IMPEDANCE MATCHING SYNTHESIZER";
-      switchToTab("tab6");
     }
 
+    updateTabsForSession(sessionName);
     runSynthesis();
   }
 
@@ -3307,19 +3464,6 @@ function initApp() {
     runSynthesis();
   });
 
-  // Tabs
-  const navTabs = document.querySelectorAll(".nav-tab");
-  const tabContents = {
-    tab1: document.getElementById("tabContent1"),
-    tab2: document.getElementById("tabContent2"),
-    tab3: document.getElementById("tabContent3"),
-    tab4: document.getElementById("tabContent4"),
-    tab5: document.getElementById("tabContent5"),
-    tab6: document.getElementById("tabContent6"),
-    tab7: document.getElementById("tabContent7"),
-    tab8: document.getElementById("tabContent8")
-  };
-
   const topGlossaryPanel = document.getElementById("topGlossaryPanel");
   const topManualPanel = document.getElementById("topManualPanel");
 
@@ -3350,34 +3494,6 @@ function initApp() {
     }
   }
 
-  function switchToTab(target) {
-    state.activeTab = target;
-    navTabs.forEach(t => {
-      if (t.getAttribute("data-tab") === target) {
-        t.className = "nav-tab px-3 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
-      } else {
-        t.className = "nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap";
-      }
-    });
-    Object.keys(tabContents).forEach(k => {
-      if (k === target) tabContents[k]?.classList.remove("hidden");
-      else tabContents[k]?.classList.add("hidden");
-    });
-    if (target === "tab1") drawSmithChart();
-    else if (target === "tab2") drawWaveforms();
-    else if (target === "tab3") drawSchematicSvg();
-    else if (target === "tab5") drawLinkBudget();
-    else if (target === "tab6") drawMatchingSynthesizer();
-    else if (target === "tab7") drawDieAreaFloorplan();
-    else if (target === "tab8") drawPvtCorners();
-  }
-
-  navTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      switchToTab(tab.getAttribute("data-tab"));
-    });
-  });
-
   // Top Bar Glossary & Manual Buttons
   const topGlossaryBtn = document.getElementById("topGlossaryBtn");
   topGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
@@ -3404,6 +3520,7 @@ function initApp() {
   document.getElementById("langToggleBtn").addEventListener("click", () => {
     currentLang = currentLang === "zh" ? "en" : "zh";
     applyLanguage();
+    updateTabsForSession(state.session);
   });
 
   // Copy & Download
@@ -3512,6 +3629,7 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
   initManual();
 
   // First run
+  updateTabsForSession(state.session);
   runSynthesis();
 }
 
