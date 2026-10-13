@@ -46,6 +46,9 @@ const i18nData = {
     tabSpice: "💻 SPICE 網表與導出 (Export)",
     tabGlossary: "📖 術語字典 (Glossary)",
     topGlossaryBtn: "📖 術語字典",
+    topManualBtn: "📘 使用手冊 (Manual)",
+    manualTitle: "AutoRF 射頻前端積體電路設計平台使用指南 (User Manual)",
+    manualSubtitle: "涵蓋 6 大射頻模組規格自訂、負載牽引圖表解讀、動態波形檢驗與 SPICE / S-參數導出操作流程",
     glossaryTitle: "射頻前端積體電路核心術語字典 (RF Front-End Glossary)",
     glossarySubtitle: "包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義",
     // PA labels
@@ -209,6 +212,9 @@ const i18nData = {
     tabSpice: "💻 SPICE Deck & Export",
     tabGlossary: "📖 RF Glossary",
     topGlossaryBtn: "📖 RF Glossary",
+    topManualBtn: "📘 User Manual",
+    manualTitle: "AutoRF RF Front-End Transceiver Synthesis User Manual",
+    manualSubtitle: "Comprehensive operational manual covering 6 RF modules, load-pull contours, waveforms, and EDA SPICE/Touchstone export",
     glossaryTitle: "RF Front-End Integrated Circuits Glossary",
     glossarySubtitle: "Fundamental physical definitions, formulations, and FOMs for PA, LNA, VCO, Mixer, Switch & Antenna",
     // PA
@@ -2773,17 +2779,32 @@ function initApp() {
   };
 
   const topGlossaryPanel = document.getElementById("topGlossaryPanel");
+  const topManualPanel = document.getElementById("topManualPanel");
 
   function toggleTopGlossary(forceOpen) {
     if (!topGlossaryPanel) return;
     const isHidden = topGlossaryPanel.classList.contains("hidden");
     const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
     if (shouldOpen) {
+      if (topManualPanel) topManualPanel.classList.add("hidden");
       topGlossaryPanel.classList.remove("hidden");
       topGlossaryPanel.scrollIntoView({ behavior: "smooth", block: "start" });
       document.getElementById("glossarySearchInput")?.focus();
     } else {
       topGlossaryPanel.classList.add("hidden");
+    }
+  }
+
+  function toggleTopManual(forceOpen) {
+    if (!topManualPanel) return;
+    const isHidden = topManualPanel.classList.contains("hidden");
+    const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
+    if (shouldOpen) {
+      if (topGlossaryPanel) topGlossaryPanel.classList.add("hidden");
+      topManualPanel.classList.remove("hidden");
+      topManualPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      topManualPanel.classList.add("hidden");
     }
   }
 
@@ -2811,12 +2832,18 @@ function initApp() {
     });
   });
 
-  // Top Bar Glossary Buttons (Header and Close button)
+  // Top Bar Glossary & Manual Buttons
   const topGlossaryBtn = document.getElementById("topGlossaryBtn");
   topGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
 
   const closeGlossaryBtn = document.getElementById("closeGlossaryBtn");
   closeGlossaryBtn?.addEventListener("click", () => toggleTopGlossary(false));
+
+  const topManualBtn = document.getElementById("topManualBtn");
+  topManualBtn?.addEventListener("click", () => toggleTopManual());
+
+  const closeManualBtn = document.getElementById("closeManualBtn");
+  closeManualBtn?.addEventListener("click", () => toggleTopManual(false));
 
   // Theme Toggle
   document.getElementById("themeToggleBtn").addEventListener("click", () => {
@@ -2863,8 +2890,9 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
     downloadFile(`autorf_${state.session}_${state.freq_ghz}ghz.json`, JSON.stringify(currentDesign, null, 2));
   });
 
-  // Init Glossary
+  // Init Glossary & User Manual
   initGlossary();
+  initManual();
 
   // First run
   runSynthesis();
@@ -3256,6 +3284,465 @@ function initGlossary() {
   render();
 }
 
+// --- 12. Interactive User Manual (使用者指南 / 操作手冊) ---
+let activeManualSection = "quickstart";
+
+function initManual() {
+  const contentArea = document.getElementById("manualContentArea");
+  const navBtns = document.querySelectorAll("#manualSectionTabs .manual-nav-btn");
+  if (!contentArea) return;
+
+  const isZh = currentLang === "zh";
+
+  // Section button click handlers
+  navBtns.forEach(btn => {
+    btn.onclick = () => {
+      activeManualSection = btn.getAttribute("data-manual-sec");
+      navBtns.forEach(b => {
+        b.className = "manual-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 font-medium transition-all";
+      });
+      btn.className = "manual-nav-btn px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold transition-all";
+      renderManualContent();
+    };
+  });
+
+  function renderManualContent() {
+    if (activeManualSection === "quickstart") {
+      contentArea.innerHTML = isZh ? `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-sky-950/40 border border-sky-500/30">
+            <h4 class="text-sm font-bold text-sky-300 flex items-center gap-2 mb-1.5">
+              <span>🚀</span> 歡迎使用 AutoRF 射頻前端積體電路設計與合成平台
+            </h4>
+            <p class="text-slate-300 leading-relaxed">
+              AutoRF 是一套為射頻與毫米波積體電路（RFIC / MMIC）設計工程師打造的自動化閉環合成指引系統。內建 TSMC 28nm HPC+、40nm RF、65nm RF 與 0.18µm RF 等真實 PDK 模型，涵蓋收發機 6 大核心模組。請遵循以下 5 步工作流程迅速完成電路合成：
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">1</span>
+                選擇典型應用預設 (Presets)
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                在頂部下拉選單選擇如 2.4G Wi-Fi、28G/39G 5G 毫米波、60G WiGig、73G E-Band 或 77G 車用雷達。系統會自動載入最佳工作頻率、建議 PDK 技術節點與標稱供電電壓 Vdd。
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">2</span>
+                切換設計模組標籤 (Session Tabs)
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                點擊頂部標籤：<b>PA</b> (功率放大器)、<b>LNA</b> (低雜訊放大器)、<b>VCO</b> (壓控振盪器)、<b>Mixer</b> (混頻器)、<b>Switch</b> (雙工開關)、<b>Antenna</b> (封裝天線)。左側規格面板會即時更新為對應專屬輸入項。
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">3</span>
+                微調目標規格與 PDK 參數
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                隨意滑動或輸入中心頻率、目標輸出功率 Pout、增益 Gain、操作模式 (Class AB/A/B/C/E) 或片上電感 Q 值。物理引擎會在 10 毫秒內即時重新收斂最佳尺寸。
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">4</span>
+                檢視四大視覺化圖表與 BOM
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                在下方四大分頁切換檢驗：史密斯圖負載牽引/雜訊圓、時域波形與動態負載線 (確認無超出 SOA 安全工作區)、IEEE 標準電晶體電路圖與詳細被動元件 BOM 清單。
+              </p>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-emerald-300">第五步：一鍵導出 SPICE 與 Touchstone S2P</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">點擊「💻 SPICE 網表與導出」分頁即可直接複製或下載檔案，相容於 Keysight ADS, Cadence Virtuoso, LTspice。</div>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-sky-950/40 border border-sky-500/30">
+            <h4 class="text-sm font-bold text-sky-300 flex items-center gap-2 mb-1.5">
+              <span>🚀</span> Welcome to AutoRF CMOS Front-End Synthesis Guide
+            </h4>
+            <p class="text-slate-300 leading-relaxed">
+              AutoRF is an automated physics-driven synthesis suite for RF and millimeter-wave integrated circuits. With built-in foundry models (TSMC 28nm HPC+, 40nm, 65nm, 180nm), it covers 6 core front-end building blocks. Follow the 5 quick steps below:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">1</span>
+                Select Application Preset
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Select from presets such as 2.4G Wi-Fi, 28G/39G 5G mmWave, 60G WiGig, 73G E-Band, or 77G Radar. Carrier frequency, recommended PDK node, and supply voltage Vdd are loaded instantly.
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">2</span>
+                Choose Circuit Session
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Click session buttons: <b>PA</b> (Power Amp), <b>LNA</b> (Low-Noise Amp), <b>VCO</b> (Oscillator), <b>Mixer</b>, <b>Switch</b>, <b>Antenna</b>. Left specification controls update dynamically.
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">3</span>
+                Tune Specifications & PDK
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Adjust frequency, target Pout, gain, operation class (Class AB/A/B/C/E), or on-chip inductor Q. The synthesis engine re-converges transistor sizing and passives in &lt;10ms.
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+              <div class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-xs">4</span>
+                Inspect Charts, Waves & BOM
+              </div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                Review Smith Chart contours / noise circles, transient waveforms and dynamic load-lines (ensuring safe SOA operation), IEEE schematic, and passive component BOM.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-emerald-300">Step 5: Export SPICE Decks & Touchstone S2P</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Switch to the "💻 SPICE Deck & Export" tab to copy or download files compatible with Keysight ADS, Cadence Virtuoso, and LTspice.</div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (activeManualSection === "modules") {
+      contentArea.innerHTML = isZh ? `
+        <div class="space-y-3.5">
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-cyan-500/30">
+            <div class="font-bold text-cyan-400 flex items-center gap-2 mb-1">
+              <span>🚀</span> 1. 功率放大器 (PA - Power Amplifier)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>基於 Cripps 負載線理論，在供電電壓 $V_{dd}$ 與膝電壓 $V_{knee}$ 限制下，合成最佳負載電阻 $R_{opt} = 2(V_{dd}-V_{knee})^2 / P_{out}$。<br>
+              <b>拓樸亮點：</b>差動疊接 (Differential Cascode) 提供優異輸出擺幅與逆向隔離；交叉中和電容 $C_{neu} \approx C_{gd}$ 抵消 Miller 效應，保證 $K > 1$ 絕對無條件穩定；輸出端配置片上整合變壓器 Balun，直接匹配至 50Ω 單端天線。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-emerald-500/30">
+            <div class="font-bold text-emerald-400 flex items-center gap-2 mb-1">
+              <span>📡</span> 2. 低雜訊放大器 (LNA - Low-Noise Amplifier)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>電感源極退化技術 (Inductive Source Degeneration)，由退化電感 $L_s$ 於共振點產生無熱雜訊之等效實數阻抗 $R_{in} = \omega_T \cdot L_s \approx 50\,\Omega$。<br>
+              <b>雜訊匹配：</b>透過閘極電感 $L_g$ 諧振 $C_{gs}$，達成同步雜訊與輸入阻抗匹配 (SNIM)，兼顧極低雜訊指數 ($NF \le 2.0\,\text{dB}$)、高功率增益與良好線性度 ($IIP_3$)。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-amber-500/30">
+            <div class="font-bold text-amber-400 flex items-center gap-2 mb-1">
+              <span>⚡</span> 3. 壓控振盪器 (VCO - Voltage-Controlled Oscillator)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>互補交叉耦合對 (NMOS+PMOS) 產生負電導 $-G_m$ 抵消 LC 諧振腔並聯損耗電阻 $R_p$。<br>
+              <b>起振保證：</b>自動配置起振裕度 $G_m \ge 2.5 \cdot G_{tank}$ 滿足 Barkhausen 振盪條件；利用 Leeson 相位雜訊模型精確預測 1 MHz 頻偏處之相噪表現。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-purple-500/30">
+            <div class="font-bold text-purple-400 flex items-center gap-2 mb-1">
+              <span>🔀</span> 4. 混頻器 (Mixer - Down-Conversion Mixer)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>吉爾伯特雙平衡單晶乘法結構 (Double-Balanced Gilbert Cell)，包含底層差動射頻跨導級 ($g_m$)、中層本振 LO 快速電流換向開關對及頂層負載。<br>
+              <b>隔離優勢：</b>對稱平衡架構天然提供高達 $> 35\,\text{dB}$ 的 LO-RF 與 LO-IF 隔離度，轉換增益 $G_c \approx (2/\pi) g_m R_L$。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-rose-500/30">
+            <div class="font-bold text-rose-400 flex items-center gap-2 mb-1">
+              <span>🔌</span> 5. 雙工天線開關 (Switch - T/R Switch)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>SPDT 串並聯拓樸 (Series-Shunt)。導通支路依靠低 $R_{on}$ 降低插入損失 ($IL < 1.5\,\text{dB}$)，截止支路利用並聯 FET 接地確保高隔離度 ($> 25\,\text{dB}$)。<br>
+              <b>高耐壓技術：</b>採用多晶體管堆疊 (FET Stacking) 與基極浮接電阻 (Body-Floating)，大幅提升功率承受力 $P_{1dB} \ge 24\,\text{dBm}$。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-sky-500/30">
+            <div class="font-bold text-sky-400 flex items-center gap-2 mb-1">
+              <span>📶</span> 6. 封裝天線 (Antenna - Inset-Fed Microstrip Patch)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>理論依據：</b>矩形微帶貼片天線，考量邊緣電場效應計算諧振長度 $L$ 與寬度 $W$。<br>
+              <b>阻抗匹配：</b>透過內縮饋電切槽深度 $y_0$ 將輸入阻抗精確調諧至 $50\,\Omega$，支援 AiP 有機載板、LTCC、RO4350B 等多種基板介質。
+            </p>
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-3.5">
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-cyan-500/30">
+            <div class="font-bold text-cyan-400 flex items-center gap-2 mb-1">
+              <span>🚀</span> 1. Power Amplifier (PA)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> Based on Cripps load-line formulation, synthesizes optimum load resistance $R_{opt} = 2(V_{dd}-V_{knee})^2 / P_{out}$ under supply $V_{dd}$ and knee voltage $V_{knee}$ limits.<br>
+              <b>Topology:</b> Differential cascode provides high voltage swing and reverse isolation; cross-neutralization $C_{neu} \approx C_{gd}$ eliminates Miller feedback, guaranteeing $K > 1$; on-chip transformer balun matches directly to a single-ended 50Ω antenna.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-emerald-500/30">
+            <div class="font-bold text-emerald-400 flex items-center gap-2 mb-1">
+              <span>📡</span> 2. Low-Noise Amplifier (LNA)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> Inductive source degeneration ($L_s$) creates a noiseless real 50Ω input resistance $R_{in} = \omega_T \cdot L_s$ at resonance.<br>
+              <b>Noise Matching:</b> Gate inductor $L_g$ resonates with $C_{gs}$ for Simultaneous Noise and Input Match (SNIM), achieving $NF \le 2.0\,\text{dB}$ and low $S_{11} < -15\,\text{dB}$.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-amber-500/30">
+            <div class="font-bold text-amber-400 flex items-center gap-2 mb-1">
+              <span>⚡</span> 3. Voltage-Controlled Oscillator (VCO)
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> Complementary cross-coupled pair (NMOS+PMOS) generates negative transconductance $-G_m$ canceling LC tank loss $R_p$.<br>
+              <b>Startup Margin:</b> Guarantees $G_m \ge 2.5 \cdot G_{tank}$ for robust oscillation across PVT corners; Leeson model predicts 1 MHz offset phase noise.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-purple-500/30">
+            <div class="font-bold text-purple-400 flex items-center gap-2 mb-1">
+              <span>🔀</span> 4. Down-Conversion Mixer
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> Double-balanced Gilbert cell with differential RF transconductance ($g_m$), 4-transistor LO switching quad, and resistive loads.<br>
+              <b>Isolation:</b> High intrinsic port-to-port LO-RF and LO-IF isolation ($> 35\,\text{dB}$) and conversion gain $G_c \approx (2/\pi) g_m R_L$.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-rose-500/30">
+            <div class="font-bold text-rose-400 flex items-center gap-2 mb-1">
+              <span>🔌</span> 5. T/R Switch
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> SPDT Series-Shunt topology. Low $R_{on}$ minimizes insertion loss ($< 1.5\,\text{dB}$), while shunt FETs shunt leakage to ground for isolation ($> 25\,\text{dB}$).<br>
+              <b>Power Handling:</b> Multi-FET stacking and body-floating resistors provide high linearity and $P_{1dB} \ge 24\,\text{dBm}$.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border border-sky-500/30">
+            <div class="font-bold text-sky-400 flex items-center gap-2 mb-1">
+              <span>📶</span> 6. AiP Microstrip Patch Antenna
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              <b>Theory:</b> Rectangular microstrip patch with fringe field correction for length $L$ and width $W$.<br>
+              <b>Matching:</b> Inset notch depth $y_0$ matches precisely to 50Ω feedlines across organic AiP, LTCC, and RO4350B substrates.
+            </p>
+          </div>
+        </div>
+      `;
+    } else if (activeManualSection === "charts") {
+      contentArea.innerHTML = isZh ? `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-cyan-400 mb-1.5 flex items-center gap-2">
+              <span>🎯</span> 1. 史密斯圓圖 (Smith Chart) 與等高線解讀
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li><b>圓圖中心 (Center Point)：</b>代表標準 $50\,\Omega$ 系統特徵阻抗 ($\Gamma = 0$)。</li>
+              <li><b>PA 負載牽引等功率線 (Load-Pull Contours)：</b>藍色圓點標示汲極端最佳負載阻抗 $Z_{L,opt}$。紅線 (-0.5dB)、黃線 (-1.0dB)、綠線 (-2.0dB) 呈現負載失配時輸出功率容限。</li>
+              <li><b>LNA 等雜訊圓 (Noise Circles)：</b>圓點代表最小雜訊阻抗 $Z_{opt,noise}$。同心圓分別代表雜訊指數增加 +0.3dB、+0.6dB、+1.0dB 的信號源阻抗範圍。</li>
+              <li><b>VCO / Switch / Antenna：</b>分別標記諧振腔負阻抗分佈、開關導通 (ON) 與截止 (OFF) 阻抗點、及天線 $50\,\Omega$ 共振點。</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-emerald-400 mb-1.5 flex items-center gap-2">
+              <span>🌊</span> 2. 暫態響應與動態負載線 (Waveforms & Load-Line)
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li><b>時域波形 (左圖)：</b>繪製連續 2 個射頻週期之大訊號汲極電壓 $V_{ds}(t)$（藍線）與電流 $I_{ds}(t)$（綠線），底部受半導體膝電壓 $V_{knee}$ 限制。</li>
+              <li><b>動態負載線 (右圖)：</b>展示瞬態 $I_{ds}$ vs $V_{ds}$ 相平面軌跡，直觀檢視電晶體工作點是否進入深飽和或超出半導體安全操作區 (SOA)。</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-400 mb-1.5 flex items-center gap-2">
+              <span>📐</span> 3. 晶片電路圖 (Schematic) 與 BOM 清單
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li>電路圖嚴格遵循 IEEE 標準 MOSFET 符號（包含閘極、汲極、源極、通道與箭頭，無黑色色塊遮擋）。</li>
+              <li>BOM 清單提供所有微米尺寸主動管寬度、指狀數、片上電感、電容與變壓器匝比之具體數值。</li>
+            </ul>
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-cyan-400 mb-1.5 flex items-center gap-2">
+              <span>🎯</span> 1. Smith Chart Contours & Impedance Points
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li><b>Center (50Ω):</b> Normalized center point ($\Gamma = 0$).</li>
+              <li><b>PA Load-Pull Contours:</b> Cyan dot shows optimum load $Z_{L,opt}$. Contours represent -0.5dB (red), -1.0dB (yellow), and -2.0dB (green) power drops.</li>
+              <li><b>LNA Noise Circles:</b> Shows optimum source reflection $\Gamma_{opt}$ with constant NF circles (+0.3dB, +0.6dB, +1.0dB).</li>
+              <li><b>VCO / Switch / Antenna:</b> Illustrates negative Gm region, switch ON/OFF states, and antenna resonance.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-emerald-500/30">
+            <div class="font-bold text-emerald-400 mb-1.5 flex items-center gap-2">
+              <span>🌊</span> 2. Transient Waveforms & Dynamic Load-Line
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li><b>Time Domain (Left):</b> Displays 2 RF cycles of large-signal drain voltage $V_{ds}(t)$ (blue) and current $I_{ds}(t)$ (green), clipped by knee voltage $V_{knee}$.</li>
+              <li><b>Dynamic Load-Line (Right):</b> Plots $I_{ds}$ vs $V_{ds}$ dynamic trajectory, confirming non-destructive SOA operation.</li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-amber-500/30">
+            <div class="font-bold text-amber-400 mb-1.5 flex items-center gap-2">
+              <span>📐</span> 3. Schematic & Component BOM
+            </div>
+            <ul class="list-disc list-inside text-slate-300 space-y-1 text-[11px] leading-relaxed">
+              <li>Schematic uses standard IEEE MOSFET symbols without solid fill artifacts.</li>
+              <li>BOM table lists all micron-level transistor gate widths, fingers, inductances, capacitances, and transformer coupling values.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (activeManualSection === "export") {
+      contentArea.innerHTML = isZh ? `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-cyan-400 mb-1.5 flex items-center gap-2">
+              <span>💻</span> SPICE 網表與 EDA 工具整合指南
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed mb-3">
+              點擊「💻 SPICE 網表與導出」標籤頁，系統會自動生成標準可執行的 SPICE 語法。支援一鍵複製或直接下載 <code>.sp</code> 與 <code>.s2p</code> 檔案。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-sky-400 mb-1">Cadence Virtuoso / Spectre 匯入</div>
+                <p class="text-slate-400 leading-relaxed">
+                  在 ADE-L 或 ADE Explorer 中，選擇 <b>Setup -> Model Libraries</b>，點擊添加下載之 <code>.sp</code> 文件，即可執行週期穩態分析 (PSS / PAC) 與瞬態模擬。
+                </p>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-emerald-400 mb-1">Keysight ADS (先進設計系統) 匯入</div>
+                <p class="text-slate-400 leading-relaxed">
+                  下載 <code>.s2p</code> 檔案。在 ADS 原理圖中放置 <code>S2P</code> 元件，雙擊指向該檔案，即可結合收發機鏈路預算進行 S 參數、增益與穩定度模擬。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-[11px] text-slate-400">
+            <span class="text-slate-200 font-bold">Touchstone S2P 檔案規範：</span>
+            本系統導出的 <code>.s2p</code> 遵循嚴格國際格式：頻率單位為 GHz，資料格式為 DB（分貝）與角度（Degree），參考特徵阻抗為 50.0 Ω，相容於所有主流微波 EDA 軟體。
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-cyan-400 mb-1.5 flex items-center gap-2">
+              <span>💻</span> SPICE Deck & EDA Tool Integration Guide
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed mb-3">
+              Switch to the "💻 SPICE Deck & Export" tab to view automatically generated simulation decks. You can copy to clipboard or download <code>.sp</code> and <code>.s2p</code> files directly.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-sky-400 mb-1">Cadence Virtuoso / Spectre</div>
+                <p class="text-slate-400 leading-relaxed">
+                  In ADE-L / ADE Explorer, go to <b>Setup -> Model Libraries</b>, add the downloaded <code>.sp</code> deck, and run DC, Transient (.tran), or Periodic Steady-State (PSS/PAC) simulations.
+                </p>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-emerald-400 mb-1">Keysight ADS</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Download the <code>.s2p</code> Touchstone file. Place an <code>S2P</code> component on the ADS schematic, link the file, and run S-parameter simulation for link-budget verification.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-[11px] text-slate-400">
+            <span class="text-slate-200 font-bold">Touchstone S2P Compliance:</span>
+            Exported <code>.s2p</code> files conform to standard format (# GHZ S DB R 50.0), compatible with Keysight ADS, Cadence Virtuoso nport, ANSYS HFSS, and AWR Microwave Office.
+          </div>
+        </div>
+      `;
+    } else if (activeManualSection === "faq") {
+      contentArea.innerHTML = isZh ? `
+        <div class="space-y-3.5">
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q1: 為什麼 Rollett 穩定因子 $K < 1$？該如何解決？</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              當 $K < 1$ 時代表電路處於「條件穩定」狀態，在特定源/負載阻抗下可能誘發寄生自激振盪。在毫米波頻段，這主要是由於電晶體汲極至閘極的重疊反饋電容 $C_{gd}$ 引發之 Miller 效應。<br>
+              <b>處置方案：</b>在規格面板中勾選「<b>差動交叉中和電容 (Cneu)</b>」，系統會配置與 $C_{gd}$ 匹配之交叉中和電容注入反相電荷，消除反饋，保證 $K > 1$ 絕對無條件穩定。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q2: 毫米波頻段 (如 28 GHz / 77 GHz) 片上電感品質因子 Q 偏低怎麼辦？</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              矽基 CMOS 導電基板在高頻會引發嚴重的渦流損耗與金屬層集膚效應，導致片上電感 Q 值通常落在 12~18 之間。本系統已將電感等效串聯電阻 (ESR) 損耗納入 PAE 與輸出功率計算。實體設計建議採用頂層超厚金屬 (UTM) 製作差動八角對稱電感。
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q3: 是否可以直接以離線單機方式執行本工具？</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              可以！本系統之 WebApp 為純前端靜態架構，無須安裝 Node.js 或後端伺服器，直接以瀏覽器開啟 <code>web/index.html</code> 即可在完全離線環境下進行高精度物理合成與 SPICE 導出。
+            </p>
+          </div>
+        </div>
+      ` : `
+        <div class="space-y-3.5">
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q1: Why is Rollett Stability Factor K < 1, and how to fix it?</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              When $K < 1$, the amplifier is conditionally stable and may oscillate under certain load terminations. In mmWave CMOS, this is caused by drain-to-gate overlap capacitance $C_{gd}$ via the Miller effect.<br>
+              <b>Fix:</b> Enable "<b>Cross-Coupled Neutralization (Cneu)</b>". The engine places a neutralization capacitor matching $C_{gd}$ with 180° inverted phase, canceling the feedback loop and restoring unconditional stability ($K > 1$).
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q2: How to handle low on-chip inductor Q at mmWave frequencies (28G / 77G)?</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Substrate eddy currents and skin effects limit on-chip inductor Q to 12-18 in bulk CMOS. AutoRF incorporates inductor ESR loss into power and PAE synthesis. In layout, use ultra-thick metal (UTM) layers for symmetrical octagonal inductors.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700">
+            <div class="font-bold text-amber-300 text-xs mb-1">Q3: Can this tool run completely offline?</div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Yes! The AutoRF WebApp is 100% client-side with zero backend dependencies. Simply open <code>web/index.html</code> in any modern browser to synthesize designs and export SPICE decks offline.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  renderManualContent();
+}
+
 function applyLanguage() {
   const dict = i18nData[currentLang];
   document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -3264,6 +3751,7 @@ function applyLanguage() {
   });
   updateUI();
   initGlossary();
+  initManual();
 }
 
 window.addEventListener("DOMContentLoaded", initApp);

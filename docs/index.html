@@ -96,6 +96,11 @@
         <button id="topGlossaryBtn" class="px-3 py-2 text-xs font-bold rounded-lg border border-amber-500/50 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap">
           <span>📖</span> <span data-i18n="topGlossaryBtn">術語字典 (Glossary)</span>
         </button>
+
+        <!-- User Manual Top Action Button -->
+        <button id="topManualBtn" class="px-3 py-2 text-xs font-bold rounded-lg border border-sky-500/50 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap">
+          <span>📘</span> <span data-i18n="topManualBtn">使用手冊 (Manual)</span>
+        </button>
       </div>
     </header>
 
@@ -165,6 +170,43 @@
       <!-- Glossary Terms Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[520px] overflow-y-auto pr-1" id="glossaryGrid">
         <!-- Dynamically populated glossary cards -->
+      </div>
+    </div>
+
+    <!-- Top Dedicated User Manual Panel (Placed at Top Common Area) -->
+    <div id="topManualPanel" class="card-panel rounded-2xl p-5 shadow-2xl space-y-4 border-2 border-sky-500/40 hidden bg-slate-900/95">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+            <span>📘</span> <span data-i18n="manualTitle">AutoRF 射頻前端積體電路設計平台使用指南 (User Manual)</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">系統指南</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1" data-i18n="manualSubtitle">涵蓋 6 大射頻模組規格自訂、負載牽引圖表解讀、動態波形檢驗與 SPICE / S-參數導出操作流程</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Full Manual Link -->
+          <a href="https://github.com/SinLiongToo/auto-rf-transceiver-designer/blob/main/USER_MANUAL.md" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 border border-slate-700 text-xs font-bold transition-all flex items-center gap-1" title="在 GitHub 查看完整 Markdown 手冊">
+            <span>📄</span> 完整手冊.md
+          </a>
+          <!-- Close button -->
+          <button id="closeManualBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 text-xs font-bold transition-all" title="收起指南">
+            ✕ 收起
+          </button>
+        </div>
+      </div>
+
+      <!-- Section Navigation Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs" id="manualSectionTabs">
+        <button class="manual-nav-btn px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold" data-manual-sec="quickstart">🚀 1. 快速上手 (Quick Start)</button>
+        <button class="manual-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-manual-sec="modules">📐 2. 六大模組設計指引 (6 Modules)</button>
+        <button class="manual-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-manual-sec="charts">🎯 3. 視覺化圖表解讀 (Charts & Waves)</button>
+        <button class="manual-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-manual-sec="export">💻 4. SPICE 網表與 S2P 導出 (EDA Export)</button>
+        <button class="manual-nav-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700" data-manual-sec="faq">❓ 5. 設計常見問題 (FAQ)</button>
+      </div>
+
+      <!-- Manual Dynamic Content Area -->
+      <div class="max-h-[520px] overflow-y-auto pr-2 space-y-4 text-xs text-slate-300 leading-relaxed" id="manualContentArea">
+        <!-- Rendered by initManual() -->
       </div>
     </div>
 

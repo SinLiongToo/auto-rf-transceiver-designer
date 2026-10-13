@@ -2,13 +2,16 @@
 ### Universal CMOS RF & Millimeter-Wave Full Transceiver Front-End Design Guide
 
 [![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?logo=github)](https://sinliongtoo.github.io/auto-rf-transceiver-designer/)
+[![User Manual](https://img.shields.io/badge/User%20Manual-Comprehensive%20Guide-blueviolet?logo=gitbook)](USER_MANUAL.md)
 [![Tests](https://img.shields.io/badge/Unit%20Tests-12%20Passed-blue)](tests/test_designer.py)
 [![QA](https://img.shields.io/badge/System%20QA-20%2F20%20Verified-success)](tests/verify_all.py)
 
 > 🚀 **即時線上體驗 (Live Interactive WebApp)**:  
-> [https://sinliongtoo.github.io/auto-rf-transceiver-designer/](https://sinliongtoo.github.io/auto-rf-transceiver-designer/)
+> [https://sinliongtoo.github.io/auto-rf-transceiver-designer/](https://sinliongtoo.github.io/auto-rf-transceiver-designer/)  
+> 📖 **完整使用操作手冊 (User Manual)**:  
+> [USER_MANUAL.md](USER_MANUAL.md) — 涵蓋六大模組合成理論、史密斯圖負載牽引解讀、SPICE 網表與 EDA 工具整合教學。
 
-**AutoRF** 是一套專為射頻與毫米波積體電路（RFIC / MMIC）設計工程師打造的完整射頻前端設計與自動化合成指引系統。系統涵蓋現代射頻收發機前端的**六大核心電路與被動輻射模組（PA 功率放大器、LNA 低雜訊放大器、VCO 壓控振盪器、Mixer 混頻器、T/R Switch 雙工開關、AiP Antenna 封裝天線）**，並內建完整雙語射頻前端術語字典（RF Front-End Glossary），支援從 **Sub-1 GHz IoT**、**2.4G/5G Wi-Fi**、**28G/39G 5G 毫米波**，一直到 **60G WiGig**、**71–76G E-Band 骨幹回傳** 與 **72–79 GHz / 77–81 GHz 車用毫米波雷達與高精度工業成像**。
+**AutoRF** 是一套專為射頻與毫米波積體電路（RFIC / MMIC）設計工程師打造的完整射頻前端設計與自動化合成指引系統。系統涵蓋現代射頻收發機前端的**六大核心電路與被動輻射模組（PA 功率放大器、LNA 低雜訊放大器、VCO 壓控振盪器、Mixer 混頻器、T/R Switch 雙工開關、AiP Antenna 封裝天線）**，並內建完整雙語射頻前端術語字典（RF Front-End Glossary）與操作手冊（User Manual），支援從 **Sub-1 GHz IoT**、**2.4G/5G Wi-Fi**、**28G/39G 5G 毫米波**，一直到 **60G WiGig**、**71–76G E-Band 骨幹回傳** 與 **72–79 GHz / 77–81 GHz 車用毫米波雷達與高精度工業成像**。
 
 ---
 
