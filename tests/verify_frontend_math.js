@@ -95,7 +95,58 @@ try {
   runSynthesis();
   console.log(`[PASS] LNA Session Synthesis (77GHz Radar): NF=${currentDesign.nfDb.toFixed(2)}dB, Gain=${currentDesign.gainDb.toFixed(1)}dB, Ls=${(currentDesign.lsNh*1000).toFixed(1)}pH`);
 
-  console.log('\n[ALL FRONTEND PA & LNA CHECKS PASSED]');
+  // Verify VCO session synthesis
+  state.session = 'vco';
+  state.freq_ghz = 76.5;
+  state.node_key = '28nm_hpc';
+  runSynthesis();
+  if (!currentDesign || isNaN(currentDesign.pn1MDbc) || isNaN(currentDesign.lTankNh)) {
+    throw new Error('Synthesis failed for VCO session');
+  }
+  console.log(`[PASS] VCO Session Synthesis (77GHz): PN=${currentDesign.pn1MDbc.toFixed(1)}dBc/Hz, Ltank=${currentDesign.lTankNh.toFixed(3)}nH, FOM=${currentDesign.fomDbc.toFixed(1)}dBc`);
+  drawSchematicSvg();
+  updateBomTable();
+  console.log(`[PASS] VCO Schematic SVG and BOM rendered cleanly`);
+
+  // Verify Mixer session synthesis
+  state.session = 'mixer';
+  state.freq_ghz = 76.5;
+  runSynthesis();
+  if (!currentDesign || isNaN(currentDesign.gainDb) || isNaN(currentDesign.iip3Dbm)) {
+    throw new Error('Synthesis failed for Mixer session');
+  }
+  console.log(`[PASS] Mixer Session Synthesis (77GHz): Gc=${currentDesign.gainDb.toFixed(1)}dB, IIP3=${currentDesign.iip3Dbm.toFixed(1)}dBm, NF=${currentDesign.nfSsbDb.toFixed(1)}dB`);
+  drawSchematicSvg();
+  updateBomTable();
+  console.log(`[PASS] Mixer Schematic SVG and BOM rendered cleanly`);
+
+  // Verify Switch session synthesis
+  state.session = 'switch';
+  state.freq_ghz = 76.5;
+  state.switch_p1db_dbm = 24.0;
+  runSynthesis();
+  if (!currentDesign || isNaN(currentDesign.ilDb) || isNaN(currentDesign.isoDb)) {
+    throw new Error('Synthesis failed for Switch session');
+  }
+  console.log(`[PASS] Switch Session Synthesis (77GHz): IL=${currentDesign.ilDb.toFixed(2)}dB, ISO=${currentDesign.isoDb.toFixed(1)}dB, Stacks=${currentDesign.numStack}`);
+  drawSchematicSvg();
+  updateBomTable();
+  console.log(`[PASS] Switch Schematic SVG and BOM rendered cleanly`);
+
+  // Verify Antenna session synthesis
+  state.session = 'antenna';
+  state.freq_ghz = 76.5;
+  state.antenna_substrate = 'aip_organic';
+  runSynthesis();
+  if (!currentDesign || isNaN(currentDesign.gainDbi) || isNaN(currentDesign.wPatchUm)) {
+    throw new Error('Synthesis failed for Antenna session');
+  }
+  console.log(`[PASS] Antenna Session Synthesis (77GHz): Gain=${currentDesign.gainDbi.toFixed(1)}dBi, BW=${currentDesign.bwMhz.toFixed(0)}MHz, Patch W=${currentDesign.wPatchUm.toFixed(0)}um, L=${currentDesign.lPatchUm.toFixed(0)}um`);
+  drawSchematicSvg();
+  updateBomTable();
+  console.log(`[PASS] Antenna Schematic SVG and BOM rendered cleanly`);
+
+  console.log('\n[ALL FRONTEND 6-SESSION (PA, LNA, VCO, MIXER, SWITCH, ANTENNA) CHECKS PASSED]');
 } catch (e) {
   console.error('[FAIL] Frontend verification failed:', e);
   process.exit(1);

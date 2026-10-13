@@ -9,8 +9,12 @@ const i18nData = {
     appTitle: "AutoRF 射頻前端積體電路自動化設計系統",
     appSubtitle: "整合式 CMOS 功率放大器 (PA) 與低雜訊放大器 (LNA) 端到端合成與模擬引擎",
     circuitSession: "設計模組",
-    sessionPa: "功率放大器 (PA Session)",
-    sessionLna: "低雜訊放大器 (LNA Session)",
+    sessionPa: "功率放大器 (PA)",
+    sessionLna: "低雜訊放大器 (LNA)",
+    sessionVco: "壓控振盪器 (VCO)",
+    sessionMixer: "混頻器 (Mixer)",
+    sessionSwitch: "雙工開關 (Switch)",
+    sessionAntenna: "封裝天線 (Antenna)",
     presetWifi24: "⚡ 經典 Wi-Fi 2.4 GHz (65nm)",
     presetWifi5: "⚡ Wi-Fi 6 5.2 GHz (40nm)",
     presetMmwave28: "⚡ 5G 毫米波 28 GHz (28nm)",
@@ -79,6 +83,66 @@ const i18nData = {
     waveLnaNfCurve: "雜訊指數 NF 曲線 (dB vs Freq)",
     schLnaTitle: "電感源極退化疊接 CMOS LNA 拓樸電路圖",
     schLnaSubtitle: "具備源極退化 Ls (無雜訊 50Ω 輸入實部) 與閘極微調電感 Lg 同步匹配",
+    // VCO labels
+    fomVcoPn: "相位雜訊 @1MHz",
+    fomVcoFtr: "調諧範圍 (FTR)",
+    fomVcoKvco: "增益常數 (Kvco)",
+    fomVcoPdc: "核心功耗 (Pdc)",
+    fomVcoLtank: "諧振電感 (Ltank)",
+    fomVcoFom: "品質因數 (FOM)",
+    smithVcoTitle: "LC 諧振腔阻抗軌跡 (LC Tank Impedance on Smith Chart)",
+    smithVcoSubtitle: "展示諧振槽並聯損耗阻抗 Rp 與負電導 -Gm 補償圓",
+    waveVcoTitle: "差動正弦振盪時域波形與相位雜訊 (Oscillation & Phase Noise)",
+    waveVcoSubtitle: "互補交叉對產生之差動電壓擺幅與 Leeson 頻偏相位雜訊頻譜",
+    waveVcoTime: "差動輸出擺幅 (Vout+ / Vout-)",
+    waveVcoPnCurve: "相位雜訊頻譜 L(Δf) (dBc/Hz vs Offset)",
+    schVcoTitle: "互補交叉耦合 CMOS LC 壓控振盪器拓樸電路圖",
+    schVcoSubtitle: "NMOS+PMOS 負電導核心抵消電感損耗，反向變容二極體對提供頻率調諧",
+    // Mixer labels
+    fomMixerGc: "轉換增益 (Gc)",
+    fomMixerNf: "單邊帶雜訊 (SSB NF)",
+    fomMixerIip3: "三階截波點 (IIP3)",
+    fomMixerPdc: "混頻總功耗 (Pdc)",
+    fomMixerIso: "LO-RF 隔離度",
+    fomMixerLoPwr: "所需 LO 功率",
+    smithMixerTitle: "RF 跨導輸入阻抗 (RF Input Impedance Matching)",
+    smithMixerSubtitle: "雙平衡 Gilbert 輸入差動對之 S11 與 50Ω 寬頻匹配等高線",
+    waveMixerTitle: "時域開關乘法波形與 IF 中頻響應 (Commutation & IF Spectrum)",
+    waveMixerSubtitle: "LO 開關四核高速電流整流換向與 IF 中頻濾波頻譜",
+    waveMixerTime: "混頻電流切換波形 (Commutation)",
+    waveMixerIfCurve: "IF 中頻轉換增益響應 (Gc vs IF Freq)",
+    schMixerTitle: "雙平衡 Gilbert Cell 混頻單元拓樸電路圖",
+    schMixerSubtitle: "含 RF 跨導差動對、LO 高速切換四核與 IF 差動負載",
+    // Switch labels
+    fomSwitchIl: "插入損耗 (IL)",
+    fomSwitchIso: "埠間隔離度 (ISO)",
+    fomSwitchP1db: "耐受功率 (P1dB)",
+    fomSwitchS11: "反射損耗 (S11)",
+    fomSwitchRon: "導通電阻 (Ron)",
+    fomSwitchFom: "品質因數 (Ron·Coff)",
+    smithSwitchTitle: "開關導通/截止狀態 S 參數 (Switch On/Off States on Smith Chart)",
+    smithSwitchSubtitle: "展示導通傳輸阻抗與截止隔離高阻抗之反射係數軌跡",
+    waveSwitchTitle: "開關小訊號響應與大訊號功率壓縮 (Small-Signal S21 & P1dB)",
+    waveSwitchSubtitle: "展示頻率插入損耗/隔離度響應與大訊號電壓耐受堆疊特性",
+    waveSwitchS21Iso: "插入損耗 IL 與隔離度 ISO (dB vs Freq)",
+    waveSwitchP1dbCurve: "大訊號傳輸特性與 P1dB 壓縮曲線",
+    schSwitchTitle: "串並聯 CMOS SPDT 雙工開關拓樸電路圖",
+    schSwitchSubtitle: "採用多重堆疊 FETs (Stacked FETs) 耐受高功率，體偏置電阻抑制高頻漏電",
+    // Antenna labels
+    fomAntGain: "天線增益 (Gain)",
+    fomAntBw: "阻抗頻寬 (BW)",
+    fomAntW: "貼片寬度 (Width)",
+    fomAntL: "貼片長度 (Length)",
+    fomAntY0: "內凹饋電 (y0)",
+    fomAntEff: "輻射效率 (Efficiency)",
+    smithAntTitle: "微帶天線輸入阻抗匹配 (Patch Input Impedance on Smith Chart)",
+    smithAntSubtitle: "展示內凹饋電深度 y0 共振於 50Ω 圓心之輸入反射係數 Γ",
+    waveAntTitle: "天線輻射方向圖與反射係數 S11 (Radiation Pattern & S11)",
+    waveAntSubtitle: "E-Plane / H-Plane 主瓣輻射圖與 -10dB 回波損耗共振頻寬",
+    waveAntS11: "反射損耗 S11 (dB vs Freq)",
+    waveAntPattern: "天線主波束輻射方向圖 (Radiation Pattern)",
+    schAntTitle: "毫米波微帶貼片天線與 AiP 封裝結構圖",
+    schAntSubtitle: "具備內凹槽 (Inset-Fed) 50Ω 阻抗匹配與頂層微帶共振輻射面",
     // Common BOM
     bomComp: "元件名稱",
     bomType: "類型",
@@ -104,8 +168,12 @@ const i18nData = {
     appTitle: "AutoRF Integrated CMOS RF PA & LNA Design Suite",
     appSubtitle: "End-to-End Synthesis & Simulation Engine for CMOS Power Amplifiers & Low-Noise Amplifiers",
     circuitSession: "Circuit Session",
-    sessionPa: "Power Amplifier (PA)",
-    sessionLna: "Low-Noise Amplifier (LNA)",
+    sessionPa: "PA",
+    sessionLna: "LNA",
+    sessionVco: "VCO",
+    sessionMixer: "Mixer",
+    sessionSwitch: "Switch",
+    sessionAntenna: "Antenna",
     presetWifi24: "⚡ Wi-Fi 2.4 GHz (65nm)",
     presetWifi5: "⚡ Wi-Fi 6 5.2 GHz (40nm)",
     presetMmwave28: "⚡ 5G mmWave 28 GHz (28nm)",
@@ -174,6 +242,66 @@ const i18nData = {
     waveLnaNfCurve: "Noise Figure NF (dB vs Freq)",
     schLnaTitle: "Inductively Degenerated Cascode CMOS LNA Topology",
     schLnaSubtitle: "Featuring source degeneration Ls (noiseless 50Ω input match) and gate inductor Lg",
+    // VCO labels
+    fomVcoPn: "Phase Noise @1MHz",
+    fomVcoFtr: "Tuning Range (FTR)",
+    fomVcoKvco: "Gain Constant (Kvco)",
+    fomVcoPdc: "Core Power (Pdc)",
+    fomVcoLtank: "Resonant Inductor (Ltank)",
+    fomVcoFom: "Figure of Merit (FOM)",
+    smithVcoTitle: "LC Tank Impedance on Smith Chart",
+    smithVcoSubtitle: "Parallel tank loss Rp and negative conductance -Gm compensation circle",
+    waveVcoTitle: "Differential Oscillation & Phase Noise Spectrum",
+    waveVcoSubtitle: "Cross-coupled pair voltage swings and Leeson phase noise curve",
+    waveVcoTime: "Differential Swings (Vout+ / Vout-)",
+    waveVcoPnCurve: "Phase Noise L(Δf) (dBc/Hz vs Offset)",
+    schVcoTitle: "Complementary Cross-Coupled CMOS LC-VCO Topology",
+    schVcoSubtitle: "NMOS+PMOS negative-gm core with MOS accumulation varactors for tuning",
+    // Mixer labels
+    fomMixerGc: "Conversion Gain (Gc)",
+    fomMixerNf: "Single-Sideband NF",
+    fomMixerIip3: "Input IP3 (IIP3)",
+    fomMixerPdc: "Mixer Power (Pdc)",
+    fomMixerIso: "LO-to-RF Isolation",
+    fomMixerLoPwr: "Required LO Power",
+    smithMixerTitle: "RF Port Input Impedance on Smith Chart",
+    smithMixerSubtitle: "Double-balanced Gilbert RF transconductance pair matching to 50Ω",
+    waveMixerTitle: "Commutation Waveforms & IF Output Spectrum",
+    waveMixerSubtitle: "LO switching quad current commutation and IF low-pass filter response",
+    waveMixerTime: "Current Commutation Waveforms",
+    waveMixerIfCurve: "IF Conversion Gain vs Frequency",
+    schMixerTitle: "Double-Balanced Gilbert Active Mixer Topology",
+    schMixerSubtitle: "Featuring RF Gm stage, LO switching quad, and differential IF loads",
+    // Switch labels
+    fomSwitchIl: "Insertion Loss (IL)",
+    fomSwitchIso: "Port Isolation (ISO)",
+    fomSwitchP1db: "Power Handling (P1dB)",
+    fomSwitchS11: "Return Loss (S11)",
+    fomSwitchRon: "On-Resistance (Ron)",
+    fomSwitchFom: "Figure of Merit (Ron·Coff)",
+    smithSwitchTitle: "Switch On/Off States on Smith Chart",
+    smithSwitchSubtitle: "Transmission state low impedance and isolated state high impedance reflection",
+    waveSwitchTitle: "Small-Signal Frequency Response & Large-Signal P1dB",
+    waveSwitchSubtitle: "Broadband IL / ISO frequency curves and power compression",
+    waveSwitchS21Iso: "IL & ISO (dB vs Frequency)",
+    waveSwitchP1dbCurve: "Large-Signal Transmission & P1dB",
+    schSwitchTitle: "Series-Shunt CMOS SPDT T/R Switch Topology",
+    schSwitchSubtitle: "Stacked FETs for multi-watt power handling and body-floating resistors",
+    // Antenna labels
+    fomAntGain: "Antenna Gain",
+    fomAntBw: "Bandwidth (BW)",
+    fomAntW: "Patch Width (W)",
+    fomAntL: "Patch Length (L)",
+    fomAntY0: "Inset Depth (y0)",
+    fomAntEff: "Radiation Efficiency",
+    smithAntTitle: "Patch Antenna Input Impedance on Smith Chart",
+    smithAntSubtitle: "Inset-feed notch depth y0 resonance matched to 50Ω center",
+    waveAntTitle: "Radiation Pattern & S11 Return Loss",
+    waveAntSubtitle: "E-Plane / H-Plane radiation pattern and -10dB return loss bandwidth",
+    waveAntS11: "Return Loss S11 (dB vs Freq)",
+    waveAntPattern: "Main Beam Radiation Pattern",
+    schAntTitle: "Millimeter-Wave Microstrip Patch & AiP Structure",
+    schAntSubtitle: "Featuring inset-feed 50Ω notch match and top-metal radiator",
     // Common BOM
     bomComp: "Component",
     bomType: "Type",
@@ -296,7 +424,21 @@ const state = {
 
   // LNA Specific
   lna_gain_db: 18.0,
-  lna_idc_ma: 6.0
+  lna_idc_ma: 6.0,
+
+  // VCO Specific
+  vco_ftr_pct: 15.0,
+  vco_idc_ma: 8.0,
+
+  // Mixer Specific
+  mixer_gc_db: 10.0,
+  mixer_idc_ma: 6.0,
+
+  // Switch Specific
+  switch_p1db_dbm: 24.0,
+
+  // Antenna Specific
+  antenna_substrate: "aip_organic"
 };
 
 let currentDesign = null;
@@ -559,9 +701,251 @@ function runLnaSynthesis() {
   updateUI();
 }
 
+// --- 4b. Voltage-Controlled Oscillator (VCO) Synthesis Engine ---
+function runVcoSynthesis() {
+  const pdk = PDK_LIBRARY[state.node_key];
+  const freq = state.freq_ghz;
+  const vdd = state.vdd;
+  const ftrPct = state.vco_ftr_pct;
+  const idcMa = state.vco_idc_ma;
+  const qTank = state.inductor_q;
+  const omega0 = 2 * Math.PI * freq * 1e9;
+
+  const z0 = Math.max(15.0, Math.min(60.0, 150.0 / Math.sqrt(freq)));
+  const lTankH = z0 / omega0;
+  const lTankNh = lTankH * 1e9;
+
+  const cTankF = 1.0 / (omega0 * omega0 * lTankH);
+  const cTankPf = cTankF * 1e12;
+  const rParallelOhm = qTank * omega0 * lTankH;
+
+  const alphaStartup = 3.0;
+  const gmReqCore = (2.0 * alphaStartup) / rParallelOhm;
+  const gmReqMs = gmReqCore * 1e3;
+
+  const vov = Math.max(0.12, vdd * 0.22);
+  const wNmosUm = Math.max(8.0, (idcMa * 1e-3 / (0.5 * pdk.kp * 1e-6 * (vov / pdk.l_min) * vov)) * 0.8);
+  const wPmosUm = wNmosUm * 2.2;
+  const numFingersN = Math.max(2, Math.ceil(wNmosUm / 2.0));
+  const numFingersP = Math.max(2, Math.ceil(wPmosUm / 2.0));
+
+  const pDcMw = vdd * idcMa;
+  const pRfOutDbm = 10 * Math.log10(Math.max(0.1, (2.0 / Math.PI) * idcMa * (2.0 / Math.PI) * vdd * 1000 * 0.4));
+
+  const kBoltz = 1.380649e-23;
+  const tempK = 300.0;
+  const noiseFactorF = 2.5;
+  const pOscWatts = Math.max(1e-4, Math.pow(10, (pRfOutDbm - 30.0) / 10.0));
+  const deltaF1M = 1e6;
+  const qLoaded = qTank * 0.65;
+  const pn1MLin = ((2.0 * noiseFactorF * kBoltz * tempK) / pOscWatts) * (1.0 + Math.pow(freq * 1e9 / (2.0 * qLoaded * deltaF1M), 2));
+  const pn1MDbc = 10.0 * Math.log10(pn1MLin);
+
+  const fomDbc = -pn1MDbc + 20.0 * Math.log10((freq * 1e9) / deltaF1M) - 10.0 * Math.log10(pDcMw);
+  const kvcoGhzPerV = (freq * (ftrPct / 100.0)) / (vdd * 0.8);
+
+  currentDesign = {
+    session: "vco",
+    freq,
+    vdd,
+    pdk,
+    ftrPct,
+    idcMa,
+    pDcMw,
+    lTankNh,
+    cTankPf,
+    qTank,
+    rParallelOhm,
+    gmReqMs,
+    alphaStartup,
+    wNmosUm,
+    wPmosUm,
+    numFingersN,
+    numFingersP,
+    pRfOutDbm,
+    pn1MDbc,
+    fomDbc,
+    kvcoGhzPerV,
+    fMinGhz: freq * (1.0 - ftrPct / 200.0),
+    fMaxGhz: freq * (1.0 + ftrPct / 200.0)
+  };
+
+  updateUI();
+}
+
+// --- 4c. Mixer Synthesis Engine ---
+function runMixerSynthesis() {
+  const pdk = PDK_LIBRARY[state.node_key];
+  const freq = state.freq_ghz;
+  const vdd = state.vdd;
+  const targetGainDb = state.mixer_gc_db;
+  const idcMa = state.mixer_idc_ma;
+  const rLoadOhm = 250.0;
+
+  const targetGcLin = Math.pow(10, targetGainDb / 20.0);
+  const gmRfReq = (Math.PI / 2.0) * (targetGcLin / rLoadOhm);
+  const gmRfMs = gmRfReq * 1e3;
+
+  const iBranchMa = idcMa / 2.0;
+  const vovRf = Math.max(0.12, (2.0 * iBranchMa * 1e-3) / Math.max(1e-4, gmRfReq));
+  const wRfUm = Math.max(10.0, (2.0 * iBranchMa * 1e-3) / (pdk.kp * 1e-6 * (1.0 / pdk.l_min) * (vovRf * vovRf)));
+  const wLoUm = wRfUm * 1.15;
+  const numFingersRf = Math.max(2, Math.ceil(wRfUm / 2.0));
+  const numFingersLo = Math.max(2, Math.ceil(wLoUm / 2.0));
+
+  const nfSsbDb = Math.min(16.0, Math.max(7.5, 8.5 + 4.0 * (freq / pdk.ft_peak)));
+  const iip3Dbm = Math.min(10.0, Math.max(-10.0, 10.0 * Math.log10(vovRf * 1000) - 1.0 + (idcMa / 6.0)));
+  const ip1dbDbm = iip3Dbm - 9.6;
+  const loRfIsoDb = Math.min(65.0, Math.max(35.0, 52.0 - 15.0 * (freq / 60.0)));
+  const loPwrDbm = 0.0 + 3.0 * (freq / 40.0);
+  const pDcMw = vdd * idcMa;
+
+  currentDesign = {
+    session: "mixer",
+    freq,
+    loFreq: Math.max(0.5, freq - 0.5),
+    ifFreq: 0.5,
+    vdd,
+    pdk,
+    gainDb: targetGainDb,
+    idcMa,
+    pDcMw,
+    rLoadOhm,
+    gmRfMs,
+    wRfUm,
+    wLoUm,
+    numFingersRf,
+    numFingersLo,
+    nfSsbDb,
+    nfDsbDb: nfSsbDb - 3.0,
+    iip3Dbm,
+    ip1dbDbm,
+    loRfIsoDb,
+    loPwrDbm
+  };
+
+  updateUI();
+}
+
+// --- 4d. T/R Switch Synthesis Engine ---
+function runSwitchSynthesis() {
+  const pdk = PDK_LIBRARY[state.node_key];
+  const freq = state.freq_ghz;
+  const vdd = state.vdd;
+  const targetP1db = state.switch_p1db_dbm;
+  const z0 = 50.0;
+  const omega = 2 * Math.PI * freq * 1e9;
+
+  const pTargetW = Math.pow(10, (targetP1db - 30.0) / 10.0);
+  const vPeakRf = Math.sqrt(2.0 * z0 * pTargetW);
+  const vMaxPerFet = vdd * 0.9;
+  let numStack = Math.max(1, Math.ceil(vPeakRf / vMaxPerFet));
+  if (freq > 40.0 && numStack > 2) numStack = 2;
+
+  const vovOn = vdd - pdk.vth;
+  const rOnTarget = Math.max(1.2, Math.min(4.0, 1.8 + (freq / 50.0)));
+  const wSerUm = Math.max(20.0, Math.min(350.0, (pdk.l_min * numStack) / ((pdk.kp * 1e-6) * rOnTarget * vovOn)));
+  const wShuntUm = Math.max(15.0, wSerUm * 0.65);
+  const numFingersSer = Math.max(4, Math.ceil(wSerUm / 2.0));
+  const numFingersShunt = Math.max(2, Math.ceil(wShuntUm / 2.0));
+
+  const cOffSerFf = wSerUm * (pdk.cox * pdk.l_min * 0.35 + pdk.c_ov);
+  const cOffShuntFf = wShuntUm * (pdk.cox * pdk.l_min * 0.35 + pdk.c_ov);
+
+  const ilDb = 10.0 * Math.log10(1.0 + (2.0 * rOnTarget) / z0) + 0.15 * (freq / 30.0);
+  const isoLin = 1.0 + Math.pow(1.0 / (2.0 * omega * (cOffShuntFf * 1e-15) * z0), 2);
+  const isoDb = Math.min(45.0, 10.0 * Math.log10(isoLin) + 6.0);
+  const s11Db = -20.0 + 5.0 * (freq / 40.0);
+  const fomFs = rOnTarget * cOffShuntFf;
+
+  currentDesign = {
+    session: "switch",
+    freq,
+    vdd,
+    pdk,
+    targetP1db,
+    numStack,
+    wSerUm,
+    wShuntUm,
+    numFingersSer,
+    numFingersShunt,
+    rOnTarget,
+    cOffShuntFf,
+    ilDb,
+    isoDb,
+    s11Db,
+    fomFs,
+    iip3Dbm: targetP1db + 12.0
+  };
+
+  updateUI();
+}
+
+// --- 4e. Antenna (AiP / Microstrip Patch) Synthesis Engine ---
+function runAntennaSynthesis() {
+  const freq = state.freq_ghz;
+  const subType = state.antenna_substrate;
+
+  let er = 3.2, hUm = 100.0, subName = "AiP Organic Substrate";
+  if (subType === "ltcc_ceramic") { er = 5.9; hUm = 120.0; subName = "LTCC Ceramic Package"; }
+  else if (subType === "fused_silica") { er = 3.78; hUm = 150.0; subName = "Fused Silica Glass"; }
+  else if (subType === "on_chip_sio2") { er = 3.9; hUm = 12.0; subName = "On-Chip CMOS SiO2"; }
+
+  const c = 2.99792458e8;
+  const fHz = freq * 1e9;
+  const lambda0M = c / fHz;
+  const lambda0Mm = lambda0M * 1e3;
+
+  const wPatchM = (c / (2.0 * fHz)) * Math.sqrt(2.0 / (er + 1.0));
+  const wPatchUm = wPatchM * 1e6;
+  const hM = hUm * 1e-6;
+
+  const epsEff = (er + 1.0) / 2.0 + ((er - 1.0) / 2.0) * Math.pow(1.0 + 12.0 * (hM / wPatchM), -0.5);
+  const deltaLM = 0.412 * hM * ((epsEff + 0.3) * (wPatchM / hM + 0.264)) / ((epsEff - 0.258) * (wPatchM / hM + 0.8));
+  const lPatchM = c / (2.0 * fHz * Math.sqrt(epsEff)) - 2.0 * deltaLM;
+  const lPatchUm = lPatchM * 1e6;
+
+  const y0Um = (lPatchUm / Math.PI) * Math.acos(Math.sqrt(50.0 / 250.0));
+  const effPct = Math.min(92.0, Math.max(15.0, (1.0 - Math.exp(-hUm / 25.0)) * 88.0 * (subType === "on_chip_sio2" ? 0.35 : 1.0)));
+  const directivityDbi = 6.8 + 1.2 * Math.log10(er);
+  const gainDbi = directivityDbi + 10.0 * Math.log10(effPct / 100.0);
+  const bwPct = Math.max(1.5, Math.min(9.5, 3.77 * ((er - 1.0) / (er * er)) * (wPatchM / lPatchM) * (hM / lambda0M) * 100.0));
+  const bwMhz = freq * 1000.0 * (bwPct / 100.0);
+
+  currentDesign = {
+    session: "antenna",
+    freq,
+    vdd: state.vdd,
+    subType,
+    subName,
+    er,
+    hUm,
+    lambda0Mm,
+    wPatchUm,
+    lPatchUm,
+    y0Um,
+    gainDbi,
+    directivityDbi,
+    effPct,
+    bwPct,
+    bwMhz,
+    s11Db: -22.5
+  };
+
+  updateUI();
+}
+
 function runSynthesis() {
   if (state.session === "lna") {
     runLnaSynthesis();
+  } else if (state.session === "vco") {
+    runVcoSynthesis();
+  } else if (state.session === "mixer") {
+    runMixerSynthesis();
+  } else if (state.session === "switch") {
+    runSwitchSynthesis();
+  } else if (state.session === "antenna") {
+    runAntennaSynthesis();
   } else {
     runPaSynthesis();
   }
@@ -579,7 +963,7 @@ function updateUI() {
   document.getElementById("valVdd").innerText = `${d.vdd.toFixed(2)} V`;
   document.getElementById("valIndQ").innerText = `${state.inductor_q}`;
 
-  if (!isLna) {
+  if (d.session === "pa") {
     document.getElementById("valPout").innerText = `${d.pout.toFixed(1)} dBm (${d.poutMw.toFixed(0)} mW)`;
 
     // Top Cards for PA
@@ -626,12 +1010,11 @@ function updateUI() {
     document.getElementById("smithStat3").innerText = `${d.pboPae.toFixed(1)} % PAE`;
     document.getElementById("smithSubLabel4").innerText = t.smith1dB;
     document.getElementById("smithStat4").innerText = `${d.p1db.toFixed(1)} dBm`;
-  } else {
+  } else if (d.session === "lna") {
     // LNA Mode UI Updates
     document.getElementById("valLnaGain").innerText = `${state.lna_gain_db.toFixed(1)} dB`;
     document.getElementById("valLnaIdc").innerText = `${state.lna_idc_ma.toFixed(1)} mA`;
 
-    // Top Cards for LNA
     document.getElementById("fomLabel1").innerText = t.fomLnaNf;
     document.getElementById("fomVal1").innerText = `${d.nfDb.toFixed(2)} dB`;
     document.getElementById("fomSub1").innerText = `NFmin: ${d.nfMinDb.toFixed(2)} dB`;
@@ -657,7 +1040,6 @@ function updateUI() {
     document.getElementById("fomSub6").innerText = t.stabUnconditional;
     document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
 
-    // Tab Header Texts
     document.getElementById("smithCardTitle").innerText = t.smithLnaTitle;
     document.getElementById("smithCardSubtitle").innerText = t.smithLnaSubtitle;
     document.getElementById("waveCardTitle").innerText = t.waveLnaTitle;
@@ -675,6 +1057,192 @@ function updateUI() {
     document.getElementById("smithStat3").innerText = `${d.rnOhm.toFixed(1)} Ω`;
     document.getElementById("smithSubLabel4").innerText = t.smithLnaP1db;
     document.getElementById("smithStat4").innerText = `${d.p1dbInDbm.toFixed(1)} dBm`;
+  } else if (d.session === "vco") {
+    // VCO Mode UI Updates
+    document.getElementById("valVcoTuning").innerText = `${d.ftrPct.toFixed(1)} %`;
+    document.getElementById("valVcoIdc").innerText = `${d.idcMa.toFixed(1)} mA`;
+
+    document.getElementById("fomLabel1").innerText = t.fomVcoPn;
+    document.getElementById("fomVal1").innerText = `${d.pn1MDbc.toFixed(1)} dBc`;
+    document.getElementById("fomSub1").innerText = `@ 1MHz 頻偏`;
+
+    document.getElementById("fomLabel2").innerText = t.fomVcoFtr;
+    document.getElementById("fomVal2").innerText = `${d.ftrPct.toFixed(1)} %`;
+    document.getElementById("fomSub2").innerText = `${d.fMinGhz.toFixed(2)} ~ ${d.fMaxGhz.toFixed(2)} GHz`;
+
+    document.getElementById("fomLabel3").innerText = t.fomVcoKvco;
+    document.getElementById("fomVal3").innerText = `${d.kvcoGhzPerV.toFixed(2)} GHz/V`;
+    document.getElementById("fomSub3").innerText = `線性調諧度`;
+
+    document.getElementById("fomLabel4").innerText = t.fomVcoPdc;
+    document.getElementById("fomVal4").innerText = `${d.pDcMw.toFixed(1)} mW`;
+    document.getElementById("fomSub4").innerText = `${d.idcMa.toFixed(1)} mA @ ${d.vdd}V`;
+
+    document.getElementById("fomLabel5").innerText = t.fomVcoLtank;
+    document.getElementById("fomVal5").innerText = `${d.lTankNh.toFixed(3)} nH`;
+    document.getElementById("fomSub5").innerText = `C_tank: ${d.cTankPf.toFixed(2)} pF`;
+
+    document.getElementById("fomLabel6").innerText = t.fomVcoFom;
+    document.getElementById("fomVal6").innerText = `${d.fomDbc.toFixed(1)} dBc`;
+    document.getElementById("fomSub6").innerText = `啟振係數 α=${d.alphaStartup.toFixed(1)}`;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
+
+    document.getElementById("smithCardTitle").innerText = t.smithVcoTitle;
+    document.getElementById("smithCardSubtitle").innerText = t.smithVcoSubtitle;
+    document.getElementById("waveCardTitle").innerText = t.waveVcoTitle;
+    document.getElementById("waveCardSubtitle").innerText = t.waveVcoSubtitle;
+    document.getElementById("canvas1Title").innerText = t.waveVcoTime;
+    document.getElementById("canvas2Title").innerText = t.waveVcoPnCurve;
+    document.getElementById("schCardTitle").innerText = t.schVcoTitle;
+    document.getElementById("schCardSubtitle").innerText = t.schVcoSubtitle;
+
+    document.getElementById("smithSubLabel1").innerText = "Tank Rp";
+    document.getElementById("smithStat1").innerText = `${d.rParallelOhm.toFixed(1)} Ω`;
+    document.getElementById("smithSubLabel2").innerText = "Req -Gm";
+    document.getElementById("smithStat2").innerText = `${d.gmReqMs.toFixed(1)} mS`;
+    document.getElementById("smithSubLabel3").innerText = "P_rf Out";
+    document.getElementById("smithStat3").innerText = `${d.pRfOutDbm.toFixed(1)} dBm`;
+    document.getElementById("smithSubLabel4").innerText = "W_n / W_p";
+    document.getElementById("smithStat4").innerText = `${d.wNmosUm.toFixed(0)} / ${d.wPmosUm.toFixed(0)} μm`;
+  } else if (d.session === "mixer") {
+    // Mixer Mode UI Updates
+    document.getElementById("valMixerGain").innerText = `${d.gainDb.toFixed(1)} dB`;
+    document.getElementById("valMixerIdc").innerText = `${d.idcMa.toFixed(1)} mA`;
+
+    document.getElementById("fomLabel1").innerText = t.fomMixerGc;
+    document.getElementById("fomVal1").innerText = `${d.gainDb.toFixed(1)} dB`;
+    document.getElementById("fomSub1").innerText = `RL = ${d.rLoadOhm} Ω`;
+
+    document.getElementById("fomLabel2").innerText = t.fomMixerNf;
+    document.getElementById("fomVal2").innerText = `${d.nfSsbDb.toFixed(1)} dB`;
+    document.getElementById("fomSub2").innerText = `DSB NF: ${d.nfDsbDb.toFixed(1)} dB`;
+
+    document.getElementById("fomLabel3").innerText = t.fomMixerIip3;
+    document.getElementById("fomVal3").innerText = `${d.iip3Dbm.toFixed(1)} dBm`;
+    document.getElementById("fomSub3").innerText = `IP1dB: ${d.ip1dbDbm.toFixed(1)} dBm`;
+
+    document.getElementById("fomLabel4").innerText = t.fomMixerPdc;
+    document.getElementById("fomVal4").innerText = `${d.pDcMw.toFixed(1)} mW`;
+    document.getElementById("fomSub4").innerText = `${d.idcMa.toFixed(1)} mA @ ${d.vdd}V`;
+
+    document.getElementById("fomLabel5").innerText = t.fomMixerIso;
+    document.getElementById("fomVal5").innerText = `${d.loRfIsoDb.toFixed(1)} dB`;
+    document.getElementById("fomSub5").innerText = `雙平衡 Gilbert 抵消`;
+
+    document.getElementById("fomLabel6").innerText = t.fomMixerLoPwr;
+    document.getElementById("fomVal6").innerText = `${d.loPwrDbm.toFixed(1)} dBm`;
+    document.getElementById("fomSub6").innerText = `LO驅動電壓充足`;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
+
+    document.getElementById("smithCardTitle").innerText = t.smithMixerTitle;
+    document.getElementById("smithCardSubtitle").innerText = t.smithMixerSubtitle;
+    document.getElementById("waveCardTitle").innerText = t.waveMixerTitle;
+    document.getElementById("waveCardSubtitle").innerText = t.waveMixerSubtitle;
+    document.getElementById("canvas1Title").innerText = t.waveMixerTime;
+    document.getElementById("canvas2Title").innerText = t.waveMixerIfCurve;
+    document.getElementById("schCardTitle").innerText = t.schMixerTitle;
+    document.getElementById("schCardSubtitle").innerText = t.schMixerSubtitle;
+
+    document.getElementById("smithSubLabel1").innerText = "Gm RF";
+    document.getElementById("smithStat1").innerText = `${d.gmRfMs.toFixed(1)} mS`;
+    document.getElementById("smithSubLabel2").innerText = "W_rf / W_lo";
+    document.getElementById("smithStat2").innerText = `${d.wRfUm.toFixed(0)} / ${d.wLoUm.toFixed(0)} μm`;
+    document.getElementById("smithSubLabel3").innerText = "IF Freq";
+    document.getElementById("smithStat3").innerText = `${d.ifFreq.toFixed(1)} GHz`;
+    document.getElementById("smithSubLabel4").innerText = "LO Freq";
+    document.getElementById("smithStat4").innerText = `${d.loFreq.toFixed(1)} GHz`;
+  } else if (d.session === "switch") {
+    // Switch Mode UI Updates
+    document.getElementById("valSwitchP1db").innerText = `${d.targetP1db.toFixed(1)} dBm`;
+
+    document.getElementById("fomLabel1").innerText = t.fomSwitchIl;
+    document.getElementById("fomVal1").innerText = `${d.ilDb.toFixed(2)} dB`;
+    document.getElementById("fomSub1").innerText = `50Ω 插入損耗`;
+
+    document.getElementById("fomLabel2").innerText = t.fomSwitchIso;
+    document.getElementById("fomVal2").innerText = `${d.isoDb.toFixed(1)} dB`;
+    document.getElementById("fomSub2").innerText = `關斷埠隔離度`;
+
+    document.getElementById("fomLabel3").innerText = t.fomSwitchP1db;
+    document.getElementById("fomVal3").innerText = `${d.targetP1db.toFixed(1)} dBm`;
+    document.getElementById("fomSub3").innerText = `堆疊數 N=${d.numStack}`;
+
+    document.getElementById("fomLabel4").innerText = t.fomSwitchS11;
+    document.getElementById("fomVal4").innerText = `${d.s11Db.toFixed(1)} dB`;
+    document.getElementById("fomSub4").innerText = `導通埠匹配`;
+
+    document.getElementById("fomLabel5").innerText = t.fomSwitchRon;
+    document.getElementById("fomVal5").innerText = `${d.rOnTarget.toFixed(2)} Ω`;
+    document.getElementById("fomSub5").innerText = `Coff: ${d.cOffShuntFf.toFixed(1)} fF`;
+
+    document.getElementById("fomLabel6").innerText = t.fomSwitchFom;
+    document.getElementById("fomVal6").innerText = `${d.fomFs.toFixed(0)} fs`;
+    document.getElementById("fomSub6").innerText = `CMOS RF 開關品質優`;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
+
+    document.getElementById("smithCardTitle").innerText = t.smithSwitchTitle;
+    document.getElementById("smithCardSubtitle").innerText = t.smithSwitchSubtitle;
+    document.getElementById("waveCardTitle").innerText = t.waveSwitchTitle;
+    document.getElementById("waveCardSubtitle").innerText = t.waveSwitchSubtitle;
+    document.getElementById("canvas1Title").innerText = t.waveSwitchS21Iso;
+    document.getElementById("canvas2Title").innerText = t.waveSwitchP1dbCurve;
+    document.getElementById("schCardTitle").innerText = t.schSwitchTitle;
+    document.getElementById("schCardSubtitle").innerText = t.schSwitchSubtitle;
+
+    document.getElementById("smithSubLabel1").innerText = "Ron Total";
+    document.getElementById("smithStat1").innerText = `${d.rOnTarget.toFixed(2)} Ω`;
+    document.getElementById("smithSubLabel2").innerText = "W_series";
+    document.getElementById("smithStat2").innerText = `${d.wSerUm.toFixed(0)} μm`;
+    document.getElementById("smithSubLabel3").innerText = "W_shunt";
+    document.getElementById("smithStat3").innerText = `${d.wShuntUm.toFixed(0)} μm`;
+    document.getElementById("smithSubLabel4").innerText = "IIP3";
+    document.getElementById("smithStat4").innerText = `${d.iip3Dbm.toFixed(1)} dBm`;
+  } else if (d.session === "antenna") {
+    // Antenna Mode UI Updates
+    document.getElementById("selectAntennaSubstrate").value = d.subType;
+
+    document.getElementById("fomLabel1").innerText = t.fomAntGain;
+    document.getElementById("fomVal1").innerText = `${d.gainDbi.toFixed(1)} dBi`;
+    document.getElementById("fomSub1").innerText = `方向性 D: ${d.directivityDbi.toFixed(1)} dBi`;
+
+    document.getElementById("fomLabel2").innerText = t.fomAntBw;
+    document.getElementById("fomVal2").innerText = `${d.bwMhz.toFixed(0)} MHz`;
+    document.getElementById("fomSub2").innerText = `分數頻寬: ${d.bwPct.toFixed(1)} %`;
+
+    document.getElementById("fomLabel3").innerText = t.fomAntW;
+    document.getElementById("fomVal3").innerText = `${(d.wPatchUm).toFixed(0)} μm`;
+    document.getElementById("fomSub3").innerText = `輻射邊寬度`;
+
+    document.getElementById("fomLabel4").innerText = t.fomAntL;
+    document.getElementById("fomVal4").innerText = `${(d.lPatchUm).toFixed(0)} μm`;
+    document.getElementById("fomSub4").innerText = `諧振邊長度`;
+
+    document.getElementById("fomLabel5").innerText = t.fomAntY0;
+    document.getElementById("fomVal5").innerText = `${(d.y0Um).toFixed(0)} μm`;
+    document.getElementById("fomSub5").innerText = `內凹饋電深度 (50Ω)`;
+
+    document.getElementById("fomLabel6").innerText = t.fomAntEff;
+    document.getElementById("fomVal6").innerText = `${d.effPct.toFixed(1)} %`;
+    document.getElementById("fomSub6").innerText = d.subName;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
+
+    document.getElementById("smithCardTitle").innerText = t.smithAntTitle;
+    document.getElementById("smithCardSubtitle").innerText = t.smithAntSubtitle;
+    document.getElementById("waveCardTitle").innerText = t.waveAntTitle;
+    document.getElementById("waveCardSubtitle").innerText = t.waveAntSubtitle;
+    document.getElementById("canvas1Title").innerText = t.waveAntS11;
+    document.getElementById("canvas2Title").innerText = t.waveAntPattern;
+    document.getElementById("schCardTitle").innerText = t.schAntTitle;
+    document.getElementById("schCardSubtitle").innerText = t.schAntSubtitle;
+
+    document.getElementById("smithSubLabel1").innerText = "λ0 (空氣)";
+    document.getElementById("smithStat1").innerText = `${d.lambda0Mm.toFixed(2)} mm`;
+    document.getElementById("smithSubLabel2").innerText = "εr (介電常數)";
+    document.getElementById("smithStat2").innerText = `${d.er.toFixed(2)}`;
+    document.getElementById("smithSubLabel3").innerText = "h (基板厚度)";
+    document.getElementById("smithStat3").innerText = `${d.hUm.toFixed(0)} μm`;
+    document.getElementById("smithSubLabel4").innerText = "S11 諧振點";
+    document.getElementById("smithStat4").innerText = `${d.s11Db.toFixed(1)} dB`;
   }
 
   // Draw Visualizations
@@ -805,7 +1373,7 @@ function drawSmithChart() {
         ctx.stroke();
       }
     });
-  } else {
+  } else if (d.session === "lna") {
     // LNA: Draw Noise Circles (NFmin, +0.3dB, +0.6dB, +1.0dB)
     const gOptRe = d.gammaOptMag * Math.cos((d.gammaOptDeg * Math.PI) / 180);
     const gOptIm = d.gammaOptMag * Math.sin((d.gammaOptDeg * Math.PI) / 180);
@@ -832,7 +1400,6 @@ function drawSmithChart() {
     ];
 
     noiseLevels.forEach(lvl => {
-      // Noise parameter delta: N = (|Gamma_s - Gamma_opt|^2) / (1 - |Gamma_s|^2)
       const radFactor = Math.sqrt(lvl.dNf * 0.25);
       ctx.strokeStyle = lvl.color;
       ctx.lineWidth = 1.8;
@@ -849,6 +1416,46 @@ function drawSmithChart() {
       ctx.closePath();
       ctx.stroke();
     });
+  } else if (d.session === "vco") {
+    // VCO Tank Impedance & -Gm on Smith Chart
+    const pt = gammaToCanvas(0.45, 0.0);
+    ctx.fillStyle = "#f59e0b";
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`Tank Rp (${d.rParallelOhm.toFixed(1)}Ω)`, pt.x + 8, pt.y - 6);
+
+    // Negative Gm compensation circle
+    ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 2.0; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.arc(cx - 0.45 * R, cy, 0.4 * R, 0, 2 * Math.PI); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f472b6"; ctx.fillText(`-Gm Region (${d.gmReqMs.toFixed(1)} mS)`, cx - 0.7 * R, cy - 15);
+  } else if (d.session === "mixer") {
+    // Mixer RF Transconductance Input S11
+    const pt = gammaToCanvas(0.15, -0.2);
+    ctx.fillStyle = "#a855f7";
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`RF In (50 - j20 Ω)`, pt.x + 8, pt.y - 6);
+  } else if (d.session === "switch") {
+    // Switch ON (low impedance) & OFF (high impedance) points
+    const ptOn = gammaToCanvas(-0.85, 0.05);
+    const ptOff = gammaToCanvas(0.88, -0.2);
+    ctx.fillStyle = "#10b981"; ctx.beginPath(); ctx.arc(ptOn.x, ptOn.y, 6, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px sans-serif"; ctx.fillText(`ON State (Ron=${d.rOnTarget.toFixed(2)}Ω)`, ptOn.x + 8, ptOn.y - 6);
+    ctx.fillStyle = "#f43f5e"; ctx.beginPath(); ctx.arc(ptOff.x, ptOff.y, 6, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "#ffffff"; ctx.fillText(`OFF State (ISO=${d.isoDb.toFixed(1)}dB)`, ptOff.x - 140, ptOff.y - 6);
+  } else if (d.session === "antenna") {
+    // Antenna Resonance Point at 50 Ohm (Smith Chart Center)
+    const pt = gammaToCanvas(0.04, 0.02);
+    ctx.fillStyle = "#38bdf8"; ctx.shadowColor = "#38bdf8"; ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, 2 * Math.PI); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.fillStyle = "#ffffff"; ctx.font = "bold 11px sans-serif";
+    ctx.fillText(`Resonance f0 (50Ω Matched, y0=${d.y0Um.toFixed(0)}μm)`, pt.x + 10, pt.y - 8);
+
+    // S11 < -10dB circle (VSWR < 2:1)
+    ctx.strokeStyle = "#10b981"; ctx.lineWidth = 1.8; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.arc(cx, cy, 0.316 * R, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#34d399"; ctx.fillText(`VSWR < 2.0 (BW=${d.bwMhz.toFixed(0)} MHz)`, cx + 15, cy + 0.35 * R);
   }
 }
 
@@ -964,7 +1571,7 @@ function drawWaveforms() {
       ctx.fillStyle = "#34d399"; ctx.font = "bold 10px sans-serif";
       ctx.fillText(`Class-${opClass} 動態負載線`, w - 160, 20);
     }
-  } else {
+  } else if (d.session === "lna") {
     // LNA: Draw Frequency Response Curves (S21, S11 & NF vs Frequency)
     const c1 = document.getElementById("timeWaveCanvas");
     if (c1) {
@@ -1029,6 +1636,137 @@ function drawWaveforms() {
       ctx.fillStyle = "#94a3b8"; ctx.font = "10px sans-serif";
       ctx.fillText(`中心頻率: ${d.freq.toFixed(1)} GHz`, w - 130, 20);
     }
+  } else if (d.session === "vco") {
+    // VCO Oscillation Swing & Phase Noise
+    const c1 = document.getElementById("timeWaveCanvas");
+    if (c1) {
+      const ctx = c1.getContext("2d"); const w = c1.width, h = c1.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.0; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = h/2 + Math.sin((x / w) * 8 * Math.PI) * (h * 0.35);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 1.8; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = h/2 - Math.sin((x / w) * 8 * Math.PI) * (h * 0.35);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#38bdf8"; ctx.font = "bold 11px sans-serif"; ctx.fillText("— Vout+ 差動正端", 15, 20);
+      ctx.fillStyle = "#f59e0b"; ctx.fillText("— Vout- 差動負端", 140, 20);
+    }
+    const c2 = document.getElementById("loadlineCanvas");
+    if (c2) {
+      const ctx = c2.getContext("2d"); const w = c2.width, h = c2.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#ec4899"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = 30 + (x / w) * (h - 60);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#ec4899"; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(`— Leeson 相位雜訊 L(Δf) (${d.pn1MDbc.toFixed(1)} dBc/Hz @1M)`, 15, 20);
+    }
+  } else if (d.session === "mixer") {
+    // Mixer Commutation Waveforms & IF Output Spectrum
+    const c1 = document.getElementById("timeWaveCanvas");
+    if (c1) {
+      const ctx = c1.getContext("2d"); const w = c1.width, h = c1.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const sq = Math.sin((x / w) * 12 * Math.PI) > 0 ? 1 : -1;
+        const rf = Math.sin((x / w) * 12 * Math.PI + 0.3);
+        const y = h/2 - (sq * rf) * (h * 0.35);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#c084fc"; ctx.font = "bold 11px sans-serif"; ctx.fillText("— LO 換向電流波形 (Commutation)", 15, 20);
+    }
+    const c2 = document.getElementById("loadlineCanvas");
+    if (c2) {
+      const ctx = c2.getContext("2d"); const w = c2.width, h = c2.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.0; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = 40 + Math.pow(x / w, 2) * (h - 70);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#38bdf8"; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(`— 中頻轉換增益響應 Gc (${d.gainDb.toFixed(1)} dB)`, 15, 20);
+    }
+  } else if (d.session === "switch") {
+    // Switch IL & ISO curves
+    const c1 = document.getElementById("timeWaveCanvas");
+    if (c1) {
+      const ctx = c1.getContext("2d"); const w = c1.width, h = c1.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = 25 + (x / w) * 20;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = "#f43f5e"; ctx.lineWidth = 2.0; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const y = h - 30 - (x / w) * 35;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#10b981"; ctx.font = "bold 11px sans-serif"; ctx.fillText(`— 插入損耗 IL (${d.ilDb.toFixed(2)} dB)`, 15, 20);
+      ctx.fillStyle = "#f43f5e"; ctx.fillText(`— 隔離度 ISO (${d.isoDb.toFixed(1)} dB)`, 170, 20);
+    }
+    const c2 = document.getElementById("loadlineCanvas");
+    if (c2) {
+      const ctx = c2.getContext("2d"); const w = c2.width, h = c2.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const norm = x / w;
+        const y = norm < 0.7 ? h - 20 - norm * (h - 60) : h - 20 - 0.7 * (h - 60) - (norm - 0.7) * (h - 60) * 0.4;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#fbbf24"; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(`— P1dB 功率耐受壓縮曲線 (${d.targetP1db.toFixed(1)} dBm)`, 15, 20);
+    }
+  } else if (d.session === "antenna") {
+    // Antenna Radiation Pattern & S11
+    const c1 = document.getElementById("timeWaveCanvas");
+    if (c1) {
+      const ctx = c1.getContext("2d"); const w = c1.width, h = c1.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let x = 0; x < w; x++) {
+        const delta = Math.abs(x / w - 0.5);
+        const y = 30 + (1.0 - Math.exp(-delta * 12)) * (h - 50);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#10b981"; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(`— 回波損耗 S11 (共振谷點: ${d.s11Db.toFixed(1)} dB, BW=${d.bwMhz.toFixed(0)}MHz)`, 15, 20);
+    }
+    const c2 = document.getElementById("loadlineCanvas");
+    if (c2) {
+      const ctx = c2.getContext("2d"); const w = c2.width, h = c2.height;
+      ctx.clearRect(0, 0, w, h); ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+      const cx = w / 2, cy = h / 2 + 10;
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (let i = 0; i <= 72; i++) {
+        const th = (i / 72) * 2 * Math.PI;
+        const r = Math.pow(Math.cos(th), 2) * (h * 0.42);
+        const px = cx + r * Math.sin(th);
+        const py = cy - r * Math.cos(th);
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#38bdf8"; ctx.font = "bold 11px sans-serif";
+      ctx.fillText(`— 貼片天線方向圖 (Gain: ${d.gainDbi.toFixed(1)} dBi, η: ${d.effPct.toFixed(1)}%)`, 15, 20);
+    }
   }
 }
 
@@ -1080,7 +1818,7 @@ function drawSchematicSvg() {
       <rect x="540" y="125" width="40" height="30" rx="4" fill="#1e293b" stroke="#f43f5e" stroke-width="2" /><text x="546" y="144" fill="#fb7185" font-size="10" font-weight="bold">50 Ω</text>
       <text x="600" y="144" fill="#fb7185" font-size="12" font-weight="bold">RFOUT</text><text x="600" y="160" fill="#94a3b8" font-size="10">${d.pout} dBm</text>
     `;
-  } else {
+  } else if (d.session === "lna") {
     // LNA Inductively Degenerated Cascode Schematic
     svg.innerHTML = `
       <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
@@ -1151,6 +1889,163 @@ function drawSchematicSvg() {
       <text x="585" y="124" fill="#fb7185" font-size="12" font-weight="bold">RFOUT (50Ω)</text>
       <text x="585" y="140" fill="#94a3b8" font-size="10">Gain = ${d.gainDb.toFixed(1)} dB</text>
     `;
+  } else if (d.session === "vco") {
+    // VCO Cross-Coupled Resonator Schematic
+    svg.innerHTML = `
+      <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
+      <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">CMOS Complementary Cross-Coupled LC-VCO (${d.freq} GHz)</text>
+      <text x="470" y="32" fill="#94a3b8" font-size="11">PN = ${d.pn1MDbc.toFixed(1)} dBc/Hz @ 1MHz | Ltank = ${d.lTankNh.toFixed(3)} nH</text>
+
+      <!-- VDD Node Top -->
+      <circle cx="340" cy="50" r="4" fill="#f59e0b" /><text x="350" y="54" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
+      <path d="M340 54 L340 80" stroke="#cbd5e1" stroke-width="2" />
+
+      <!-- PMOS Cross-Coupled Pair Top -->
+      <path d="M280 80 L400 80" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M280 80 L280 100" stroke="#cbd5e1" stroke-width="2" /><path d="M400 80 L400 100" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="260" y="100" width="40" height="25" rx="3" fill="#1e293b" stroke="#ec4899" stroke-width="1.5" /><text x="264" y="116" fill="#f472b6" font-size="9">PMOS P1</text>
+      <rect x="380" y="100" width="40" height="25" rx="3" fill="#1e293b" stroke="#ec4899" stroke-width="1.5" /><text x="384" y="116" fill="#f472b6" font-size="9">PMOS P2</text>
+
+      <!-- Differential Tank Nodes (Vout+ & Vout-) -->
+      <path d="M280 125 L280 200" stroke="#38bdf8" stroke-width="2.5" />
+      <path d="M400 125 L400 200" stroke="#38bdf8" stroke-width="2.5" />
+
+      <!-- Cross Coupling Connections -->
+      <path d="M280 150 L380 175" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" />
+      <path d="M400 150 L300 175" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" />
+
+      <!-- Tank Inductor & Varactors in Middle -->
+      <path d="M280 160 L210 160 L210 170" stroke="#38bdf8" stroke-width="2" />
+      <path d="M400 160 L470 160 L470 170" stroke="#38bdf8" stroke-width="2" />
+      <rect x="180" y="170" width="60" height="28" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" /><text x="186" y="188" fill="#fbbf24" font-size="9" font-weight="bold">Ltank ${d.lTankNh.toFixed(2)}n</text>
+      <rect x="440" y="170" width="60" height="28" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1.5" /><text x="446" y="188" fill="#c084fc" font-size="9" font-weight="bold">Cvar ${d.cTankPf.toFixed(2)}p</text>
+      <path d="M210 198 L210 208 L470 208 L470 198" stroke="#38bdf8" stroke-width="2" />
+
+      <!-- NMOS Cross-Coupled Pair Bottom -->
+      <rect x="260" y="200" width="40" height="25" rx="3" fill="#1e293b" stroke="#06b6d4" stroke-width="1.5" /><text x="264" y="216" fill="#22d3ee" font-size="9">NMOS N1</text>
+      <rect x="380" y="200" width="40" height="25" rx="3" fill="#1e293b" stroke="#06b6d4" stroke-width="1.5" /><text x="384" y="216" fill="#22d3ee" font-size="9">NMOS N2</text>
+      <path d="M280 225 L280 250 L400 250 L400 225" stroke="#cbd5e1" stroke-width="2" />
+
+      <!-- Tail Current Source to Ground -->
+      <path d="M340 250 L340 270" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="340" cy="280" r="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+      <text x="333" y="284" fill="#34d399" font-size="9" font-weight="bold">Idc</text>
+      <path d="M340 290 L340 305 M332 305 L348 305" stroke="#64748b" stroke-width="1.5" />
+      <text x="355" y="285" fill="#94a3b8" font-size="10">${d.idcMa.toFixed(1)} mA</text>
+
+      <!-- Ports Output -->
+      <circle cx="120" cy="160" r="4" fill="#38bdf8" /><path d="M124 160 L180 160" stroke="#38bdf8" stroke-width="1.8" />
+      <text x="80" y="164" fill="#38bdf8" font-size="11" font-weight="bold">VOUT-</text>
+      <circle cx="560" cy="160" r="4" fill="#38bdf8" /><path d="M500 160 L556 160" stroke="#38bdf8" stroke-width="1.8" />
+      <text x="568" y="164" fill="#38bdf8" font-size="11" font-weight="bold">VOUT+</text>
+    `;
+  } else if (d.session === "mixer") {
+    // Gilbert Mixer Schematic
+    svg.innerHTML = `
+      <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
+      <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">Double-Balanced Gilbert Active Mixer (${d.freq} GHz RF -> ${d.ifFreq} GHz IF)</text>
+      <text x="490" y="32" fill="#94a3b8" font-size="11">Gc = ${d.gainDb.toFixed(1)} dB | IIP3 = ${d.iip3Dbm.toFixed(1)} dBm</text>
+
+      <!-- VDD & IF Loads -->
+      <circle cx="340" cy="50" r="4" fill="#f59e0b" /><text x="350" y="54" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
+      <path d="M340 54 L340 70 M250 70 L430 70" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="230" y="70" width="40" height="24" rx="3" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5" /><text x="236" y="86" fill="#fb7185" font-size="9">RL ${d.rLoadOhm}Ω</text>
+      <rect x="410" y="70" width="40" height="24" rx="3" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5" /><text x="416" y="86" fill="#fb7185" font-size="9">RL ${d.rLoadOhm}Ω</text>
+
+      <!-- IF Output Ports -->
+      <circle cx="170" cy="100" r="4" fill="#a855f7" /><text x="135" y="104" fill="#c084fc" font-size="11" font-weight="bold">IF-</text><path d="M174 100 L250 100" stroke="#a855f7" stroke-width="1.8" />
+      <circle cx="510" cy="100" r="4" fill="#a855f7" /><text x="518" y="104" fill="#c084fc" font-size="11" font-weight="bold">IF+</text><path d="M430 100 L506 100" stroke="#a855f7" stroke-width="1.8" />
+
+      <!-- LO Switching Quad (4 FETs) -->
+      <rect x="220" y="125" width="100" height="35" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+      <text x="235" y="146" fill="#38bdf8" font-size="10" font-weight="bold">LO Quad M3-M4</text>
+      <rect x="360" y="125" width="100" height="35" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+      <text x="375" y="146" fill="#38bdf8" font-size="10" font-weight="bold">LO Quad M5-M6</text>
+
+      <path d="M250 94 L250 125 M430 94 L430 125" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M270 160 L270 190 M410 160 L410 190" stroke="#cbd5e1" stroke-width="2" />
+
+      <!-- RF Input Differential Pair M1, M2 -->
+      <rect x="240" y="190" width="60" height="30" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" /><text x="246" y="208" fill="#34d399" font-size="9">RF+ (M1)</text>
+      <rect x="380" y="190" width="60" height="30" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" /><text x="386" y="208" fill="#34d399" font-size="9">RF- (M2)</text>
+
+      <!-- RF Inputs -->
+      <circle cx="170" cy="205" r="4" fill="#34d399" /><text x="135" y="209" fill="#34d399" font-size="11" font-weight="bold">RF+</text><path d="M174 205 L240 205" stroke="#34d399" stroke-width="1.8" />
+      <circle cx="510" cy="205" r="4" fill="#34d399" /><text x="518" y="209" fill="#34d399" font-size="11" font-weight="bold">RF-</text><path d="M440 205 L506 205" stroke="#34d399" stroke-width="1.8" />
+
+      <!-- Tail Current Source -->
+      <path d="M270 220 L270 250 L410 250 L410 220" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M340 250 L340 270" stroke="#cbd5e1" stroke-width="2" />
+      <circle cx="340" cy="280" r="10" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+      <text x="333" y="284" fill="#34d399" font-size="9" font-weight="bold">Idc</text>
+      <path d="M340 290 L340 305 M332 305 L348 305" stroke="#64748b" stroke-width="1.5" />
+      <text x="355" y="285" fill="#94a3b8" font-size="10">${d.idcMa.toFixed(1)} mA</text>
+    `;
+  } else if (d.session === "switch") {
+    // SPDT Switch Schematic
+    svg.innerHTML = `
+      <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
+      <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">CMOS Series-Shunt SPDT T/R Switch (${d.freq} GHz)</text>
+      <text x="470" y="32" fill="#94a3b8" font-size="11">IL = ${d.ilDb.toFixed(2)} dB | ISO = ${d.isoDb.toFixed(1)} dB | P1dB = ${d.targetP1db} dBm</text>
+
+      <!-- Antenna Port (ANT) Middle Left -->
+      <circle cx="70" cy="165" r="5" fill="#f59e0b" /><text x="30" y="170" fill="#fbbf24" font-size="12" font-weight="bold">ANT</text>
+      <path d="M75 165 L160 165" stroke="#f59e0b" stroke-width="2.5" />
+
+      <!-- Branch Split to TX and RX -->
+      <path d="M160 165 L160 100 L220 100" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M160 165 L160 230 L220 230" stroke="#cbd5e1" stroke-width="2" />
+
+      <!-- TX Branch: Series FETs + Shunt FET -->
+      <rect x="220" y="85" width="90" height="30" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.8" />
+      <text x="226" y="104" fill="#34d399" font-size="10" font-weight="bold">SER (N=${d.numStack})</text>
+      <path d="M310 100 L380 100" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="380" y="85" width="70" height="30" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+      <text x="386" y="104" fill="#34d399" font-size="9">SHUNT</text>
+      <path d="M415 115 L415 135 M408 135 L422 135" stroke="#64748b" stroke-width="1.5" />
+      <path d="M450 100 L540 100" stroke="#10b981" stroke-width="2.5" />
+      <circle cx="545" cy="100" r="4" fill="#10b981" /><text x="555" y="104" fill="#34d399" font-size="12" font-weight="bold">TX Port</text>
+      <text x="555" y="118" fill="#94a3b8" font-size="10">P1dB: ${d.targetP1db} dBm</text>
+
+      <!-- RX Branch: Series FETs + Shunt FET -->
+      <rect x="220" y="215" width="90" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.8" />
+      <text x="226" y="234" fill="#38bdf8" font-size="10" font-weight="bold">SER (N=${d.numStack})</text>
+      <path d="M310 230 L380 230" stroke="#cbd5e1" stroke-width="2" />
+      <rect x="380" y="215" width="70" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+      <text x="386" y="234" fill="#38bdf8" font-size="9">SHUNT</text>
+      <path d="M415 245 L415 265 M408 265 L422 265" stroke="#64748b" stroke-width="1.5" />
+      <path d="M450 230 L540 230" stroke="#38bdf8" stroke-width="2.5" />
+      <circle cx="545" cy="230" r="4" fill="#38bdf8" /><text x="555" y="234" fill="#38bdf8" font-size="12" font-weight="bold">RX Port</text>
+      <text x="555" y="248" fill="#94a3b8" font-size="10">IL: ${d.ilDb.toFixed(2)} dB</text>
+    `;
+  } else if (d.session === "antenna") {
+    // Antenna Microstrip Patch Diagram
+    svg.innerHTML = `
+      <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
+      <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">Millimeter-Wave Inset-Fed Microstrip Patch Antenna (${d.freq} GHz)</text>
+      <text x="490" y="32" fill="#94a3b8" font-size="11">Gain = ${d.gainDbi.toFixed(1)} dBi | BW = ${d.bwMhz.toFixed(0)} MHz</text>
+
+      <!-- Substrate Ground Layer -->
+      <rect x="120" y="60" width="440" height="230" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+      <text x="135" y="80" fill="#64748b" font-size="10">Dielectric Substrate (${d.subName}, εr=${d.er}, h=${d.hUm}μm)</text>
+
+      <!-- Copper Radiating Patch -->
+      <rect x="200" y="95" width="280" height="150" rx="4" fill="#d97706" fill-opacity="0.3" stroke="#f59e0b" stroke-width="2.5" />
+      <text x="280" y="160" fill="#fbbf24" font-size="13" font-weight="bold">Patch W = ${d.wPatchUm.toFixed(0)} μm</text>
+      <text x="280" y="180" fill="#fde68a" font-size="11">Resonant Length L = ${d.lPatchUm.toFixed(0)} μm</text>
+
+      <!-- 50 Ohm Microstrip Inset Feedline -->
+      <rect x="315" y="185" width="30" height="60" fill="#0b1120" stroke="#f59e0b" stroke-width="1.5" />
+      <path d="M330 245 L330 300" stroke="#38bdf8" stroke-width="3" />
+      <circle cx="330" cy="305" r="4" fill="#38bdf8" />
+      <text x="345" y="308" fill="#38bdf8" font-size="11" font-weight="bold">50Ω Feed Inset (y0 = ${d.y0Um.toFixed(0)} μm)</text>
+
+      <!-- Dimensions Annotation -->
+      <path d="M200 85 L480 85" stroke="#94a3b8" stroke-width="1" />
+      <text x="325" y="80" fill="#94a3b8" font-size="10">Width W</text>
+      <path d="M495 95 L495 245" stroke="#94a3b8" stroke-width="1" />
+      <text x="505" y="175" fill="#94a3b8" font-size="10">Length L</text>
+    `;
   }
 }
 
@@ -1171,7 +2066,7 @@ function updateBomTable() {
       { name: "Cp, Cs", type: "MIM 電容", val: `Cp=${d.cpTuningPf.toFixed(2)}pF, Cs=${d.csTuningPf.toFixed(2)}pF`, desc: "變壓器諧振微調電容 (吸收 Cds 寄生與漏感)" },
       { name: "Limn, Cimn", type: "輸入匹配 LC 元件", val: `L=${d.limnNh.toFixed(2)}nH, C=${d.cimnPf.toFixed(2)}pF`, desc: "輸入 50Ω 共軛阻抗匹配網路 (IMN)" }
     ];
-  } else {
+  } else if (d.session === "lna") {
     rows = [
       { name: "M1 (Core)", type: "Input RF NMOS", val: `W=${d.wMainUm}μm, L=${d.lGateUm}μm, NF=${d.numFingers}`, desc: "共源極主放大電晶體 (雜訊最佳化尺寸)" },
       { name: "M2 (Cascode)", type: "Shielding RF NMOS", val: `W=${d.wCascodeUm}μm, L=${d.lGateUm}μm, NF=${d.numFingers}`, desc: "疊接電晶體 (消除 Cgd 米勒效應，高隔離度)" },
@@ -1179,6 +2074,36 @@ function updateBomTable() {
       { name: "Lg (Gate Inductor)", type: "高Q平面螺旋電感", val: `${d.lgNh.toFixed(2)} nH`, desc: "閘極輸入電感 (與 Cgs 串聯諧振，抵消虛部抗性)" },
       { name: "Ld, Cd", type: "LC 諧振負載", val: `Ld=${d.ldNh.toFixed(2)}nH, Cd=${d.cdPf.toFixed(2)}pF`, desc: "汲極調諧負載槽 (決定峰值增益與帶寬)" },
       { name: "Cout", type: "MIM 耦合電容", val: `${d.coutPf.toFixed(2)} pF`, desc: "輸出隔直電容 (直接耦合至 50Ω 負載)" }
+    ];
+  } else if (d.session === "vco") {
+    rows = [
+      { name: "M_N1, M_N2", type: "NMOS Cross-Coupled", val: `W=${d.wNmosUm}μm, NF=${d.numFingersN}`, desc: "NMOS 負電導核心電晶體對 (-gm 提供啟振裕度)" },
+      { name: "M_P1, M_P2", type: "PMOS Cross-Coupled", val: `W=${d.wPmosUm}μm, NF=${d.numFingersP}`, desc: "PMOS 互補負電導核心對 (增強對稱電壓擺幅)" },
+      { name: "L_tank", type: "差動八角形高Q電感", val: `${d.lTankNh.toFixed(3)} nH (Q=${d.qTank})`, desc: "主諧振槽電感 (超厚頂層金屬線圈)" },
+      { name: "C_var (Varactor)", type: "MOS 反轉/積累變容管", val: `${d.cTankPf.toFixed(3)} pF`, desc: "壓控調諧變容二極體對 (提供連續頻率調諧)" },
+      { name: "M_TAIL", type: "尾電流源 NMOS", val: `Idc = ${d.idcMa.toFixed(1)} mA`, desc: "低雜訊電流尾鏡，提供定電流偏置與抑制高頻擾動" }
+    ];
+  } else if (d.session === "mixer") {
+    rows = [
+      { name: "M1, M2 (Gm RF)", type: "RF 跨導差動對", val: `W=${d.wRfUm}μm, NF=${d.numFingersRf}`, desc: "線性 RF 電壓轉電流單元 (決定混頻雜訊與轉換跨導)" },
+      { name: "M3-M6 (LO Quad)", type: "LO 開關四核", val: `W=${d.wLoUm}μm, NF=${d.numFingersLo}`, desc: "高速電流換向切換開關 (雙平衡拓樸抑制 LO 洩漏)" },
+      { name: "R_L1, R_L2", type: "多晶矽無感電阻", val: `${d.rLoadOhm} Ω`, desc: "IF 中頻差動輸出負載電阻 (決定轉換增益 Gc)" },
+      { name: "C_IF_filt", type: "MIM 低通電容", val: `1.5 pF`, desc: "抑制高頻 LO 諧波與合頻訊號，提取差動中頻" },
+      { name: "M_TAIL", type: "偏置尾電流鏡", val: `Idc = ${d.idcMa.toFixed(1)} mA`, desc: "混頻核心直流偏壓源" }
+    ];
+  } else if (d.session === "switch") {
+    rows = [
+      { name: "M_SER (TX/RX)", type: "Stacked RF FETs", val: `W=${d.wSerUm}μm (Stack N=${d.numStack})`, desc: "串聯主通訊路徑開關 (低 Ron 導通電阻保證低插損)" },
+      { name: "M_SHUNT (TX/RX)", type: "Shunt RF FETs", val: `W=${d.wShuntUm}μm`, desc: "並聯隔離接地開關 (截止路徑時提供極致高隔離度)" },
+      { name: "R_BODY", type: "浮體電阻 (Body-Floating)", val: `15 kΩ`, desc: "抑制高頻訊號向矽基板洩漏，提升大訊號 P1dB 線性度" },
+      { name: "R_GATE", type: "閘極隔離電阻", val: `10 kΩ`, desc: "防止 RF 交流訊號耦合至直流控制線" }
+    ];
+  } else if (d.session === "antenna") {
+    rows = [
+      { name: "Patch Radiator", type: "頂層微帶銅箔輻射面", val: `W=${(d.wPatchUm).toFixed(0)}μm, L=${(d.lPatchUm).toFixed(0)}μm`, desc: "半波長共振天線貼片 (高頻電磁場邊緣輻射)" },
+      { name: "Inset Feed Notch", type: "50Ω 內凹微帶饋線", val: `y0=${(d.y0Um).toFixed(0)}μm`, desc: "天線邊緣至中央之阻抗漸層過渡區 (匹配 50Ω)" },
+      { name: "Substrate Dielectric", type: d.subName, val: `εr=${d.er}, h=${d.hUm}μm`, desc: "低介電損耗高頻封裝基板 (決定輻射效率與頻寬)" },
+      { name: "Ground Shield", type: "底層金屬接地屏蔽", val: `${(d.lambda0Mm * 1.5).toFixed(1)} mm x ${(d.lambda0Mm * 1.5).toFixed(1)} mm`, desc: "防電磁干擾接地底板，約束單向天線波束" }
     ];
   }
 
@@ -1251,6 +2176,116 @@ R_LOAD rf_out    0      50.0
   print gain_max
 .endc
 .end
+`;
+  } else if (d.session === "vco") {
+    return `* ==============================================================================
+* AutoRF CMOS LC-VCO Simulation Deck
+* Topology: Complementary Cross-Coupled LC-VCO
+* Oscillation Freq: ${d.freq} GHz | Phase Noise: ${d.pn1MDbc.toFixed(1)} dBc/Hz @ 1MHz
+* Technology: ${d.pdk.name} | Vdd: ${d.vdd} V | Idc: ${d.idcMa} mA
+* ==============================================================================
+
+.title CMOS Complementary LC-VCO (${d.freq} GHz)
+
+VDD   vdd_node 0 DC ${d.vdd}
+
+* Cross-Coupled PMOS Pair (Negative Gm)
+M_P1  out_p out_n vdd_node vdd_node CMOS_RF_PMOS W=${d.wPmosUm}u L=${d.pdk.l_min}u NF=${d.numFingersP}
+M_P2  out_n out_p vdd_node vdd_node CMOS_RF_PMOS W=${d.wPmosUm}u L=${d.pdk.l_min}u NF=${d.numFingersP}
+
+* Cross-Coupled NMOS Pair (Negative Gm)
+M_N1  out_p out_n tail_node 0 CMOS_RF_NMOS W=${d.wNmosUm}u L=${d.pdk.l_min}u NF=${d.numFingersN}
+M_N2  out_n out_p tail_node 0 CMOS_RF_NMOS W=${d.wNmosUm}u L=${d.pdk.l_min}u NF=${d.numFingersN}
+
+* Resonant LC Tank
+L_TANK out_p out_n { ${d.lTankNh.toFixed(3)}n }
+C_VAR  out_p out_n { ${d.cTankPf.toFixed(3)}p }
+
+* Tail Current Source
+I_TAIL tail_node 0 DC { ${(d.idcMa * 1e-3).toFixed(5)} }
+
+.model CMOS_RF_NMOS NMOS (LEVEL=3 VTO=${d.pdk.vth} KP=${d.pdk.kp}u)
+.model CMOS_RF_PMOS PMOS (LEVEL=3 VTO=-${d.pdk.vth} KP=${(d.pdk.kp * 0.45).toFixed(1)}u)
+
+.tran ${(1.0 / (d.freq * 100)).toFixed(4)}n ${(30.0 / d.freq).toFixed(2)}n
+.end
+`;
+  } else if (d.session === "mixer") {
+    return `* ==============================================================================
+* AutoRF CMOS Double-Balanced Gilbert Active Mixer Simulation Deck
+* RF: ${d.freq} GHz | LO: ${d.loFreq} GHz | IF: ${d.ifFreq} GHz | Gc: ${d.gainDb} dB
+* Technology: ${d.pdk.name} | Vdd: ${d.vdd} V | Idc: ${d.idcMa} mA
+* ==============================================================================
+
+.title CMOS Gilbert Mixer (${d.freq} GHz)
+
+VDD   vdd_node 0 DC ${d.vdd}
+
+* IF Load Resistors
+R_L1  vdd_node if_p ${d.rLoadOhm}
+R_L2  vdd_node if_n ${d.rLoadOhm}
+C_IF  if_p if_n 1.5p
+
+* LO Switching Quad (M3 - M6)
+M3    if_p lo_p node_rf_p 0 CMOS_RF_NMOS W=${d.wLoUm}u L=${d.pdk.l_min}u NF=${d.numFingersLo}
+M4    if_n lo_n node_rf_p 0 CMOS_RF_NMOS W=${d.wLoUm}u L=${d.pdk.l_min}u NF=${d.numFingersLo}
+M5    if_n lo_p node_rf_n 0 CMOS_RF_NMOS W=${d.wLoUm}u L=${d.pdk.l_min}u NF=${d.numFingersLo}
+M6    if_p lo_n node_rf_n 0 CMOS_RF_NMOS W=${d.wLoUm}u L=${d.pdk.l_min}u NF=${d.numFingersLo}
+
+* RF Transconductance Pair (M1, M2)
+M1    node_rf_p rf_inp tail_node 0 CMOS_RF_NMOS W=${d.wRfUm}u L=${d.pdk.l_min}u NF=${d.numFingersRf}
+M2    node_rf_n rf_inn tail_node 0 CMOS_RF_NMOS W=${d.wRfUm}u L=${d.pdk.l_min}u NF=${d.numFingersRf}
+
+* Tail Current Bias
+I_TAIL tail_node 0 DC { ${(d.idcMa * 1e-3).toFixed(5)} }
+
+.model CMOS_RF_NMOS NMOS (LEVEL=3 VTO=${d.pdk.vth} KP=${d.pdk.kp}u)
+.end
+`;
+  } else if (d.session === "switch") {
+    return `* ==============================================================================
+* AutoRF CMOS Series-Shunt SPDT T/R Switch Simulation Deck
+* Frequency: ${d.freq} GHz | IL: ${d.ilDb.toFixed(2)} dB | ISO: ${d.isoDb.toFixed(1)} dB | P1dB: ${d.targetP1db} dBm
+* Technology: ${d.pdk.name} | Vdd: ${d.vdd} V
+* ==============================================================================
+
+.title CMOS SPDT Switch (${d.freq} GHz)
+
+V_TX_CTRL ctrl_tx 0 DC ${d.vdd}
+V_RX_CTRL ctrl_rx 0 DC 0.0
+
+* Series Path (TX)
+M_SER_TX ant_node ctrl_tx tx_node 0 CMOS_RF_NMOS W=${d.wSerUm}u L=${d.pdk.l_min}u NF=${d.numFingersSer}
+* Shunt Isolation (TX)
+M_SHU_TX tx_node ctrl_rx 0 0 CMOS_RF_NMOS W=${d.wShuntUm}u L=${d.pdk.l_min}u NF=${d.numFingersShunt}
+
+* Series Path (RX)
+M_SER_RX ant_node ctrl_rx rx_node 0 CMOS_RF_NMOS W=${d.wSerUm}u L=${d.pdk.l_min}u NF=${d.numFingersSer}
+* Shunt Isolation (RX)
+M_SHU_RX rx_node ctrl_tx 0 0 CMOS_RF_NMOS W=${d.wShuntUm}u L=${d.pdk.l_min}u NF=${d.numFingersShunt}
+
+.model CMOS_RF_NMOS NMOS (LEVEL=3 VTO=${d.pdk.vth} KP=${d.pdk.kp}u)
+.end
+`;
+  } else if (d.session === "antenna") {
+    return `* ==============================================================================
+* AutoRF Millimeter-Wave Microstrip Patch & AiP Antenna Design Report
+* Frequency: ${d.freq} GHz | Gain: ${d.gainDbi.toFixed(1)} dBi | Bandwidth: ${d.bwMhz.toFixed(0)} MHz
+* Substrate: ${d.subName} (er=${d.er}, h=${d.hUm} um)
+* ==============================================================================
+
+* Physical Layout Coordinates (Microstrip Inset-Fed Patch):
+* - Resonant Patch Width  (W)  = ${d.wPatchUm.toFixed(1)} um
+* - Resonant Patch Length (L)  = ${d.lPatchUm.toFixed(1)} um
+* - Inset Notch Feed Depth (y0) = ${d.y0Um.toFixed(1)} um (Matched to 50 Ohm)
+* - Free Space Wavelength (λ0) = ${d.lambda0Mm.toFixed(2)} mm
+* - Radiation Efficiency (η)    = ${d.effPct.toFixed(1)} %
+* - Directivity (D)             = ${d.directivityDbi.toFixed(1)} dBi
+* - Fractional Bandwidth (BW)   = ${d.bwPct.toFixed(2)} %
+
+* HFSS / CST / ADS Momentum EM Simulation Boundary:
+* Port 1: 50 Ohm Microstrip Waveguide Port at (X=0, Y=0)
+* Ground Shield Size: ${(d.lambda0Mm * 1.5).toFixed(2)} mm x ${(d.lambda0Mm * 1.5).toFixed(2)} mm
 `;
   } else {
     // PA SPICE Deck
@@ -1333,39 +2368,91 @@ function downloadFile(filename, text) {
 // --- 10. Initialization & Event Listeners ---
 function initApp() {
   // Session Switch Buttons
+  // Session Switch Buttons
   const paBtn = document.getElementById("sessionPaBtn");
   const lnaBtn = document.getElementById("sessionLnaBtn");
+  const vcoBtn = document.getElementById("sessionVcoBtn");
+  const mixerBtn = document.getElementById("sessionMixerBtn");
+  const switchBtn = document.getElementById("sessionSwitchBtn");
+  const antennaBtn = document.getElementById("sessionAntennaBtn");
+
   const logo = document.getElementById("headerLogo");
   const statusBadge = document.getElementById("sessionStatusBadge");
 
   // Groups to toggle
-  const paGroups = ["groupPaPout", "groupPaClass", "groupPaTopology", "groupPaNeu"];
-  const lnaGroups = ["groupLnaGain", "groupLnaIdc"];
+  const allGroups = [
+    "groupPaPout", "groupPaClass", "groupPaTopology", "groupPaNeu",
+    "groupLnaGain", "groupLnaIdc",
+    "groupVcoTuning", "groupVcoIdc",
+    "groupMixerGain", "groupMixerIdc",
+    "groupSwitchP1db",
+    "groupAntennaSubstrate"
+  ];
+
+  const sessionButtons = {
+    pa: paBtn,
+    lna: lnaBtn,
+    vco: vcoBtn,
+    mixer: mixerBtn,
+    switch: switchBtn,
+    antenna: antennaBtn
+  };
 
   function setSession(sessionName) {
     state.session = sessionName;
+    allGroups.forEach(id => document.getElementById(id)?.classList.add("hidden"));
+
+    Object.keys(sessionButtons).forEach(key => {
+      const btn = sessionButtons[key];
+      if (!btn) return;
+      if (key === sessionName) {
+        btn.className = "session-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm flex items-center justify-center gap-1.5 transition-all";
+      } else {
+        btn.className = "session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all";
+      }
+    });
+
     if (sessionName === "pa") {
-      paBtn.className = "session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm flex items-center justify-center gap-2 transition-all";
-      lnaBtn.className = "session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-2 transition-all";
       logo.innerText = "PA";
       logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
       statusBadge.innerText = "CURRENT: CMOS POWER AMPLIFIER (PA)";
-      paGroups.forEach(id => document.getElementById(id)?.classList.remove("hidden"));
-      lnaGroups.forEach(id => document.getElementById(id)?.classList.add("hidden"));
-    } else {
-      lnaBtn.className = "session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm flex items-center justify-center gap-2 transition-all";
-      paBtn.className = "session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-2 transition-all";
+      ["groupPaPout", "groupPaClass", "groupPaTopology", "groupPaNeu"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+    } else if (sessionName === "lna") {
       logo.innerText = "LNA";
       logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
       statusBadge.innerText = "CURRENT: CMOS LOW-NOISE AMPLIFIER (LNA)";
-      paGroups.forEach(id => document.getElementById(id)?.classList.add("hidden"));
-      lnaGroups.forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+      ["groupLnaGain", "groupLnaIdc"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+    } else if (sessionName === "vco") {
+      logo.innerText = "VCO";
+      logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
+      statusBadge.innerText = "CURRENT: VOLTAGE-CONTROLLED OSCILLATOR (VCO)";
+      ["groupVcoTuning", "groupVcoIdc"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+    } else if (sessionName === "mixer") {
+      logo.innerText = "MIX";
+      logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
+      statusBadge.innerText = "CURRENT: DOUBLE-BALANCED GILBERT MIXER";
+      ["groupMixerGain", "groupMixerIdc"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+    } else if (sessionName === "switch") {
+      logo.innerText = "SW";
+      logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
+      statusBadge.innerText = "CURRENT: SERIES-SHUNT SPDT T/R SWITCH";
+      ["groupSwitchP1db"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+    } else if (sessionName === "antenna") {
+      logo.innerText = "ANT";
+      logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg";
+      statusBadge.innerText = "CURRENT: INSET-FED MICROSTRIP PATCH & AiP";
+      ["groupAntennaSubstrate"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
     }
+
     runSynthesis();
   }
 
-  paBtn.addEventListener("click", () => setSession("pa"));
-  lnaBtn.addEventListener("click", () => setSession("lna"));
+  paBtn?.addEventListener("click", () => setSession("pa"));
+  lnaBtn?.addEventListener("click", () => setSession("lna"));
+  vcoBtn?.addEventListener("click", () => setSession("vco"));
+  mixerBtn?.addEventListener("click", () => setSession("mixer"));
+  switchBtn?.addEventListener("click", () => setSession("switch"));
+  antennaBtn?.addEventListener("click", () => setSession("antenna"));
 
   // Inputs
   const freqInput = document.getElementById("inputFreq");
@@ -1387,8 +2474,44 @@ function initApp() {
   });
 
   const lnaIdcInput = document.getElementById("inputLnaIdc");
-  lnaIdcInput.addEventListener("input", e => {
+  lnaIdcInput?.addEventListener("input", e => {
     state.lna_idc_ma = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const vcoTuningInput = document.getElementById("inputVcoTuning");
+  vcoTuningInput?.addEventListener("input", e => {
+    state.vco_ftr_pct = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const vcoIdcInput = document.getElementById("inputVcoIdc");
+  vcoIdcInput?.addEventListener("input", e => {
+    state.vco_idc_ma = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const mixerGainInput = document.getElementById("inputMixerGain");
+  mixerGainInput?.addEventListener("input", e => {
+    state.mixer_gc_db = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const mixerIdcInput = document.getElementById("inputMixerIdc");
+  mixerIdcInput?.addEventListener("input", e => {
+    state.mixer_idc_ma = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const switchP1dbInput = document.getElementById("inputSwitchP1db");
+  switchP1dbInput?.addEventListener("input", e => {
+    state.switch_p1db_dbm = parseFloat(e.target.value);
+    runSynthesis();
+  });
+
+  const antennaSubstrateSelect = document.getElementById("selectAntennaSubstrate");
+  antennaSubstrateSelect?.addEventListener("change", e => {
+    state.antenna_substrate = e.target.value;
     runSynthesis();
   });
 
@@ -1520,13 +2643,13 @@ function initApp() {
   });
 
   document.getElementById("downloadSpiceBtn").addEventListener("click", () => {
-    const prefix = state.session === "lna" ? "autorf_lna" : "autorf_pa";
+    const prefix = `autorf_${state.session}`;
     downloadFile(`${prefix}_${state.freq_ghz}ghz.sp`, generateSpiceString());
   });
 
   document.getElementById("downloadS2pBtn").addEventListener("click", () => {
     const d = currentDesign;
-    const prefix = state.session === "lna" ? "autorf_lna" : "autorf_pa";
+    const prefix = `autorf_${state.session}`;
     const s2p = `! AutoRF Touchstone S-Parameter File (${state.session.toUpperCase()})
 ! Center: ${d.freq} GHz | Z0 = 50 Ohm
 # GHZ S DB R 50.0

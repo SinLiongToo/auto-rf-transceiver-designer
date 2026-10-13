@@ -94,15 +94,27 @@
       </div>
     </header>
 
-    <!-- Top Session Switcher Tabs (PA vs LNA) -->
-    <div class="card-panel rounded-2xl p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <span class="text-xs font-bold text-slate-400 px-2 uppercase tracking-wider" data-i18n="circuitSession">設計模組</span>
-        <button id="sessionPaBtn" class="session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm flex items-center justify-center gap-2 transition-all">
-          <span>🚀</span> <span data-i18n="sessionPa">功率放大器 (PA Session)</span>
+    <!-- Top Session Switcher Tabs (PA, LNA, VCO, Mixer, Switch, Antenna) -->
+    <div class="card-panel rounded-2xl p-2.5 flex flex-col md:flex-row items-center justify-between gap-3 shadow-lg">
+      <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
+        <span class="text-xs font-bold text-slate-400 px-2 uppercase tracking-wider hidden lg:inline" data-i18n="circuitSession">設計模組</span>
+        <button id="sessionPaBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm flex items-center justify-center gap-1.5 transition-all">
+          <span>🚀</span> <span data-i18n="sessionPa">PA</span>
         </button>
-        <button id="sessionLnaBtn" class="session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-2 transition-all">
-          <span>📡</span> <span data-i18n="sessionLna">低雜訊放大器 (LNA Session)</span>
+        <button id="sessionLnaBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>📡</span> <span data-i18n="sessionLna">LNA</span>
+        </button>
+        <button id="sessionVcoBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>⚡</span> <span data-i18n="sessionVco">VCO</span>
+        </button>
+        <button id="sessionMixerBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>🔀</span> <span data-i18n="sessionMixer">Mixer</span>
+        </button>
+        <button id="sessionSwitchBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>🔌</span> <span data-i18n="sessionSwitch">Switch</span>
+        </button>
+        <button id="sessionAntennaBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>📶</span> <span data-i18n="sessionAntenna">Antenna</span>
         </button>
       </div>
       <div class="text-xs text-slate-400 font-mono hidden md:flex items-center gap-2 pr-3">
@@ -215,6 +227,62 @@
               <span class="text-cyan-400 font-bold" id="valLnaIdc">6.0 mA</span>
             </div>
             <input type="range" id="inputLnaIdc" min="2" max="25" step="0.5" value="6" class="custom-range w-full">
+          </div>
+
+          <!-- VCO-Specific Parameter: Tuning Range (%) -->
+          <div id="groupVcoTuning" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblVcoTuning">目標頻率調諧範圍 FTR (%)</label>
+              <span class="text-cyan-400 font-bold" id="valVcoTuning">15.0 %</span>
+            </div>
+            <input type="range" id="inputVcoTuning" min="5" max="35" step="1" value="15" class="custom-range w-full">
+          </div>
+
+          <!-- VCO-Specific Parameter: Core Bias Current Idc (mA) -->
+          <div id="groupVcoIdc" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblVcoIdc">VCO 核心偏置電流 Idc (mA)</label>
+              <span class="text-cyan-400 font-bold" id="valVcoIdc">8.0 mA</span>
+            </div>
+            <input type="range" id="inputVcoIdc" min="2" max="30" step="0.5" value="8" class="custom-range w-full">
+          </div>
+
+          <!-- Mixer-Specific Parameter: Conversion Gain (dB) -->
+          <div id="groupMixerGain" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblMixerGain">混頻轉換增益 Gc (dB)</label>
+              <span class="text-cyan-400 font-bold" id="valMixerGain">10.0 dB</span>
+            </div>
+            <input type="range" id="inputMixerGain" min="2" max="20" step="0.5" value="10" class="custom-range w-full">
+          </div>
+
+          <!-- Mixer-Specific Parameter: Core Bias Current Idc (mA) -->
+          <div id="groupMixerIdc" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblMixerIdc">混頻核心偏置電流 Idc (mA)</label>
+              <span class="text-cyan-400 font-bold" id="valMixerIdc">6.0 mA</span>
+            </div>
+            <input type="range" id="inputMixerIdc" min="2" max="25" step="0.5" value="6" class="custom-range w-full">
+          </div>
+
+          <!-- Switch-Specific Parameter: Target Power Handling P1dB (dBm) -->
+          <div id="groupSwitchP1db" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblSwitchP1db">開關耐受功率 P1dB (dBm)</label>
+              <span class="text-cyan-400 font-bold" id="valSwitchP1db">24.0 dBm</span>
+            </div>
+            <input type="range" id="inputSwitchP1db" min="10" max="35" step="1" value="24" class="custom-range w-full">
+          </div>
+
+          <!-- Antenna-Specific Parameter: Substrate Type -->
+          <div id="groupAntennaSubstrate" class="space-y-1.5 hidden">
+            <label class="text-xs font-medium text-slate-300" data-i18n="lblAntennaSubstrate">天線封裝介質基板</label>
+            <select id="selectAntennaSubstrate" class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg p-2.5 border border-slate-700 focus:outline-none focus:border-cyan-500">
+              <option value="aip_organic">AiP 毫米波有機封裝 (εr=3.2, h=100μm)</option>
+              <option value="ltcc_ceramic">LTCC 低溫共燒陶瓷 (εr=5.9, h=120μm)</option>
+              <option value="fused_silica">熔融石英 / 玻璃 (εr=3.78, h=150μm)</option>
+              <option value="on_chip_sio2">CMOS 晶片內金屬層 SiO2 (εr=3.9, h=12μm)</option>
+            </select>
           </div>
 
           <!-- Process Node Select (Shared) -->
