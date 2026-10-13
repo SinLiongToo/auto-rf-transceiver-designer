@@ -1,6 +1,13 @@
 # AutoRF: 全功能 CMOS 射頻前端 (PA, LNA, VCO, Mixer, Switch, Antenna) 自動化設計系統
 ### Universal CMOS RF & Millimeter-Wave Full Transceiver Front-End Synthesis Suite
 
+[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?logo=github)](https://sinliongtoo.github.io/auto-rf-transceiver-designer/)
+[![Tests](https://img.shields.io/badge/Unit%20Tests-12%20Passed-blue)](tests/test_designer.py)
+[![QA](https://img.shields.io/badge/System%20QA-20%2F20%20Verified-success)](tests/verify_all.py)
+
+> 🚀 **即時線上體驗 (Live Interactive WebApp)**:  
+> [https://sinliongtoo.github.io/auto-rf-transceiver-designer/](https://sinliongtoo.github.io/auto-rf-transceiver-designer/)
+
 **AutoRF** 是一套專為射頻與毫米波積體電路（RFIC / MMIC）設計工程師打造的完整自動化合成工具鏈。系統支援現代射頻收發機前端的**六大核心電路與被動輻射模組（PA、LNA、VCO、Mixer、T/R Switch、AiP Antenna）**，支援從 **Sub-1 GHz IoT**、**2.4G/5G Wi-Fi**、**28G/39G 5G 毫米波**，一直到 **60G WiGig**、**71–76G E-Band 骨幹回傳** 與 **72–79 GHz / 77–81 GHz 車用毫米波雷達與高精度工業成像**。
 
 ---
