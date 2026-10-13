@@ -26,7 +26,9 @@ const mockCanvas = {
     save: () => {},
     restore: () => {},
     clip: () => {},
-    closePath: () => {}
+    closePath: () => {},
+    quadraticCurveTo: () => {},
+    bezierCurveTo: () => {}
   })
 };
 
@@ -43,9 +45,13 @@ global.document = {
     };
   },
   querySelectorAll: () => [],
+  createElement: () => ({ href: '', download: '', click: () => {} }),
+  body: { appendChild: () => {}, removeChild: () => {} },
   documentElement: { getAttribute: () => 'dark', setAttribute: () => {} }
 };
 global.window = { addEventListener: () => {} };
+global.URL = { createObjectURL: () => 'blob:mock', revokeObjectURL: () => {} };
+global.Blob = class Blob { constructor(content, opts) {} };
 
 const vm = require('vm');
 
@@ -146,7 +152,28 @@ try {
   updateBomTable();
   console.log(`[PASS] Antenna Schematic SVG and BOM rendered cleanly`);
 
-  console.log('\n[ALL FRONTEND 6-SESSION (PA, LNA, VCO, MIXER, SWITCH, ANTENNA) CHECKS PASSED]');
+  // Verify Advanced Features: Link Budget & Phased Array
+  drawLinkBudget();
+  console.log(`[PASS] Cascaded Link Budget & Phased Array Beamforming rendered cleanly`);
+
+  // Verify Matching Synthesizer
+  state.match_rs = 50; state.match_rl = 15.8;
+  drawMatchingSynthesizer();
+  console.log(`[PASS] Interactive Matching Synthesizer rendered cleanly`);
+
+  // Verify Die Area & Floorplan
+  drawDieAreaFloorplan();
+  console.log(`[PASS] Die Area & Floorplan estimator rendered cleanly`);
+
+  // Verify PVT Corners
+  drawPvtCorners();
+  console.log(`[PASS] PVT Corners sensitivity matrix rendered cleanly`);
+
+  // Verify Full Engineering Spec Report
+  downloadFullReport();
+  console.log(`[PASS] 1-Click Full Engineering Spec Report generated cleanly`);
+
+  console.log('\n[ALL FRONTEND 6-SESSION & 6-ADVANCED-FEATURE CHECKS PASSED]');
 } catch (e) {
   console.error('[FAIL] Frontend verification failed:', e);
   process.exit(1);

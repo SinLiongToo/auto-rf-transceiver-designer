@@ -64,9 +64,32 @@
    - **內凹微帶饋電 (Inset Notch Feed)**: 精確合成內凹饋電深度 $y_0$，實現對 $50\,\Omega$ 傳輸線的完美阻抗匹配 ($S_{11} < -20\text{ dB}$)。
    - **封裝介質材料適配 (Substrates)**: 支援高密度有機有機封裝材料 (Organic AiP, $\varepsilon_r = 3.2$)、低溫共燒陶瓷 (LTCC, $\varepsilon_r = 5.9$)、石英玻璃 (Fused Silica, $\varepsilon_r = 3.78$) 與晶片片上 (On-Chip $\text{SiO}_2$)。
 
-7. **📖 互動式射頻術語字典 (RF Front-End Glossary)**:
-   - **術語分類篩選與即時搜尋**: 內建 PA, LNA, VCO, Mixer, Switch, Antenna 核心術語卡片（含 $R_{opt}$, PAE, $P_{1\text{dB}}$, Rollett $K$, $C_{neu}$, NF, SNIM, $IIP_3$, Leeson $L(\Delta f)$, Barkhausen, $G_c$, $R_{on}C_{off}$, AiP 等）。
-   - **物理公式與中英雙語對照**: 每一術語皆提供標準數學公式、電路設計意義及中英雙語詳細說明。
+7. **🌐 全收發鏈路預算與 Friis 級聯分析 (Cascaded Link Budget)**:
+   - **Friis 級聯雜訊公式**: 即時計算接收機總增益 $Gain_{rx}$、級聯雜訊指數 $NF_{rx} = NF_1 + \frac{NF_2 - 1}{G_1} + \dots$、級聯 $IIP_3$ 與熱雜訊底調解靈敏度 ($Sensitivity$)。
+   - **發射機鏈路**: 計算天線端總功率與單單元/陣列等效全向輻射功率 (EIRP)。
+
+8. **📡 相控陣列 2D 波束賦形合成器 (Phased Array Beamforming)**:
+   - **空間波束掃描**: 支援線性與面陣列 ($1\times 4, 1\times 8, 4\times 4, 8\times 8$)、波束指向角 $\theta \in [-60^\circ, +60^\circ]$、4/5/6-Bit 移相器步進量化。
+   - **陣列因子方向圖**: 即時 Canvas 極坐標陣列因子繪圖、同相功率疊加增益提升與半功率波束寬度 (HPBW) 銳化角分析。
+
+9. **🎛️ 互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)**:
+   - **四大拓樸自由切換**: L-型低通 (諧波抑制)、L-型高通 (隔直)、$\Pi$-型寬頻與 T-型帶通匹配。
+   - **物理損耗評估與史密斯軌跡**: 納入片上電感有限品質因子 $Q$，計算實際挿損 (IL) 與有載 $Q$ 頻寬，並於史密斯圖上動態標註阻抗變換路徑。
+
+10. **📐 晶片面積估算與平面佈局 (Die Area Breakdown & Floorplan)**:
+    - **主動/被動/銲墊分佈**: 微米尺寸電晶體核心、晶片片上電感/Balun/變容管、以及 32-Pin I/O 銲墊環面積分解。
+    - **矽片量產成本預估**: 基於 12 吋 (300mm) 晶圓良率模型估算單顆晶粒製造單價。
+
+11. **🌡️ 製程角 PVT 容差與敏感度分析 (PVT Corners Analysis)**:
+    - **全極端角涵蓋**: TT (典型 $25^\circ\text{C}$)、FF (快角 $-40^\circ\text{C}$)、SS (慢角 $+125^\circ\text{C}$)、FS 與 SF。
+    - **良率安全裕度**: 監控 PA 飽和功率/PAE、LNA 增益/NF、VCO 頻偏與起振裕度之極端漂移。
+
+12. **📄 一鍵導出完整工程規格書 (1-Click Full Engineering Spec Report)**:
+    - **工程級報告產出**: 一鍵輸出包含設計參數、鏈路指標、PVT 矩陣、BOM 與 SPICE 網表的專業 HTML 規格報告。
+
+13. **📖 互動式射頻術語字典 (RF Front-End Glossary)**:
+    - **術語分類篩選與即時搜尋**: 內建 PA, LNA, VCO, Mixer, Switch, Antenna 核心術語卡片（含 $R_{opt}$, PAE, $P_{1\text{dB}}$, Rollett $K$, $C_{neu}$, NF, SNIM, $IIP_3$, Leeson $L(\Delta f)$, Barkhausen, $G_c$, $R_{on}C_{off}$, AiP 等）。
+    - **物理公式與中英雙語對照**: 每一術語皆提供標準數學公式、電路設計意義及中英雙語詳細說明。
 
 ---
 

@@ -126,6 +126,12 @@
         <button id="sessionAntennaBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
           <span>📶</span> <span data-i18n="sessionAntenna">Antenna</span>
         </button>
+        <button id="sessionLinkBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>🌐</span> <span data-i18n="sessionLink">Link Budget</span>
+        </button>
+        <button id="sessionMatchBtn" class="session-btn px-3.5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-1.5 transition-all">
+          <span>🎛️</span> <span data-i18n="sessionMatch">Matching</span>
+        </button>
       </div>
       <div class="text-xs text-slate-400 font-mono hidden md:flex items-center gap-2 pr-3">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -439,17 +445,29 @@
 
         <!-- Tabs Navigation -->
         <div class="card-panel rounded-2xl p-2 flex gap-1 shadow-md text-xs overflow-x-auto">
-          <button class="nav-tab px-4 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap" id="tabBtn1" data-tab="tab1" data-i18n="tabLoadpull">
-            🎯 史密斯圖與等高線 (Smith Chart)
+          <button class="nav-tab px-3 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap" id="tabBtn1" data-tab="tab1" data-i18n="tabLoadpull">
+            🎯 史密斯圖 (Smith)
           </button>
-          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn2" data-tab="tab2" data-i18n="tabWaveforms">
-            🌊 暫態響應與頻寬 (Response)
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn2" data-tab="tab2" data-i18n="tabWaveforms">
+            🌊 暫態波形 (Response)
           </button>
-          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn3" data-tab="tab3" data-i18n="tabSchematic">
-            📐 晶片電路圖與架構 (Schematic)
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn3" data-tab="tab3" data-i18n="tabSchematic">
+            📐 電路圖 (Schematic)
           </button>
-          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn4" data-tab="tab4" data-i18n="tabSpice">
-            💻 SPICE 網表與導出 (Export)
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn5" data-tab="tab5" data-i18n="tabLinkBudget">
+            🌐 鏈路預算 (Link Budget)
+          </button>
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn6" data-tab="tab6" data-i18n="tabMatching">
+            🎛️ 匹配網路 (Matching)
+          </button>
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn7" data-tab="tab7" data-i18n="tabDieArea">
+            📐 晶片面積 (Floorplan)
+          </button>
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn8" data-tab="tab8" data-i18n="tabPvt">
+            🌡️ 製程角 (PVT)
+          </button>
+          <button class="nav-tab px-3 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn4" data-tab="tab4" data-i18n="tabSpice">
+            💻 網表導出 (Export)
           </button>
         </div>
 
@@ -542,6 +560,357 @@
           </div>
         </div>
 
+        <!-- Tab 5: Cascaded Link Budget & Phased Array Beamforming -->
+        <div id="tabContent5" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>🌐</span> <span data-i18n="linkBudgetTitle">收發機全鏈路串接預算與相控陣列波束賦形 (Cascaded Link Budget & Beamforming)</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="linkBudgetSubtitle">涵蓋 RX 級聯 Friis 雜訊指數 / IIP3 / 靈敏度、TX 鏈路 EIRP、雷達/通訊探測距離與 2D 相控陣列波束合成</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30" id="linkBudgetCascadeBadge">FULL CHAIN SYNTHESIS</span>
+            </div>
+          </div>
+
+          <!-- Section 1: RX Cascaded Chain Breakdown -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>📡</span> 接收機級聯鏈路分析 (RX Chain: Antenna → Switch → LNA → Mixer)
+            </h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">總接收增益 (Gain_rx)</span>
+                <div class="text-lg font-bold text-emerald-400 mt-1" id="linkRxGainVal">+24.5 dB</div>
+                <span class="text-[10px] text-slate-500" id="linkRxGainSub">LNA + Mixer - IL</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">Friis 級聯雜訊指數 (NF_rx)</span>
+                <div class="text-lg font-bold text-cyan-400 mt-1" id="linkRxNfVal">2.65 dB</div>
+                <span class="text-[10px] text-slate-500" id="linkRxNfSub">主要由 Switch IL 與 LNA 決定</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">級聯輸入截斷點 (IIP3_rx)</span>
+                <div class="text-lg font-bold text-amber-400 mt-1" id="linkRxIip3Val">-6.8 dBm</div>
+                <span class="text-[10px] text-slate-500" id="linkRxIip3Sub">後級 Mixer 支配線性度</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">接收機靈敏度 (Sensitivity)</span>
+                <div class="text-lg font-bold text-rose-400 mt-1" id="linkRxSensVal">-88.3 dBm</div>
+                <span class="text-[10px] text-slate-500" id="linkRxSensSub">BW=20MHz, SNRmin=10dB</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">無雜散動態範圍 (SFDR)</span>
+                <div class="text-lg font-bold text-purple-400 mt-1" id="linkRxSfdrVal">54.3 dB</div>
+                <span class="text-[10px] text-slate-500" id="linkRxSfdrSub">2/3 * (IIP3 - Psens)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: TX Cascaded Chain Breakdown -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🚀</span> 發射機鏈路與覆蓋評估 (TX Chain: PA → Switch → Antenna)
+            </h4>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">PA 飽和輸出功率</span>
+                <div class="text-lg font-bold text-cyan-400 mt-1" id="linkTxPoutVal">+18.0 dBm</div>
+                <span class="text-[10px] text-slate-500" id="linkTxPoutSub">63.1 mW</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">單單元 EIRP 輻射功率</span>
+                <div class="text-lg font-bold text-emerald-400 mt-1" id="linkTxEirpVal">+22.3 dBm</div>
+                <span class="text-[10px] text-slate-500" id="linkTxEirpSub">Pout - IL(0.9dB) + Gain(5.2dBi)</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">雷達/通訊覆蓋半徑 (Range)</span>
+                <div class="text-lg font-bold text-amber-400 mt-1" id="linkTxRangeVal">165.2 m</div>
+                <span class="text-[10px] text-slate-500" id="linkTxRangeSub">Radar RCS=1.0m² / Friis FSPL</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[11px] text-slate-400">收發隔離餘裕 (T/R Margin)</span>
+                <div class="text-lg font-bold text-blue-400 mt-1" id="linkTxIsoVal">&gt; 35 dB</div>
+                <span class="text-[10px] text-slate-500" id="linkTxIsoSub">避免發射洩漏飽和 LNA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Phased Array & Beamforming Interactive Canvas -->
+          <div class="space-y-3 pt-2 border-t border-slate-800">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span>📶</span> 相控陣列天線與波束賦形 (Phased Array Beamforming)
+              </h4>
+              <div class="flex flex-wrap items-center gap-3 text-xs">
+                <!-- Array Size Selector -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-400">陣列規模:</span>
+                  <select id="selectArraySize" class="bg-slate-800 text-slate-200 text-xs rounded-lg px-2 py-1 border border-slate-700">
+                    <option value="1">1x1 (單單元 0dB)</option>
+                    <option value="4" selected>1x4 (線性陣列 +6dB)</option>
+                    <option value="8">1x8 (長線性陣列 +9dB)</option>
+                    <option value="16">4x4 (面陣列 +12dB)</option>
+                    <option value="64">8x8 (大型陣列 +18dB)</option>
+                  </select>
+                </div>
+                <!-- Steering Angle Slider -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-400">波束指向 (θ):</span>
+                  <input type="range" id="inputSteerAngle" min="-60" max="60" step="1" value="15" class="custom-range w-24">
+                  <span class="text-purple-400 font-bold font-mono w-10 text-right" id="valSteerAngle">+15°</span>
+                </div>
+                <!-- Phase Shifter Bits -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-400">移相解析度:</span>
+                  <select id="selectPhaseBits" class="bg-slate-800 text-slate-200 text-xs rounded-lg px-2 py-1 border border-slate-700">
+                    <option value="4">4-Bit (22.5°)</option>
+                    <option value="5" selected>5-Bit (11.25°)</option>
+                    <option value="6">6-Bit (5.625°)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <div class="md:col-span-2 bg-slate-900/60 rounded-xl p-3 border border-slate-800 flex flex-col items-center">
+                <canvas id="phasedArrayCanvas" width="460" height="260" class="w-full max-w-[460px] h-[260px] rounded"></canvas>
+                <div class="flex justify-between w-full text-[11px] text-slate-400 mt-2 px-3">
+                  <span>-90° (左側)</span>
+                  <span class="text-purple-300 font-bold">主波束指向: <span id="beamAngleBadge">+15°</span> | 陣列增益提升: <span id="arrayGainBoostBadge">+6.0 dB</span></span>
+                  <span>+90° (右側)</span>
+                </div>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                  <span class="text-slate-400">合成總陣列增益 (Array Gain)</span>
+                  <div class="text-base font-bold text-purple-300 mt-0.5" id="arrayTotalGainVal">11.2 dBi</div>
+                  <span class="text-[10px] text-slate-500">原 5.2 dBi + 6.0 dB</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                  <span class="text-slate-400">相控陣列發射 EIRP</span>
+                  <div class="text-base font-bold text-cyan-300 mt-0.5" id="arrayTotalEirpVal">+34.3 dBm</div>
+                  <span class="text-[10px] text-slate-500">同相疊加功率: 2.7 W</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+                  <span class="text-slate-400">半功率波束寬度 (HPBW)</span>
+                  <div class="text-base font-bold text-amber-300 mt-0.5" id="arrayHpbwVal">26.4°</div>
+                  <span class="text-[10px] text-slate-500">主瓣波束銳化角</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 6: Impedance Matching Network Synthesizer -->
+        <div id="tabContent6" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>🎛️</span> <span data-i18n="matchingTitle">互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="matchingSubtitle">支援 L-Match、Pi-Match 與 T-Match 拓樸，自動計算 L/C 元件值、有限 Q 值插損並繪製史密斯圖路徑軌跡</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnSyncFromDesign" class="px-2.5 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all">
+                🔄 套用目前模組阻抗
+              </button>
+            </div>
+          </div>
+
+          <!-- Matching Inputs Form -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+              <label class="font-bold text-cyan-400">信號源實部 Rs (Ω)</label>
+              <input type="number" id="inputMatchRs" value="50" step="1" class="w-full bg-slate-800 text-slate-200 rounded px-2.5 py-1.5 border border-slate-700">
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+              <label class="font-bold text-cyan-400">信號源虛部 Xs (Ω)</label>
+              <input type="number" id="inputMatchXs" value="0" step="1" class="w-full bg-slate-800 text-slate-200 rounded px-2.5 py-1.5 border border-slate-700">
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+              <label class="font-bold text-amber-400">負載端實部 RL (Ω)</label>
+              <input type="number" id="inputMatchRl" value="15.8" step="0.5" class="w-full bg-slate-800 text-slate-200 rounded px-2.5 py-1.5 border border-slate-700">
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+              <label class="font-bold text-amber-400">負載端虛部 XL (Ω)</label>
+              <input type="number" id="inputMatchXl" value="0" step="0.5" class="w-full bg-slate-800 text-slate-200 rounded px-2.5 py-1.5 border border-slate-700">
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <span class="text-slate-400 font-bold">匹配網路拓樸:</span>
+            <select id="selectMatchTopology" class="bg-slate-800 text-slate-200 rounded-lg px-3 py-1.5 border border-slate-700 font-bold text-cyan-300">
+              <option value="l_lowpass" selected>L-型 低通 (串聯 L + 並聯 C) - 諧波抑制推薦</option>
+              <option value="l_highpass">L-型 高通 (串聯 C + 並聯 L) - 隔直直流偏壓</option>
+              <option value="pi_match">Π-型 寬頻/高選擇性匹配 (更高 Q 值)</option>
+              <option value="t_match">T-型 帶通匹配 (雙串聯 + 單並聯)</option>
+            </select>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400">元件品質因子 Q:</span>
+              <input type="number" id="inputMatchQind" value="15" step="1" class="w-16 bg-slate-800 text-slate-200 rounded px-2 py-1 border border-slate-700 text-center font-mono">
+            </div>
+          </div>
+
+          <!-- Matching Display Grid: Canvas + Schematic & Component Values -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Smith Trajectory Canvas -->
+            <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-800 flex flex-col items-center">
+              <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between w-full">
+                <span>史密斯圖阻抗轉換軌跡 (Smith Path)</span>
+                <span class="text-cyan-400 font-mono text-[11px]" id="matchingFrequencyBadge">f0 = 2.4 GHz</span>
+              </div>
+              <canvas id="matchingCanvas" width="340" height="260" class="w-full max-w-[340px] h-[260px] rounded"></canvas>
+            </div>
+
+            <!-- Synthesized Components and Circuit Diagram -->
+            <div class="space-y-3 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="text-xs font-bold text-slate-300">合成被動元件參數與損耗</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span class="text-slate-400" id="matchLabelComp1">電感 L1 (Series)</span>
+                    <div class="text-base font-bold text-cyan-400 mt-0.5" id="matchValComp1">1.54 nH</div>
+                    <span class="text-[10px] text-slate-500" id="matchSubComp1">感抗 XL = +23.2 Ω</span>
+                  </div>
+                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span class="text-slate-400" id="matchLabelComp2">電容 C1 (Shunt)</span>
+                    <div class="text-base font-bold text-emerald-400 mt-0.5" id="matchValComp2">2.82 pF</div>
+                    <span class="text-[10px] text-slate-500" id="matchSubComp2">容抗 Xc = -23.5 Ω</span>
+                  </div>
+                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span class="text-slate-400">有載品質因子 Q</span>
+                    <div class="text-base font-bold text-amber-400 mt-0.5" id="matchValQ">1.47</div>
+                    <span class="text-[10px] text-slate-500">相對頻寬 BW ≈ 68%</span>
+                  </div>
+                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
+                    <span class="text-slate-400">元件有限 Q 挿損 (IL)</span>
+                    <div class="text-base font-bold text-rose-400 mt-0.5" id="matchValLoss">0.45 dB</div>
+                    <span class="text-[10px] text-slate-500">功率傳輸效率: 90.1%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Schematic SVG Mini Box -->
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <svg id="matchingSchematicSvg" width="100%" height="90" viewBox="0 0 360 90" class="text-slate-300">
+                  <!-- Rendered dynamically -->
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 7: Die Area Breakdown & Silicon Floorplan -->
+        <div id="tabContent7" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>📐</span> <span data-i18n="dieAreaTitle">晶片矽片面積預估與平面佈局規劃 (Die Area & Silicon Floorplan)</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="dieAreaSubtitle">依據電晶體主動區微米幾何尺寸、片上被動電感/Balun 與 I/O 銲墊環估算總晶片面積與晶圓成本</p>
+            </div>
+            <div class="text-xs font-mono text-cyan-400 bg-cyan-950/40 px-2.5 py-1 rounded border border-cyan-500/30">
+              <span id="dieSummaryBadge">1.32 mm² (1.15 mm x 1.15 mm)</span>
+            </div>
+          </div>
+
+          <!-- Silicon Metrics Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400">主動核心區 (Core Active)</span>
+              <div class="text-base font-bold text-cyan-400 mt-1" id="dieCoreAreaVal">0.085 mm²</div>
+              <span class="text-[10px] text-slate-500">電晶體閘極 + 保護環</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400">片上被動區 (Passives)</span>
+              <div class="text-base font-bold text-amber-400 mt-1" id="diePassiveAreaVal">0.680 mm²</div>
+              <span class="text-[10px] text-slate-500">線圈電感、Balun、MIM電容</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400">銲墊環外圍 (Pad Ring)</span>
+              <div class="text-base font-bold text-purple-400 mt-1" id="diePadAreaVal">0.555 mm²</div>
+              <span class="text-[10px] text-slate-500">80μm 間距 32-Pin I/O Pads</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <span class="text-slate-400">預估單片裸晶成本 (Cost)</span>
+              <div class="text-base font-bold text-emerald-400 mt-1" id="dieCostVal">$0.18 USD</div>
+              <span class="text-[10px] text-slate-500">基於 300mm 晶圓量產模型</span>
+            </div>
+          </div>
+
+          <!-- Floorplan SVG Display -->
+          <div class="bg-slate-900/70 rounded-xl p-4 border border-slate-800 flex flex-col items-center">
+            <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between w-full">
+              <span>全收發機單晶平面佈局規劃示意圖 (Monolithic Transceiver Floorplan)</span>
+              <span class="text-slate-400 text-[11px]" id="floorplanScaleLabel">比例尺: 1.15 mm x 1.15 mm</span>
+            </div>
+            <svg id="floorplanSvg" width="100%" height="280" viewBox="0 0 540 280" class="rounded select-none">
+              <!-- Rendered dynamically -->
+            </svg>
+          </div>
+        </div>
+
+        <!-- Tab 8: PVT Corners & Sensitivity Analysis -->
+        <div id="tabContent8" class="card-panel rounded-2xl p-5 shadow-lg space-y-5 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                <span>🌡️</span> <span data-i18n="pvtTitle">製程角 PVT 容差與極端環境敏感度分析 (PVT Corners Analysis)</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n="pvtSubtitle">評估在 TT (典型)、FF (快快/低溫)、SS (慢慢/高溫)、FS 與 SF 極端角之電路性能浮動與良率安全裕度</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                ✓ 全部 5 個製程角均符合驗收規範
+              </span>
+            </div>
+          </div>
+
+          <!-- PVT Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-800/80 text-slate-400 border-b border-slate-700">
+                <tr>
+                  <th class="p-2.5">製程角 (Corner)</th>
+                  <th class="p-2.5">工作條件 (Condition)</th>
+                  <th class="p-2.5">PA 飽和 Pout / PAE</th>
+                  <th class="p-2.5">LNA 增益 / NF</th>
+                  <th class="p-2.5">VCO 頻偏 / 起振裕度</th>
+                  <th class="p-2.5">開關插損 IL</th>
+                  <th class="p-2.5">良率判定</th>
+                </tr>
+              </thead>
+              <tbody id="pvtTableBody" class="divide-y divide-slate-800 font-mono text-[11px]">
+                <!-- Dynamically populated by drawPvtCorners() -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="font-bold text-cyan-400 mb-1">最劣增益低溫/高溫角 (SS Corner)</div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                高溫 125°C 下載子遷移率下降約 28%，LNA 增益下降 1.8dB，VCO 跨導裕度降低至 2.1x（仍大於 2.0x 起振安全門檻）。
+              </p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="font-bold text-rose-400 mb-1">最劣耐壓高速角 (FF Corner)</div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                低溫 -40°C 與 Vdd+10% 供電下，電壓擺幅增加，但差動中和電容確保 PA 穩定因子 Rollett K 依然保持在 1.25 以上。
+              </p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="font-bold text-emerald-400 mb-1">製程中心典型角 (TT Center)</div>
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                所有 6 大模組標稱參數與史密斯圖負載牽引完全重合，具備高達 98.5% 的預期晶圓良率。
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Tab 4: SPICE Deck & Export -->
         <div id="tabContent4" class="card-panel rounded-2xl p-5 shadow-lg space-y-4 hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -550,6 +919,9 @@
               <p class="text-xs text-slate-400" id="spiceCardSubtitle" data-i18n="spiceSubtitle">包含差動驅動測試台、非線性電晶體卡、變壓器 Balun 與暫態量測敘述</p>
             </div>
             <div class="flex flex-wrap gap-2">
+              <button id="downloadReportBtn" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white shadow flex items-center gap-1" data-i18n="btnDownloadReport">
+                📄 導出工程規格書 (Report)
+              </button>
               <button id="copySpiceBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-400 border border-slate-700" data-i18n="btnCopy">
                 📋 複製網表
               </button>

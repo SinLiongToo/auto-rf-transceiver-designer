@@ -16,11 +16,15 @@
    - [3.4 下混頻器 (Mixer - Down-Conversion Mixer)](#34-下混頻器-mixer---down-conversion-mixer)
    - [3.5 收發雙工開關 (T/R Switch)](#35-收發雙工開關-tr-switch)
    - [3.6 封裝天線 (AiP Antenna-in-Package)](#36-封裝天線-aip-antenna-in-package)
-4. [四大核心視覺化圖表解讀 (Interactive Visualizations Guide)](#4-四大核心視覺化圖表解讀)
+4. [八大核心視覺化圖表與高階分析解讀 (Interactive Visualizations & Analysis Guide)](#4-八大核心視覺化圖表與高階分析解讀)
    - [4.1 史密斯圓圖與等高線 (Smith Chart & Contours)](#41-史密斯圓圖與等高線)
    - [4.2 暫態波形與動態負載線 (Waveforms & Dynamic Load-Line)](#42-暫態波形與動態負載線)
    - [4.3 晶片電路圖與元件清單 (Schematic & BOM)](#43-晶片電路圖與元件清單)
-   - [4.4 模擬網表與導出 (SPICE Decks & S2P Export)](#44-模擬網表與導出)
+   - [4.4 全收發鏈路預算與相控陣列波束賦形 (Link Budget & Phased Array Beamforming)](#44-全收發鏈路預算與相控陣列波束賦形)
+   - [4.5 互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)](#45-互動式阻抗匹配網路合成器)
+   - [4.6 晶片面積估算與平面佈局 (Die Area Breakdown & Floorplan)](#46-晶片面積估算與平面佈局)
+   - [4.7 製程角 PVT 容差與敏感度分析 (PVT Corners Analysis)](#47-製程角-pvt-容差與敏感度分析)
+   - [4.8 模擬網表與一鍵工程規格書導出 (SPICE Decks, S2P & Full Spec Report)](#48-模擬網表與一鍵工程規格書導出)
 5. [EDA 軟體整合教學 (EDA Tool Integration Guide)](#5-eda-軟體整合教學)
    - [5.1 Keysight ADS (先進設計系統) 整合](#51-keysight-ads-先進設計系統-整合)
    - [5.2 Cadence Virtuoso / Spectre 整合](#52-cadence-virtuoso--spectre-整合)
@@ -147,8 +151,54 @@ flowchart LR
 - 呈現標準 IEEE 規範之四端 MOSFET 電晶體符號（Gate, Drain, Source, Channel），包含偏置線路、交叉中和電容及片上變壓器。
 - 下方附帶完整的物料清單（BOM），詳列所有主動管指狀尺寸與被動元件值（$L, C$）及設計用途。
 
-### 4.4 模擬網表與導出 (SPICE Decks & S2P Export)
-- 支援一鍵複製或直接下載標準 `.sp` 檔案與 Touchstone `.s2p` 2-Port 散射參數矩陣檔案。
+### 4.4 全收發鏈路預算與相控陣列波束賦形 (Link Budget & Phased Array Beamforming)
+- **Friis 級聯雜訊與增益分析**:
+  - 即時呈現接收機總轉換增益 $Gain_{rx}$（LNA + 混頻器轉換增益 - 開關插損）。
+  - 計算 Friis 級聯雜訊指數 $NF_{rx} = NF_1 + \frac{NF_2 - 1}{G_1} + \frac{NF_3 - 1}{G_1 G_2}$ 與接收靈敏度 $Sensitivity = -174 + 10\log_{10}(BW) + NF_{rx} + SNR_{min}$。
+- **相控陣列 2D 波束賦形**:
+  - 支援 $1\times 1, 1\times 4, 1\times 8, 4\times 4, 8\times 8$ 陣列規模切換。
+  - 支援波束指向角 $\theta \in [-60^\circ, +60^\circ]$ 即時掃描，整合 4/5/6-Bit 移相器步進量化模型。
+  - Canvas 即時繪製極坐標陣列因子（Array Factor）天線輻射方向圖、主瓣波束銳化角（HPBW）與相干空間功率疊加 EIRP。
+
+### 4.5 互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)
+- **四種匹配架構即時切換**:
+  - `L-型 低通 (Series L + Shunt C)`: 高頻諧波抑制首選。
+  - `L-型 高通 (Series C + Shunt L)`: 天然隔直流（DC-Blocking）。
+  - `Π-型 寬頻匹配 (Pi-Match)`: 提升選擇性與特定頻寬控制。
+  - `T-型 帶通匹配 (T-Match)`: 雙串聯單並聯，適用於高阻變比。
+- **物理特性與實部/虛部阻抗轉換**:
+  - 支援「🔄 套用目前模組阻抗」一鍵導入 PA $R_{opt}$ 或 LNA $R_{in}$。
+  - 納入片上電感有限 $Q$ 值（Inductor $Q$），即時計算有載品質因子 $Q$ 與插入損耗（Insertion Loss, IL）。
+  - 於史密斯圖上動態標註 $Z_S \to Z_L$ 的實時路徑軌跡。
+
+### 4.6 晶片面積估算與平面佈局 (Die Area Breakdown & Floorplan)
+- **主動/被動/銲墊分佈分解**:
+  - 主動電晶體核心區（Transistor Core + Guard Ring）。
+  - 片上被動元件區（片上螺旋線圈電感、Balun 變壓器、MIM 電容陣列）。
+  - 周邊銲墊環外圍（Pad Ring，含 $80\,\mu\text{m}$ 間距之 32-Pin I/O 銲墊）。
+- **單片裸晶量產成本預估**:
+  - 基於 12 吋（300mm）晶圓量產模型，自動換算單顆晶粒製造單價。
+  - 繪製等比例單晶毫米波收發機單晶片（Monolithic Transceiver）平面規劃圖（Floorplan SVG）。
+
+### 4.7 製程角 PVT 容差與敏感度分析 (PVT Corners Analysis)
+- **全製程角工作條件矩陣**:
+  - `TT (典型角)`: $25^\circ\text{C}, 1.20\text{V}$。
+  - `FF (快快角)`: $-40^\circ\text{C}, 1.32\text{V}$（最劣耐壓與熱載子注入考量）。
+  - `SS (慢慢角)`: $+125^\circ\text{C}, 1.08\text{V}$（最劣高溫載子遷移率衰減與增益損失）。
+  - `FS` 與 `SF` 混合非對稱角。
+- **良率指標檢驗**: 實時驗證 PA 飽和功率/PAE、LNA 增益/NF、VCO 頻偏與起振跨導裕度（Margin $> 2.0\times$）。
+
+### 4.8 模擬網表與一鍵工程規格書導出 (SPICE Decks, S2P & Full Spec Report)
+- **一鍵導出完整工程規格書 (📄 Report)**:
+  - 點擊「📄 導出工程規格書 (Report)」，立即自動生成並下載專業格式 HTML 規格書，完整封裝：
+    1. 系統級級聯鏈路預算總表。
+    2. 六大模組核心物理合成數據與元件尺寸表。
+    3. 晶片面積與矽片成本預估。
+    4. 5大製程角 PVT 容差矩陣。
+    5. SPICE / Spectre 模擬網表代碼塊。
+- **SPICE / Spectre 網表**: 一鍵複製或下載標準 `.sp` 檔案。
+- **Touchstone S2P 檔案**: 下載標準 `.s2p` 2-Port 散射參數檔案。
+- **JSON 原始結構化設計檔**: 下載包含所有微米級幾何尺寸的 `.json` 檔案。
 
 ---
 
