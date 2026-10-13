@@ -184,7 +184,11 @@ const i18nData = {
     footCol3Title: "3. 壓控振盪器 (VCO): 負電導與 Leeson 雜訊",
     footCol3Desc: "互補交叉耦合對 (NMOS+PMOS) 提供負電導抵消 LC 諧振腔損耗，依據 Barkhausen 準則提供 3x 啟振裕度與 Leeson 相位雜訊最佳化。",
     footCol4Title: "4. 混頻器 (Mixer): 雙平衡 Gilbert 乘法單元",
-    footCol4Desc: "吉爾伯特雙平衡架構提供天然的 LO-RF 與 LO-IF 隔離度，高速電流切換開關實現轉換增益 Gc 與高線性度 IIP3。"
+    footCol4Desc: "吉爾伯特雙平衡架構提供天然的 LO-RF 與 LO-IF 隔離度，高速電流切換開關實現轉換增益 Gc 與高線性度 IIP3。",
+    footCol5Title: "5. 天線開關 (Switch): 串並聯與 FET Stacking 耐壓",
+    footCol5Desc: "採用 Series-Shunt 架構降低導通電阻 Ron 並提升隔離度，多級 FET 串聯堆疊技術承受瓦級射頻擺幅，大幅推升 P1dB 壓縮點。",
+    footCol6Title: "6. 封裝天線 (Antenna): 微帶貼片與凹槽匹配",
+    footCol6Desc: "薄膜頂層金屬構建矩形微帶貼片諧振腔，藉由精確內凹槽深度 y0 實現 50Ω 純阻抗共振，提供高天線輻射效率與平坦波束。"
   },
   en: {
     appTitle: "AutoRF Integrated CMOS RF Front-End Design & Synthesis Guide",
@@ -365,7 +369,11 @@ const i18nData = {
     footCol3Title: "3. Voltage-Controlled Oscillator (VCO): Leeson Phase Noise & Tank",
     footCol3Desc: "Complementary cross-coupled pair (NMOS+PMOS) generates negative gm to cancel LC tank loss, providing 3x startup margin and Leeson phase noise optimization.",
     footCol4Title: "4. Down-Conversion Mixer: Double-Balanced Gilbert Cell",
-    footCol4Desc: "Double-balanced topology delivers intrinsic LO-to-RF and LO-to-IF isolation with fast current commutation for conversion gain and high IIP3 linearity."
+    footCol4Desc: "Double-balanced topology delivers intrinsic LO-to-RF and LO-to-IF isolation with fast current commutation for conversion gain and high IIP3 linearity.",
+    footCol5Title: "5. T/R Switch: Series-Shunt & FET Stacking",
+    footCol5Desc: "Series-shunt configuration minimizes Ron while maximizing off-isolation; stacked FET topology divides peak RF voltage to sustain high transmit power and elevate P1dB.",
+    footCol6Title: "6. On-Package Antenna: Microstrip Patch & Inset Feed",
+    footCol6Desc: "Top-metal microstrip patch radiator achieves 50Ω input resonance via calibrated notch inset depth y0, delivering high radiation efficiency and directive main beam."
   }
 };
 
