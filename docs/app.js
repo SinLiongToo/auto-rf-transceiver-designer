@@ -2813,61 +2813,224 @@ function drawLinkBudget() {
 // --- 9.2 Impedance Matching Synthesizer Engine ---
 function drawMatchingSynthesizer() {
   const f = state.freq_ghz;
-  const rs = state.match_rs || 50.0;
+  const rs = Math.max(0.5, state.match_rs || 50.0);
   const xs = state.match_xs || 0.0;
-  const rl = state.match_rl || 15.8;
+  const rl = Math.max(0.5, state.match_rl || 15.8);
   const xl = state.match_xl || 0.0;
   const topo = state.match_topology || "l_lowpass";
-  const qInd = state.match_qind || 15.0;
+  const qInd = Math.max(1.0, state.match_qind || 15.0);
 
-  const rHigh = Math.max(rs, rl);
-  const rLow = Math.min(rs, rl);
-  const qLoaded = Math.sqrt(Math.max(0.01, rHigh / rLow - 1.0));
-
-  let lValNh = 0, cValPf = 0, xlVal = 0, xcVal = 0;
   const omega = 2 * Math.PI * f * 1e9;
+  const isZh = currentLang === "zh";
 
-  if (topo === "l_lowpass") {
-    xlVal = qLoaded * rLow - (rs < rl ? xs : xl);
-    const bp = qLoaded / rHigh;
-    lValNh = Math.abs(xlVal) / omega * 1e9;
-    cValPf = Math.abs(bp) / omega * 1e12;
-    xcVal = 1 / (omega * (cValPf * 1e-12));
+  let cardsHtml = "";
+  let l1Val = 0, c1Val = 0, l2Val = 0, c2Val = 0;
+  let qLoaded = 1.0;
+
+  if (topo === "t_match") {
+    // T-Match: Series L1 -> Shunt C1 -> Series L2
+    const qBase = Math.sqrt(Math.max(0.01, Math.max(rs, rl) / Math.min(rs, rl) - 1.0));
+    const qTarget = Math.max(1.8, qBase + 1.2);
+    const rv = Math.max(rs, rl) * (1.0 + qTarget * qTarget);
+    const q1 = Math.sqrt(Math.max(0.01, rv / rs - 1.0));
+    const q2 = Math.sqrt(Math.max(0.01, rv / rl - 1.0));
+
+    const xl1 = Math.max(0.1, q1 * rs - xs);
+    const bc1 = Math.max(0.001, (q1 + q2) / rv);
+    const xl2 = Math.max(0.1, q2 * rl - xl);
+
+    l1Val = xl1 / omega * 1e9;
+    c1Val = bc1 / omega * 1e12;
+    l2Val = xl2 / omega * 1e9;
+    qLoaded = (q1 + q2) / 2.0;
+
+    cardsHtml = `
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電感 L1 (Series 1)" : "Inductor L1 (Series 1)"}</span>
+        <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp1">${l1Val.toFixed(2)} nH</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp1">XL1 = +${xl1.toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電容 C1 (Shunt)" : "Capacitor C1 (Shunt)"}</span>
+        <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp2">${c1Val.toFixed(2)} pF</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp2">Xc1 = -${(1 / (bc1 || 1e-4)).toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp3">${isZh ? "電感 L2 (Series 2)" : "Inductor L2 (Series 2)"}</span>
+        <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp3">${l2Val.toFixed(2)} nH</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp3">XL2 = +${xl2.toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "有載品質因子 Q" : "Loaded Q"}</span>
+        <div class="text-sm font-bold text-amber-400 mt-0.5" id="matchValQ">${qLoaded.toFixed(2)}</div>
+        <span class="text-[10px] text-slate-500">相對頻寬 ≈ ${(100 / (qLoaded || 1)).toFixed(0)}%</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "元件有限 Q 挿損" : "Loss (IL)"}</span>
+        <div class="text-sm font-bold text-rose-400 mt-0.5" id="matchValLoss">${((qLoaded / qInd) * 4.34).toFixed(2)} dB</div>
+        <span class="text-[10px] text-slate-500">電感 Q = ${qInd}</span>
+      </div>
+    `;
+  } else if (topo === "pi_match") {
+    // Pi-Match: Shunt C1 -> Series L1 -> Shunt C2
+    const qBase = Math.sqrt(Math.max(0.01, Math.max(rs, rl) / Math.min(rs, rl) - 1.0));
+    const qTarget = Math.max(1.8, qBase + 1.2);
+    const rv = Math.min(rs, rl) / (1.0 + qTarget * qTarget);
+    const q1 = Math.sqrt(Math.max(0.01, rs / rv - 1.0));
+    const q2 = Math.sqrt(Math.max(0.01, rl / rv - 1.0));
+
+    const bc1 = Math.max(0.001, q1 / rs);
+    const xl1 = Math.max(0.1, (q1 + q2) * rv);
+    const bc2 = Math.max(0.001, q2 / rl);
+
+    c1Val = bc1 / omega * 1e12;
+    l1Val = xl1 / omega * 1e9;
+    c2Val = bc2 / omega * 1e12;
+    qLoaded = (q1 + q2) / 2.0;
+
+    cardsHtml = `
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電容 C1 (Shunt 1)" : "Capacitor C1 (Shunt 1)"}</span>
+        <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp1">${c1Val.toFixed(2)} pF</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp1">Xc1 = -${(1 / (bc1 || 1e-4)).toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電感 L1 (Series)" : "Inductor L1 (Series)"}</span>
+        <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp2">${l1Val.toFixed(2)} nH</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp2">XL1 = +${xl1.toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400" id="matchLabelComp3">${isZh ? "電容 C2 (Shunt 2)" : "Capacitor C2 (Shunt 2)"}</span>
+        <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp3">${c2Val.toFixed(2)} pF</div>
+        <span class="text-[10px] text-slate-500" id="matchSubComp3">Xc2 = -${(1 / (bc2 || 1e-4)).toFixed(1)} Ω</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "有載品質因子 Q" : "Loaded Q"}</span>
+        <div class="text-sm font-bold text-amber-400 mt-0.5" id="matchValQ">${qLoaded.toFixed(2)}</div>
+        <span class="text-[10px] text-slate-500">相對頻寬 ≈ ${(100 / (qLoaded || 1)).toFixed(0)}%</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "元件有限 Q 挿損" : "Loss (IL)"}</span>
+        <div class="text-sm font-bold text-rose-400 mt-0.5" id="matchValLoss">${((qLoaded / qInd) * 4.34).toFixed(2)} dB</div>
+        <span class="text-[10px] text-slate-500">電感 Q = ${qInd}</span>
+      </div>
+    `;
   } else if (topo === "l_highpass") {
-    const xcSeries = qLoaded * rLow;
-    const blShunt = qLoaded / rHigh;
-    cValPf = 1 / (omega * xcSeries) * 1e12;
-    lValNh = 1 / (omega * blShunt) * 1e9;
-    xlVal = omega * lValNh * 1e-9;
-    xcVal = xcSeries;
+    // L-Highpass: Series C + Shunt L
+    const rHigh = Math.max(rs, rl);
+    const rLow = Math.min(rs, rl);
+    qLoaded = Math.sqrt(Math.max(0.01, rHigh / rLow - 1.0));
+
+    if (rs <= rl) {
+      const xc1 = Math.max(0.1, qLoaded * rs);
+      const bl1 = Math.max(0.001, qLoaded / rl);
+      c1Val = 1 / (omega * xc1) * 1e12;
+      l1Val = 1 / (omega * bl1) * 1e9;
+      cardsHtml = `
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電容 C1 (Series)" : "Capacitor C1 (Series)"}</span>
+          <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp1">${c1Val.toFixed(2)} pF</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp1">Xc = -${xc1.toFixed(1)} Ω</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電感 L1 (Shunt)" : "Inductor L1 (Shunt)"}</span>
+          <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp2">${l1Val.toFixed(2)} nH</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp2">XL = +${(1 / bl1).toFixed(1)} Ω</span>
+        </div>
+      `;
+    } else {
+      const bl1 = Math.max(0.001, qLoaded / rs);
+      const xc1 = Math.max(0.1, qLoaded * rl);
+      l1Val = 1 / (omega * bl1) * 1e9;
+      c1Val = 1 / (omega * xc1) * 1e12;
+      cardsHtml = `
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電感 L1 (Shunt)" : "Inductor L1 (Shunt)"}</span>
+          <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp1">${l1Val.toFixed(2)} nH</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp1">XL = +${(1 / bl1).toFixed(1)} Ω</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電容 C1 (Series)" : "Capacitor C1 (Series)"}</span>
+          <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp2">${c1Val.toFixed(2)} pF</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp2">Xc = -${xc1.toFixed(1)} Ω</span>
+        </div>
+      `;
+    }
+    cardsHtml += `
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "有載品質因子 Q" : "Loaded Q"}</span>
+        <div class="text-sm font-bold text-amber-400 mt-0.5" id="matchValQ">${qLoaded.toFixed(2)}</div>
+        <span class="text-[10px] text-slate-500">相對頻寬 ≈ ${(100 / (qLoaded || 1)).toFixed(0)}%</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "元件有限 Q 挿損" : "Loss (IL)"}</span>
+        <div class="text-sm font-bold text-rose-400 mt-0.5" id="matchValLoss">${((qLoaded / qInd) * 4.34).toFixed(2)} dB</div>
+        <span class="text-[10px] text-slate-500">隔直直流偏壓</span>
+      </div>
+    `;
   } else {
-    const qPi = Math.max(qLoaded + 1.0, 2.5);
-    xlVal = qPi * rLow;
-    lValNh = xlVal / omega * 1e9;
-    cValPf = (qPi / rHigh) / omega * 1e12;
-    xcVal = 1 / (omega * cValPf * 1e-12);
+    // L-Lowpass: Series L + Shunt C
+    const rHigh = Math.max(rs, rl);
+    const rLow = Math.min(rs, rl);
+    qLoaded = Math.sqrt(Math.max(0.01, rHigh / rLow - 1.0));
+
+    if (rs <= rl) {
+      const xl1 = Math.max(0.1, qLoaded * rs - xs);
+      const bc1 = Math.max(0.001, qLoaded / rl);
+      l1Val = xl1 / omega * 1e9;
+      c1Val = bc1 / omega * 1e12;
+      cardsHtml = `
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電感 L1 (Series)" : "Inductor L1 (Series)"}</span>
+          <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp1">${l1Val.toFixed(2)} nH</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp1">XL = +${xl1.toFixed(1)} Ω</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電容 C1 (Shunt)" : "Capacitor C1 (Shunt)"}</span>
+          <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp2">${c1Val.toFixed(2)} pF</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp2">Xc = -${(1 / bc1).toFixed(1)} Ω</span>
+        </div>
+      `;
+    } else {
+      const bc1 = Math.max(0.001, qLoaded / rs);
+      const xl1 = Math.max(0.1, qLoaded * rl - xl);
+      c1Val = bc1 / omega * 1e12;
+      l1Val = xl1 / omega * 1e9;
+      cardsHtml = `
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp1">${isZh ? "電容 C1 (Shunt)" : "Capacitor C1 (Shunt)"}</span>
+          <div class="text-sm font-bold text-emerald-400 mt-0.5" id="matchValComp1">${c1Val.toFixed(2)} pF</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp1">Xc = -${(1 / bc1).toFixed(1)} Ω</span>
+        </div>
+        <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+          <span class="text-slate-400" id="matchLabelComp2">${isZh ? "電感 L1 (Series)" : "Inductor L1 (Series)"}</span>
+          <div class="text-sm font-bold text-cyan-400 mt-0.5" id="matchValComp2">${l1Val.toFixed(2)} nH</div>
+          <span class="text-[10px] text-slate-500" id="matchSubComp2">XL = +${xl1.toFixed(1)} Ω</span>
+        </div>
+      `;
+    }
+    cardsHtml += `
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "有載品質因子 Q" : "Loaded Q"}</span>
+        <div class="text-sm font-bold text-amber-400 mt-0.5" id="matchValQ">${qLoaded.toFixed(2)}</div>
+        <span class="text-[10px] text-slate-500">相對頻寬 ≈ ${(100 / (qLoaded || 1)).toFixed(0)}%</span>
+      </div>
+      <div class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700">
+        <span class="text-slate-400">${isZh ? "元件有限 Q 挿損" : "Loss (IL)"}</span>
+        <div class="text-sm font-bold text-rose-400 mt-0.5" id="matchValLoss">${((qLoaded / qInd) * 4.34).toFixed(2)} dB</div>
+        <span class="text-[10px] text-slate-500">諧波抑制優</span>
+      </div>
+    `;
   }
 
-  const ilDb = Math.max(0.1, -10 * Math.log10(Math.max(0.1, 1.0 - qLoaded / qInd)));
-
-  const elComp1 = document.getElementById("matchValComp1");
-  if (elComp1) elComp1.innerText = `${lValNh.toFixed(2)} nH`;
-  const elSub1 = document.getElementById("matchSubComp1");
-  if (elSub1) elSub1.innerText = `XL = +${xlVal.toFixed(1)} Ω`;
-
-  const elComp2 = document.getElementById("matchValComp2");
-  if (elComp2) elComp2.innerText = `${cValPf.toFixed(2)} pF`;
-  const elSub2 = document.getElementById("matchSubComp2");
-  if (elSub2) elSub2.innerText = `Xc = -${xcVal.toFixed(1)} Ω`;
-
-  const elQ = document.getElementById("matchValQ");
-  if (elQ) elQ.innerText = qLoaded.toFixed(2);
-  const elLoss = document.getElementById("matchValLoss");
-  if (elLoss) elLoss.innerText = `${ilDb.toFixed(2)} dB`;
+  // Populate dynamic cards
+  const gridEl = document.getElementById("matchingComponentsGrid");
+  if (gridEl) gridEl.innerHTML = cardsHtml;
 
   const elFreqBadge = document.getElementById("matchingFrequencyBadge");
   if (elFreqBadge) elFreqBadge.innerText = `f0 = ${f} GHz`;
 
+  // Draw Smith Chart Trajectory
   const canvas = document.getElementById("matchingCanvas");
   if (canvas && canvas.getContext) {
     const ctx = canvas.getContext("2d");
@@ -2897,46 +3060,198 @@ function drawMatchingSynthesizer() {
     const gLIm = xl / (rl + 50);
     const ptL = { x: cx + gLRe * R, y: cy - gLIm * R };
 
-    const ptMid = { x: (ptS.x + ptL.x) / 2 + 25, y: (ptS.y + ptL.y) / 2 - 35 };
+    const dist = Math.hypot(ptS.x - ptL.x, ptS.y - ptL.y);
 
-    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5; ctx.setLineDash([4, 2]);
-    ctx.beginPath();
-    ctx.moveTo(ptS.x, ptS.y);
-    if (ctx.quadraticCurveTo) ctx.quadraticCurveTo(ptMid.x, ptMid.y, ptL.x, ptL.y);
-    else ctx.lineTo(ptL.x, ptL.y);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    if (dist > 2) {
+      const ptMid = { x: (ptS.x + ptL.x) / 2 + (topo === "t_match" ? 35 : (topo === "pi_match" ? -35 : 20)), y: (ptS.y + ptL.y) / 2 - 35 };
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5; ctx.setLineDash([4, 2]);
+      ctx.beginPath();
+      ctx.moveTo(ptS.x, ptS.y);
+      if (ctx.quadraticCurveTo) ctx.quadraticCurveTo(ptMid.x, ptMid.y, ptL.x, ptL.y);
+      else ctx.lineTo(ptL.x, ptL.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      // Loop arc when identical
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.0; ctx.setLineDash([3, 2]);
+      ctx.beginPath();
+      ctx.arc(ptS.x, ptS.y - 18, 18, 0.3 * Math.PI, 1.7 * Math.PI, false);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
 
+    // Points with smart label placement to prevent overlapping
     ctx.fillStyle = "#10b981"; ctx.beginPath(); ctx.arc(ptS.x, ptS.y, 6, 0, 2 * Math.PI); ctx.fill();
     ctx.fillStyle = "#ffffff"; ctx.font = "bold 10px sans-serif";
-    ctx.fillText(`Zs (${rs}Ω)`, ptS.x + 8, ptS.y - 4);
-
-    ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(ptL.x, ptL.y, 6, 0, 2 * Math.PI); ctx.fill();
-    ctx.fillStyle = "#ffffff";
-    ctx.fillText(`ZL (${rl.toFixed(1)}Ω)`, ptL.x + 8, ptL.y - 4);
+    if (dist < 15) {
+      ctx.fillText(`Zs (${rs}Ω)`, ptS.x - 48, ptS.y - 8);
+      ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(ptL.x, ptL.y, 4, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`ZL (${rl.toFixed(1)}Ω)`, ptL.x + 8, ptL.y + 14);
+    } else {
+      ctx.fillText(`Zs (${rs}Ω)`, ptS.x + 8, ptS.y - 4);
+      ctx.fillStyle = "#f59e0b"; ctx.beginPath(); ctx.arc(ptL.x, ptL.y, 6, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`ZL (${rl.toFixed(1)}Ω)`, ptL.x + 8, ptL.y + 12);
+    }
   }
 
+  // Draw Exact Dynamic Schematic SVG for the Selected Topology
   const svg = document.getElementById("matchingSchematicSvg");
   if (svg) {
-    svg.innerHTML = `
-      <rect width="100%" height="100%" fill="#090d16" rx="8" />
-      <circle cx="35" cy="45" r="14" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
-      <text x="35" y="49" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">Zs</text>
-      <line x1="49" y1="45" x2="105" y2="45" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 105 45 Q 115 30 125 45 Q 135 30 145 45 Q 155 30 165 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
-      <text x="135" y="24" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="bold">L1: ${lValNh.toFixed(2)}nH</text>
-      <line x1="165" y1="45" x2="230" y2="45" stroke="#94a3b8" stroke-width="2" />
-      <circle cx="230" cy="45" r="3" fill="#38bdf8" />
-      <line x1="230" y1="45" x2="230" y2="58" stroke="#94a3b8" stroke-width="2" />
-      <line x1="220" y1="58" x2="240" y2="58" stroke="#34d399" stroke-width="2.5" />
-      <line x1="220" y1="63" x2="240" y2="63" stroke="#34d399" stroke-width="2.5" />
-      <line x1="230" y1="63" x2="230" y2="76" stroke="#94a3b8" stroke-width="2" />
-      <line x1="224" y1="76" x2="236" y2="76" stroke="#64748b" stroke-width="2" />
-      <text x="268" y="63" text-anchor="start" fill="#34d399" font-size="10" font-weight="bold">C1: ${cValPf.toFixed(2)}pF</text>
-      <line x1="230" y1="45" x2="310" y2="45" stroke="#94a3b8" stroke-width="2" />
-      <rect x="310" y="35" width="30" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
-      <text x="325" y="49" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">ZL</text>
-    `;
+    if (topo === "t_match") {
+      svg.innerHTML = `
+        <rect width="100%" height="100%" fill="#090d16" rx="8" />
+        <!-- Source Zs -->
+        <circle cx="28" cy="45" r="13" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+        <text x="28" y="49" text-anchor="middle" fill="#38bdf8" font-size="9" font-weight="bold">Zs</text>
+        <line x1="41" y1="45" x2="65" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- L1 Series -->
+        <path d="M 65 45 Q 73 30 81 45 Q 89 30 97 45 Q 105 30 113 45 Q 121 30 129 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+        <text x="97" y="24" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+        <line x1="129" y1="45" x2="175" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- Center Shunt Node C1 -->
+        <circle cx="175" cy="45" r="3" fill="#38bdf8" />
+        <line x1="175" y1="45" x2="175" y2="55" stroke="#94a3b8" stroke-width="2" />
+        <line x1="165" y1="55" x2="185" y2="55" stroke="#34d399" stroke-width="2.5" />
+        <line x1="165" y1="60" x2="185" y2="60" stroke="#34d399" stroke-width="2.5" />
+        <line x1="175" y1="60" x2="175" y2="72" stroke="#94a3b8" stroke-width="2" />
+        <line x1="169" y1="72" x2="181" y2="72" stroke="#64748b" stroke-width="2" />
+        <text x="175" y="85" text-anchor="middle" fill="#34d399" font-size="9" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+
+        <!-- L2 Series -->
+        <line x1="175" y1="45" x2="220" y2="45" stroke="#94a3b8" stroke-width="2" />
+        <path d="M 220 45 Q 228 30 236 45 Q 244 30 252 45 Q 260 30 268 45 Q 276 30 284 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+        <text x="252" y="24" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="bold">L2: ${l2Val.toFixed(2)}nH</text>
+        <line x1="284" y1="45" x2="315" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- Load ZL -->
+        <rect x="315" y="35" width="32" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+        <text x="331" y="49" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold">ZL</text>
+      `;
+    } else if (topo === "pi_match") {
+      svg.innerHTML = `
+        <rect width="100%" height="100%" fill="#090d16" rx="8" />
+        <!-- Source Zs -->
+        <circle cx="28" cy="45" r="13" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+        <text x="28" y="49" text-anchor="middle" fill="#38bdf8" font-size="9" font-weight="bold">Zs</text>
+        <line x1="41" y1="45" x2="90" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- C1 Shunt Node -->
+        <circle cx="90" cy="45" r="3" fill="#38bdf8" />
+        <line x1="90" y1="45" x2="90" y2="55" stroke="#94a3b8" stroke-width="2" />
+        <line x1="80" y1="55" x2="100" y2="55" stroke="#34d399" stroke-width="2.5" />
+        <line x1="80" y1="60" x2="100" y2="60" stroke="#34d399" stroke-width="2.5" />
+        <line x1="90" y1="60" x2="90" y2="72" stroke="#94a3b8" stroke-width="2" />
+        <line x1="84" y1="72" x2="96" y2="72" stroke="#64748b" stroke-width="2" />
+        <text x="90" y="85" text-anchor="middle" fill="#34d399" font-size="9" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+
+        <!-- L1 Series -->
+        <line x1="90" y1="45" x2="135" y2="45" stroke="#94a3b8" stroke-width="2" />
+        <path d="M 135 45 Q 143 30 151 45 Q 159 30 167 45 Q 175 30 183 45 Q 191 30 199 45 Q 207 30 215 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+        <text x="175" y="24" text-anchor="middle" fill="#22d3ee" font-size="9" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+        <line x1="215" y1="45" x2="255" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- C2 Shunt Node -->
+        <circle cx="255" cy="45" r="3" fill="#38bdf8" />
+        <line x1="255" y1="45" x2="255" y2="55" stroke="#94a3b8" stroke-width="2" />
+        <line x1="245" y1="55" x2="265" y2="55" stroke="#34d399" stroke-width="2.5" />
+        <line x1="245" y1="60" x2="265" y2="60" stroke="#34d399" stroke-width="2.5" />
+        <line x1="255" y1="60" x2="255" y2="72" stroke="#94a3b8" stroke-width="2" />
+        <line x1="249" y1="72" x2="261" y2="72" stroke="#64748b" stroke-width="2" />
+        <text x="255" y="85" text-anchor="middle" fill="#34d399" font-size="9" font-weight="bold">C2: ${c2Val.toFixed(2)}pF</text>
+        <line x1="255" y1="45" x2="315" y2="45" stroke="#94a3b8" stroke-width="2" />
+
+        <!-- Load ZL -->
+        <rect x="315" y="35" width="32" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+        <text x="331" y="49" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold">ZL</text>
+      `;
+    } else if (topo === "l_highpass") {
+      if (rs <= rl) {
+        svg.innerHTML = `
+          <rect width="100%" height="100%" fill="#090d16" rx="8" />
+          <circle cx="35" cy="45" r="14" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="35" y="49" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">Zs</text>
+          <line x1="49" y1="45" x2="120" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <line x1="120" y1="35" x2="120" y2="55" stroke="#34d399" stroke-width="2.5" />
+          <line x1="125" y1="35" x2="125" y2="55" stroke="#34d399" stroke-width="2.5" />
+          <text x="122.5" y="24" text-anchor="middle" fill="#34d399" font-size="10" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+          <line x1="125" y1="45" x2="220" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="220" cy="45" r="3" fill="#38bdf8" />
+          <path d="M 220 45 Q 235 52 220 59 Q 235 66 220 73" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+          <line x1="220" y1="73" x2="220" y2="78" stroke="#94a3b8" stroke-width="2" />
+          <line x1="214" y1="78" x2="226" y2="78" stroke="#64748b" stroke-width="2" />
+          <text x="242" y="63" text-anchor="start" fill="#22d3ee" font-size="10" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+          <line x1="220" y1="45" x2="310" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <rect x="310" y="35" width="30" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+          <text x="325" y="49" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">ZL</text>
+        `;
+      } else {
+        svg.innerHTML = `
+          <rect width="100%" height="100%" fill="#090d16" rx="8" />
+          <circle cx="35" cy="45" r="14" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="35" y="49" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">Zs</text>
+          <line x1="49" y1="45" x2="110" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="110" cy="45" r="3" fill="#38bdf8" />
+          <path d="M 110 45 Q 125 52 110 59 Q 125 66 110 73" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+          <line x1="110" y1="73" x2="110" y2="78" stroke="#94a3b8" stroke-width="2" />
+          <line x1="104" y1="78" x2="116" y2="78" stroke="#64748b" stroke-width="2" />
+          <text x="132" y="63" text-anchor="start" fill="#22d3ee" font-size="10" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+          <line x1="110" y1="45" x2="190" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <line x1="190" y1="35" x2="190" y2="55" stroke="#34d399" stroke-width="2.5" />
+          <line x1="195" y1="35" x2="195" y2="55" stroke="#34d399" stroke-width="2.5" />
+          <text x="192.5" y="24" text-anchor="middle" fill="#34d399" font-size="10" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+          <line x1="195" y1="45" x2="310" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <rect x="310" y="35" width="30" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+          <text x="325" y="49" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">ZL</text>
+        `;
+      }
+    } else {
+      // l_lowpass
+      if (rs <= rl) {
+        svg.innerHTML = `
+          <rect width="100%" height="100%" fill="#090d16" rx="8" />
+          <circle cx="35" cy="45" r="14" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="35" y="49" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">Zs</text>
+          <line x1="49" y1="45" x2="95" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <path d="M 95 45 Q 105 30 115 45 Q 125 30 135 45 Q 145 30 155 45 Q 165 30 175 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+          <text x="135" y="24" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+          <line x1="175" y1="45" x2="230" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="230" cy="45" r="3" fill="#38bdf8" />
+          <line x1="230" y1="45" x2="230" y2="56" stroke="#94a3b8" stroke-width="2" />
+          <line x1="220" y1="56" x2="240" y2="56" stroke="#34d399" stroke-width="2.5" />
+          <line x1="220" y1="61" x2="240" y2="61" stroke="#34d399" stroke-width="2.5" />
+          <line x1="230" y1="61" x2="230" y2="74" stroke="#94a3b8" stroke-width="2" />
+          <line x1="224" y1="74" x2="236" y2="74" stroke="#64748b" stroke-width="2" />
+          <text x="248" y="63" text-anchor="start" fill="#34d399" font-size="10" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+          <line x1="230" y1="45" x2="310" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <rect x="310" y="35" width="30" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+          <text x="325" y="49" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">ZL</text>
+        `;
+      } else {
+        svg.innerHTML = `
+          <rect width="100%" height="100%" fill="#090d16" rx="8" />
+          <circle cx="35" cy="45" r="14" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="35" y="49" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="bold">Zs</text>
+          <line x1="49" y1="45" x2="110" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="110" cy="45" r="3" fill="#38bdf8" />
+          <line x1="110" y1="45" x2="110" y2="56" stroke="#94a3b8" stroke-width="2" />
+          <line x1="100" y1="56" x2="120" y2="56" stroke="#34d399" stroke-width="2.5" />
+          <line x1="100" y1="61" x2="120" y2="61" stroke="#34d399" stroke-width="2.5" />
+          <line x1="110" y1="61" x2="110" y2="74" stroke="#94a3b8" stroke-width="2" />
+          <line x1="104" y1="74" x2="116" y2="74" stroke="#64748b" stroke-width="2" />
+          <text x="126" y="63" text-anchor="start" fill="#34d399" font-size="10" font-weight="bold">C1: ${c1Val.toFixed(2)}pF</text>
+          <line x1="110" y1="45" x2="170" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <path d="M 170 45 Q 180 30 190 45 Q 200 30 210 45 Q 220 30 230 45 Q 240 30 250 45" fill="none" stroke="#22d3ee" stroke-width="2.5" />
+          <text x="210" y="24" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="bold">L1: ${l1Val.toFixed(2)}nH</text>
+          <line x1="250" y1="45" x2="310" y2="45" stroke="#94a3b8" stroke-width="2" />
+          <rect x="310" y="35" width="30" height="20" fill="#334155" stroke="#f59e0b" stroke-width="1.5" rx="3" />
+          <text x="325" y="49" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">ZL</text>
+        `;
+      }
+    }
   }
 }
 

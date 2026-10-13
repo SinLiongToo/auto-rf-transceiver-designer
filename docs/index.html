@@ -770,27 +770,8 @@
             <div class="space-y-3 flex flex-col justify-between">
               <div class="space-y-2">
                 <div class="text-xs font-bold text-slate-300">合成被動元件參數與損耗</div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
-                    <span class="text-slate-400" id="matchLabelComp1">電感 L1 (Series)</span>
-                    <div class="text-base font-bold text-cyan-400 mt-0.5" id="matchValComp1">1.54 nH</div>
-                    <span class="text-[10px] text-slate-500" id="matchSubComp1">感抗 XL = +23.2 Ω</span>
-                  </div>
-                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
-                    <span class="text-slate-400" id="matchLabelComp2">電容 C1 (Shunt)</span>
-                    <div class="text-base font-bold text-emerald-400 mt-0.5" id="matchValComp2">2.82 pF</div>
-                    <span class="text-[10px] text-slate-500" id="matchSubComp2">容抗 Xc = -23.5 Ω</span>
-                  </div>
-                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
-                    <span class="text-slate-400">有載品質因子 Q</span>
-                    <div class="text-base font-bold text-amber-400 mt-0.5" id="matchValQ">1.47</div>
-                    <span class="text-[10px] text-slate-500">相對頻寬 BW ≈ 68%</span>
-                  </div>
-                  <div class="p-3 rounded-lg bg-slate-800/80 border border-slate-700">
-                    <span class="text-slate-400">元件有限 Q 挿損 (IL)</span>
-                    <div class="text-base font-bold text-rose-400 mt-0.5" id="matchValLoss">0.45 dB</div>
-                    <span class="text-[10px] text-slate-500">功率傳輸效率: 90.1%</span>
-                  </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs" id="matchingComponentsGrid">
+                  <!-- Dynamically populated by drawMatchingSynthesizer() -->
                 </div>
               </div>
 
