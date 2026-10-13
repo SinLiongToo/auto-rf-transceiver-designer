@@ -45,6 +45,7 @@ const i18nData = {
     tabSchematic: "📐 晶片電路圖與架構 (Schematic)",
     tabSpice: "💻 SPICE 網表與導出 (Export)",
     tabGlossary: "📖 術語字典 (Glossary)",
+    topGlossaryBtn: "📖 術語字典",
     glossaryTitle: "射頻前端積體電路核心術語字典 (RF Front-End Glossary)",
     glossarySubtitle: "包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義",
     // PA labels
@@ -207,6 +208,7 @@ const i18nData = {
     tabSchematic: "📐 Circuit Schematic & BOM",
     tabSpice: "💻 SPICE Deck & Export",
     tabGlossary: "📖 RF Glossary",
+    topGlossaryBtn: "📖 RF Glossary",
     glossaryTitle: "RF Front-End Integrated Circuits Glossary",
     glossarySubtitle: "Fundamental physical definitions, formulations, and FOMs for PA, LNA, VCO, Mixer, Switch & Antenna",
     // PA
@@ -1790,31 +1792,31 @@ function drawSchematicSvg() {
       <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">CMOS Differential Neutralized PA Architecture (${d.freq} GHz)</text>
       <text x="510" y="32" fill="#94a3b8" font-size="11">Ropt_diff = ${d.rOptDiff.toFixed(1)} Ω | Pout = ${d.pout} dBm</text>
 
-      <circle cx="45" cy="110" r="4" fill="#38bdf8" /><text x="20" y="105" fill="#38bdf8" font-size="10" font-weight="bold">RFIN+</text><path d="M49 110 L90 110" stroke="#38bdf8" stroke-width="1.8" />
-      <circle cx="45" cy="230" r="4" fill="#38bdf8" /><text x="20" y="245" fill="#38bdf8" font-size="10" font-weight="bold">RFIN-</text><path d="M49 230 L90 230" stroke="#38bdf8" stroke-width="1.8" />
+      <circle cx="45" cy="110" r="4" fill="#38bdf8" /><text x="20" y="105" fill="#38bdf8" font-size="10" font-weight="bold">RFIN+</text><path d="M49 110 L90 110" stroke="#38bdf8" stroke-width="1.8" fill="none" />
+      <circle cx="45" cy="230" r="4" fill="#38bdf8" /><text x="20" y="245" fill="#38bdf8" font-size="10" font-weight="bold">RFIN-</text><path d="M49 230 L90 230" stroke="#38bdf8" stroke-width="1.8" fill="none" />
 
       <rect x="90" y="98" width="55" height="24" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" /><text x="96" y="114" fill="#cbd5e1" font-size="9">Limn ${d.limnNh.toFixed(2)}n</text>
       <rect x="90" y="218" width="55" height="24" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" /><text x="96" y="234" fill="#cbd5e1" font-size="9">Limn ${d.limnNh.toFixed(2)}n</text>
 
-      <path d="M145 110 L190 110" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M145 230 L190 230" stroke="#cbd5e1" stroke-width="1.8" />
+      <path d="M145 110 L190 110" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M145 230 L190 230" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
 
       <!-- Transistors M1 & M2 -->
-      <path d="M190 95 L190 125" stroke="#a855f7" stroke-width="3" /><path d="M198 90 L198 130" stroke="#a855f7" stroke-width="2" />
-      <path d="M198 95 L225 95 L225 80" stroke="#cbd5e1" stroke-width="1.8" /><path d="M198 125 L225 125 L225 140" stroke="#cbd5e1" stroke-width="1.8" />
+      <path d="M190 95 L190 125" stroke="#a855f7" stroke-width="3" fill="none" /><path d="M198 90 L198 130" stroke="#a855f7" stroke-width="2" fill="none" />
+      <path d="M198 95 L225 95 L225 80" stroke="#cbd5e1" stroke-width="1.8" fill="none" /><path d="M198 125 L225 125 L225 140" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
       <text x="180" y="85" fill="#c084fc" font-size="11" font-weight="bold">M1 (W=${d.wTotalUm}μm)</text>
 
-      <path d="M190 215 L190 245" stroke="#a855f7" stroke-width="3" /><path d="M198 210 L198 250" stroke="#a855f7" stroke-width="2" />
-      <path d="M198 215 L225 215 L225 200" stroke="#cbd5e1" stroke-width="1.8" /><path d="M198 245 L225 245 L225 260" stroke="#cbd5e1" stroke-width="1.8" />
+      <path d="M190 215 L190 245" stroke="#a855f7" stroke-width="3" fill="none" /><path d="M198 210 L198 250" stroke="#a855f7" stroke-width="2" fill="none" />
+      <path d="M198 215 L225 215 L225 200" stroke="#cbd5e1" stroke-width="1.8" fill="none" /><path d="M198 245 L225 245 L225 260" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
       <text x="180" y="278" fill="#c084fc" font-size="11" font-weight="bold">M2 (W=${d.wTotalUm}μm)</text>
 
       <!-- Neutralization Caps -->
-      <path d="M185 110 L185 150 L310 150 L310 200" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" />
+      <path d="M185 110 L185 150 L310 150 L310 200" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" fill="none" />
       <text x="230" y="145" fill="#f472b6" font-size="9" font-weight="bold">Cneu (${d.cNeuFf.toFixed(1)}fF)</text>
-      <path d="M185 230 L185 190 L310 190 L310 80" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" />
+      <path d="M185 230 L185 190 L310 190 L310 80" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.5" fill="none" />
 
       <!-- Balun Primary & Secondary -->
-      <path d="M225 80 L350 80" stroke="#34d399" stroke-width="2" /><path d="M225 200 L350 200" stroke="#34d399" stroke-width="2" />
+      <path d="M225 80 L350 80" stroke="#34d399" stroke-width="2" fill="none" /><path d="M225 200 L350 200" stroke="#34d399" stroke-width="2" fill="none" />
       <circle cx="410" cy="140" r="4" fill="#f59e0b" /><text x="420" y="144" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
       <rect x="360" y="70" width="30" height="140" rx="6" fill="#047857" fill-opacity="0.25" stroke="#10b981" stroke-width="1.5" />
       <rect x="415" y="70" width="30" height="140" rx="6" fill="#0284c7" fill-opacity="0.25" stroke="#38bdf8" stroke-width="1.5" />
@@ -1825,7 +1827,7 @@ function drawSchematicSvg() {
       <text x="600" y="144" fill="#fb7185" font-size="12" font-weight="bold">RFOUT</text><text x="600" y="160" fill="#94a3b8" font-size="10">${d.pout} dBm</text>
     `;
   } else if (d.session === "lna") {
-    // LNA Inductively Degenerated Cascode Schematic
+    // LNA Inductively Degenerated Cascode Schematic with authentic IEEE MOSFETs
     svg.innerHTML = `
       <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
       <text x="25" y="32" fill="#38bdf8" font-size="13" font-weight="bold">CMOS Inductively Degenerated Cascode LNA (${d.freq} GHz)</text>
@@ -1834,40 +1836,46 @@ function drawSchematicSvg() {
       <!-- RF Input Port -->
       <circle cx="45" cy="180" r="4" fill="#38bdf8" />
       <text x="20" y="175" fill="#38bdf8" font-size="11" font-weight="bold">RFIN</text>
-      <path d="M49 180 L90 180" stroke="#38bdf8" stroke-width="2" />
+      <path d="M49 180 L90 180" stroke="#38bdf8" stroke-width="2" fill="none" />
 
       <!-- Gate Inductor Lg Box -->
       <rect x="90" y="168" width="70" height="25" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
       <text x="96" y="184" fill="#38bdf8" font-size="10" font-weight="bold">Lg ${d.lgNh.toFixed(2)}nH</text>
-      <path d="M160 180 L220 180" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M160 180 L212 180" stroke="#cbd5e1" stroke-width="2" fill="none" />
 
-      <!-- Main Transistor M1 -->
-      <path d="M220 165 L220 195" stroke="#a855f7" stroke-width="3" />
-      <path d="M228 160 L228 200" stroke="#a855f7" stroke-width="2" />
-      <text x="180" y="160" fill="#c084fc" font-size="11" font-weight="bold">M1 (W=${d.wMainUm}μm)</text>
+      <!-- Main Transistor M1 (Standard NMOS Symbol) -->
+      <!-- Gate terminal & plate -->
+      <path d="M212 165 L212 195" stroke="#a855f7" stroke-width="2.5" fill="none" />
+      <!-- Channel plate -->
+      <path d="M222 160 L222 200" stroke="#a855f7" stroke-width="2.5" fill="none" />
+      <!-- Drain tap (Top) -->
+      <path d="M222 166 L238 166 L238 140" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <!-- Source tap (Bottom) -->
+      <path d="M222 194 L238 194 L238 220" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <text x="135" y="160" fill="#c084fc" font-size="11" font-weight="bold">M1 (W=${d.wMainUm}μm)</text>
 
       <!-- Source Degeneration Ls -->
-      <path d="M228 195 L255 195 L255 230" stroke="#cbd5e1" stroke-width="2" />
-      <rect x="235" y="230" width="40" height="35" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
-      <text x="240" y="252" fill="#34d399" font-size="9" font-weight="bold">Ls ${d.lsNh.toFixed(3)}n</text>
-      <path d="M255 265 L255 285 M248 285 L262 285" stroke="#64748b" stroke-width="1.5" />
-      <text x="270" y="280" fill="#94a3b8" font-size="9">GND (Noiseless 50Ω)</text>
+      <rect x="218" y="220" width="40" height="35" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+      <text x="223" y="242" fill="#34d399" font-size="9" font-weight="bold">Ls ${d.lsNh.toFixed(3)}n</text>
+      <path d="M238 255 L238 280 M228 280 L248 280 M232 284 L244 284 M235 288 L241 288" stroke="#64748b" stroke-width="1.5" fill="none" />
+      <text x="255" y="278" fill="#94a3b8" font-size="9">GND (Noiseless 50Ω)</text>
 
-      <!-- Connection from M1 drain to M2 source (Cascode) -->
-      <path d="M228 165 L255 165 L255 130" stroke="#cbd5e1" stroke-width="2" />
+      <!-- Connection from M1 drain to M2 source (Cascode intermediate node) -->
+      <path d="M238 140 L238 126" stroke="#cbd5e1" stroke-width="2" fill="none" />
 
-      <!-- Cascode Transistor M2 -->
-      <path d="M220 100 L220 130" stroke="#a855f7" stroke-width="3" />
-      <path d="M228 95 L228 135" stroke="#a855f7" stroke-width="2" />
-      <text x="180" y="100" fill="#c084fc" font-size="11" font-weight="bold">M2 (Cascode)</text>
-
-      <!-- Cascode Gate Bias & AC Bypass -->
-      <path d="M220 115 L170 115" stroke="#cbd5e1" stroke-width="1.5" />
-      <circle cx="165" cy="115" r="3" fill="#f59e0b" />
-      <text x="120" y="118" fill="#fbbf24" font-size="9">Vbias,cas</text>
-
-      <!-- M2 Drain to Tuned Tank Ld || Cd -->
-      <path d="M228 100 L255 100 L255 60 L380 60" stroke="#cbd5e1" stroke-width="2" />
+      <!-- Cascode Transistor M2 (Standard NMOS Symbol) -->
+      <!-- Gate terminal & plate -->
+      <path d="M212 95 L212 125" stroke="#a855f7" stroke-width="2.5" fill="none" />
+      <path d="M212 110 L165 110" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
+      <circle cx="160" cy="110" r="3" fill="#f59e0b" />
+      <text x="110" y="113" fill="#fbbf24" font-size="9">Vbias,cas</text>
+      <!-- Channel plate -->
+      <path d="M222 90 L222 130" stroke="#a855f7" stroke-width="2.5" fill="none" />
+      <!-- Source tap (Bottom) connects to intermediate node -->
+      <path d="M222 124 L238 124 L238 140" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <!-- Drain tap (Top) connects to tank -->
+      <path d="M222 96 L238 96 L238 60 L380 60" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <text x="140" y="92" fill="#c084fc" font-size="11" font-weight="bold">M2 (Cascode)</text>
 
       <!-- Tank: Ld and Cd in parallel -->
       <rect x="380" y="45" width="60" height="28" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
@@ -1876,21 +1884,21 @@ function drawSchematicSvg() {
       <rect x="380" y="85" width="60" height="28" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
       <text x="386" y="102" fill="#38bdf8" font-size="9" font-weight="bold">Cd ${d.cdPf.toFixed(2)}p</text>
 
-      <path d="M360 60 L360 99 L380 99" stroke="#cbd5e1" stroke-width="1.5" />
-      <path d="M440 60 L460 60 L460 99 L440 99" stroke="#cbd5e1" stroke-width="1.5" />
+      <path d="M360 60 L360 99 L380 99" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
+      <path d="M440 60 L460 60 L460 99 L440 99" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
 
       <!-- DC Supply VDD connection -->
       <circle cx="475" cy="60" r="4" fill="#f59e0b" />
       <text x="485" y="64" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
 
       <!-- Output Coupling Cap Cout -->
-      <path d="M460 60 L460 120 L520 120" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M460 60 L460 120 L520 120" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <line x1="520" y1="112" x2="520" y2="128" stroke="#38bdf8" stroke-width="2.5" />
       <line x1="526" y1="112" x2="526" y2="128" stroke="#38bdf8" stroke-width="2.5" />
       <text x="510" y="105" fill="#38bdf8" font-size="9">Cout ${d.coutPf.toFixed(2)}p</text>
 
       <!-- Output 50 Ohm Load -->
-      <path d="M526 120 L570 120" stroke="#38bdf8" stroke-width="2" />
+      <path d="M526 120 L570 120" stroke="#38bdf8" stroke-width="2" fill="none" />
       <circle cx="575" cy="120" r="4" fill="#f43f5e" />
       <text x="585" y="124" fill="#fb7185" font-size="12" font-weight="bold">RFOUT (50Ω)</text>
       <text x="585" y="140" fill="#94a3b8" font-size="10">Gain = ${d.gainDb.toFixed(1)} dB</text>
@@ -1904,76 +1912,174 @@ function drawSchematicSvg() {
 
       <!-- VDD Node Top -->
       <circle cx="340" cy="38" r="4" fill="#f59e0b" /><text x="350" y="42" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
-      <path d="M340 42 L340 55 M275 55 L405 55" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M275 55 L275 65" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M405 55 L405 65" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M340 42 L340 55 M275 55 L405 55" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M275 55 L275 65" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M405 55 L405 65" stroke="#cbd5e1" stroke-width="2" fill="none" />
 
       <!-- PMOS Cross-Coupled Pair Top (MP1 & MP2) -->
       <!-- MP1 PMOS Symbol (Left) -->
-      <path d="M265 65 L265 95" stroke="#ec4899" stroke-width="2.8" />
-      <path d="M257 60 L257 100" stroke="#ec4899" stroke-width="2" />
+      <path d="M265 65 L265 95" stroke="#ec4899" stroke-width="2.8" fill="none" />
+      <path d="M257 60 L257 100" stroke="#ec4899" stroke-width="2" fill="none" />
       <circle cx="253" cy="80" r="3" fill="#0b1120" stroke="#ec4899" stroke-width="1.5" />
-      <path d="M250 80 L230 80 L230 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" />
-      <path d="M265 65 L275 65" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M265 95 L275 95 L275 125" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M250 80 L230 80 L230 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
+      <path d="M265 65 L275 65" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M265 95 L275 95 L275 125" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <text x="195" y="75" fill="#f472b6" font-size="10" font-weight="bold">MP1 (W=${d.wPmosUm.toFixed(0)}μm)</text>
 
       <!-- MP2 PMOS Symbol (Right) -->
-      <path d="M415 65 L415 95" stroke="#ec4899" stroke-width="2.8" />
-      <path d="M423 60 L423 100" stroke="#ec4899" stroke-width="2" />
+      <path d="M415 65 L415 95" stroke="#ec4899" stroke-width="2.8" fill="none" />
+      <path d="M423 60 L423 100" stroke="#ec4899" stroke-width="2" fill="none" />
       <circle cx="427" cy="80" r="3" fill="#0b1120" stroke="#ec4899" stroke-width="1.5" />
-      <path d="M430 80 L450 80 L450 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" />
-      <path d="M415 65 L405 65" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M415 95 L405 95 L405 125" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M430 80 L450 80 L450 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
+      <path d="M415 65 L405 65" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M415 95 L405 95 L405 125" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <text x="435" y="75" fill="#f472b6" font-size="10" font-weight="bold">MP2 (W=${d.wPmosUm.toFixed(0)}μm)</text>
 
       <!-- Cross-Coupled Feedback Interconnects -->
-      <path d="M230 145 L405 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" />
-      <path d="M450 145 L275 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" />
+      <path d="M230 145 L405 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
+      <path d="M450 145 L275 145" stroke="#ec4899" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
 
       <!-- Differential Tank Nodes (VOUT- / VOUT+) -->
-      <path d="M275 125 L275 195" stroke="#38bdf8" stroke-width="2.5" />
-      <path d="M405 125 L405 195" stroke="#38bdf8" stroke-width="2.5" />
+      <path d="M275 125 L275 195" stroke="#38bdf8" stroke-width="2.5" fill="none" />
+      <path d="M405 125 L405 195" stroke="#38bdf8" stroke-width="2.5" fill="none" />
 
       <!-- Tank Inductor & Varactors in Middle -->
-      <path d="M275 160 L180 160 L180 168" stroke="#38bdf8" stroke-width="2" />
-      <path d="M405 160 L500 160 L500 168" stroke="#38bdf8" stroke-width="2" />
+      <path d="M275 160 L180 160 L180 168" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M405 160 L500 160 L500 168" stroke="#38bdf8" stroke-width="2" fill="none" />
       <rect x="150" y="168" width="60" height="24" rx="4" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
       <text x="156" y="184" fill="#fbbf24" font-size="9" font-weight="bold">Ltank ${d.lTankNh.toFixed(2)}n</text>
       <rect x="470" y="168" width="60" height="24" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1.5" />
       <text x="476" y="184" fill="#c084fc" font-size="9" font-weight="bold">Cvar ${d.cTankPf.toFixed(2)}p</text>
-      <path d="M180 192 L180 200 L500 200 L500 192" stroke="#38bdf8" stroke-width="2" />
+      <path d="M180 192 L180 200 L500 200 L500 192" stroke="#38bdf8" stroke-width="2" fill="none" />
 
       <!-- NMOS Cross-Coupled Pair Bottom (MN1 & MN2) -->
       <!-- MN1 NMOS Symbol (Left) -->
-      <path d="M265 210 L265 240" stroke="#06b6d4" stroke-width="2.8" />
-      <path d="M257 205 L257 245" stroke="#06b6d4" stroke-width="2" />
-      <path d="M257 225 L230 225 L230 175 L405 175" stroke="#06b6d4" stroke-dasharray="3,3" stroke-width="1.4" />
-      <path d="M265 210 L275 210 L275 195" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M265 240 L275 240 L275 255" stroke="#cbd5e1" stroke-width="1.8" />
+      <path d="M265 210 L265 240" stroke="#06b6d4" stroke-width="2.8" fill="none" />
+      <path d="M257 205 L257 245" stroke="#06b6d4" stroke-width="2" fill="none" />
+      <path d="M257 225 L230 225 L230 175 L405 175" stroke="#06b6d4" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
+      <path d="M265 210 L275 210 L275 195" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M265 240 L275 240 L275 255" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
       <text x="195" y="235" fill="#22d3ee" font-size="10" font-weight="bold">MN1 (W=${d.wNmosUm.toFixed(0)}μm)</text>
 
       <!-- MN2 NMOS Symbol (Right) -->
-      <path d="M415 210 L415 240" stroke="#06b6d4" stroke-width="2.8" />
-      <path d="M423 205 L423 245" stroke="#06b6d4" stroke-width="2" />
-      <path d="M423 225 L450 225 L450 175 L275 175" stroke="#06b6d4" stroke-dasharray="3,3" stroke-width="1.4" />
-      <path d="M415 210 L405 210 L405 195" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M415 240 L405 240 L405 255" stroke="#cbd5e1" stroke-width="1.8" />
+      <path d="M415 210 L415 240" stroke="#06b6d4" stroke-width="2.8" fill="none" />
+      <path d="M423 205 L423 245" stroke="#06b6d4" stroke-width="2" fill="none" />
+      <path d="M423 225 L450 225 L450 175 L275 175" stroke="#06b6d4" stroke-dasharray="3,3" stroke-width="1.4" fill="none" />
+      <path d="M415 210 L405 210 L405 195" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M415 240 L405 240 L405 255" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
       <text x="435" y="235" fill="#22d3ee" font-size="10" font-weight="bold">MN2 (W=${d.wNmosUm.toFixed(0)}μm)</text>
 
       <!-- Tail Current Source to Ground -->
-      <path d="M275 255 L405 255" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M340 255 L340 270" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M275 255 L405 255" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M340 255 L340 270" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <circle cx="340" cy="282" r="11" fill="#1e293b" stroke="#10b981" stroke-width="1.8" />
-      <path d="M340 275 L340 289 M336 284 L340 289 L344 284" stroke="#34d399" stroke-width="1.5" />
+      <path d="M340 275 L340 289 M336 284 L340 289 L344 284" stroke="#34d399" stroke-width="1.5" fill="none" />
       <text x="360" y="285" fill="#34d399" font-size="10" font-weight="bold">Idc ${d.idcMa.toFixed(1)}mA</text>
-      <path d="M340 293 L340 308 M330 308 L350 308 M334 312 L346 312 M338 316 L342 316" stroke="#64748b" stroke-width="1.5" />
+      <path d="M340 293 L340 308 M330 308 L350 308 M334 312 L346 312 M338 316 L342 316" stroke="#64748b" stroke-width="1.5" fill="none" />
 
       <!-- Differential RF Output Ports -->
-      <circle cx="85" cy="160" r="4" fill="#38bdf8" /><path d="M89 160 L150 160" stroke="#38bdf8" stroke-width="2" />
+      <circle cx="85" cy="160" r="4" fill="#38bdf8" /><path d="M89 160 L150 160" stroke="#38bdf8" stroke-width="2" fill="none" />
       <text x="45" y="164" fill="#38bdf8" font-size="12" font-weight="bold">VOUT-</text>
-      <circle cx="595" cy="160" r="4" fill="#38bdf8" /><path d="M530 160 L591 160" stroke="#38bdf8" stroke-width="2" />
+      <circle cx="595" cy="160" r="4" fill="#38bdf8" /><path d="M530 160 L591 160" stroke="#38bdf8" stroke-width="2" fill="none" />
       <text x="605" y="164" fill="#38bdf8" font-size="12" font-weight="bold">VOUT+</text>
+    `;
+  } else if (d.session === "mixer") {
+    // Gilbert Mixer Schematic with Authentic Transistor Symbols (M1-M6)
+    svg.innerHTML = `
+      <rect x="5" y="5" width="670" height="330" rx="12" fill="#0b1120" stroke="#1e293b" stroke-width="1.5" />
+      <text x="25" y="28" fill="#38bdf8" font-size="13" font-weight="bold">Double-Balanced Gilbert Active Mixer (${d.freq} GHz RF -> ${d.ifFreq} GHz IF)</text>
+      <text x="470" y="28" fill="#94a3b8" font-size="11">Gc = ${d.gainDb.toFixed(1)} dB | IIP3 = ${d.iip3Dbm.toFixed(1)} dBm | SSB NF = ${d.nfSsbDb.toFixed(1)} dB</text>
+
+      <!-- VDD Rail & Resistors RL -->
+      <circle cx="340" cy="40" r="4" fill="#f59e0b" /><text x="350" y="44" fill="#fbbf24" font-size="11" font-weight="bold">VDD (${d.vdd}V)</text>
+      <path d="M340 44 L340 55 M210 55 L470 55" stroke="#cbd5e1" stroke-width="2" fill="none" />
+
+      <!-- Left Resistor RL1 -->
+      <path d="M210 55 L210 65" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <rect x="195" y="65" width="30" height="30" rx="3" fill="#1e293b" stroke="#f43f5e" stroke-width="1.8" />
+      <text x="180" y="82" fill="#fb7185" font-size="9" font-weight="bold">RL ${d.rLoadOhm}Ω</text>
+      <path d="M210 95 L210 115" stroke="#cbd5e1" stroke-width="2" fill="none" />
+
+      <!-- Right Resistor RL2 -->
+      <path d="M470 55 L470 65" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <rect x="455" y="65" width="30" height="30" rx="3" fill="#1e293b" stroke="#f43f5e" stroke-width="1.8" />
+      <text x="490" y="82" fill="#fb7185" font-size="9" font-weight="bold">RL ${d.rLoadOhm}Ω</text>
+      <path d="M470 95 L470 115" stroke="#cbd5e1" stroke-width="2" fill="none" />
+
+      <!-- IF Output Ports -->
+      <path d="M210 105 L150 105" stroke="#a855f7" stroke-width="2" fill="none" />
+      <circle cx="145" cy="105" r="4" fill="#a855f7" /><text x="110" y="109" fill="#c084fc" font-size="12" font-weight="bold">IF-</text>
+      <path d="M470 105 L530 105" stroke="#a855f7" stroke-width="2" fill="none" />
+      <circle cx="535" cy="105" r="4" fill="#a855f7" /><text x="545" y="109" fill="#c084fc" font-size="12" font-weight="bold">IF+</text>
+
+      <!-- LO Switching Quad (M3, M4, M5, M6 Transistors) -->
+      <!-- M3 Transistor -->
+      <path d="M175 125 L175 145" stroke="#38bdf8" stroke-width="2.5" fill="none" />
+      <path d="M182 120 L182 150" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M182 125 L210 125 L210 115" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M182 145 L250 145 L250 170" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M175 135 L145 135" stroke="#38bdf8" stroke-width="1.5" fill="none" />
+      <circle cx="140" cy="135" r="3" fill="#38bdf8" /><text x="105" y="138" fill="#38bdf8" font-size="9" font-weight="bold">LO+</text>
+      <text x="186" y="132" fill="#38bdf8" font-size="9" font-weight="bold">M3</text>
+
+      <!-- M4 Transistor -->
+      <path d="M305 125 L305 145" stroke="#38bdf8" stroke-width="2.5" fill="none" />
+      <path d="M298 120 L298 150" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M298 125 L470 125 L470 115" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M298 145 L250 145" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M305 135 L335 135" stroke="#38bdf8" stroke-width="1.5" fill="none" />
+      <circle cx="340" cy="135" r="3" fill="#38bdf8" /><text x="345" y="138" fill="#38bdf8" font-size="9" font-weight="bold">LO-</text>
+      <text x="278" y="132" fill="#38bdf8" font-size="9" font-weight="bold">M4</text>
+
+      <!-- M5 Transistor -->
+      <path d="M375 125 L375 145" stroke="#38bdf8" stroke-width="2.5" fill="none" />
+      <path d="M382 120 L382 150" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M382 125 L210 125" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M382 145 L430 145 L430 170" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M375 135 L345 135" stroke="#38bdf8" stroke-width="1.5" fill="none" />
+      <text x="386" y="132" fill="#38bdf8" font-size="9" font-weight="bold">M5</text>
+
+      <!-- M6 Transistor -->
+      <path d="M505 125 L505 145" stroke="#38bdf8" stroke-width="2.5" fill="none" />
+      <path d="M498 120 L498 150" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M498 125 L470 125" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M498 145 L430 145" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M505 135 L535 135" stroke="#38bdf8" stroke-width="1.5" fill="none" />
+      <circle cx="540" cy="135" r="3" fill="#38bdf8" /><text x="545" y="138" fill="#38bdf8" font-size="9" font-weight="bold">LO+</text>
+      <text x="478" y="132" fill="#38bdf8" font-size="9" font-weight="bold">M6</text>
+
+      <!-- Interconnect nodes -->
+      <circle cx="250" cy="145" r="3" fill="#38bdf8" />
+      <circle cx="430" cy="145" r="3" fill="#38bdf8" />
+      <text x="215" y="160" fill="#64748b" font-size="9">Node_P</text>
+      <text x="435" y="160" fill="#64748b" font-size="9">Node_N</text>
+
+      <!-- RF Input Differential Transistors (M1 & M2) -->
+      <!-- M1 Transistor -->
+      <path d="M225 195 L225 225" stroke="#10b981" stroke-width="2.8" fill="none" />
+      <path d="M233 190 L233 230" stroke="#10b981" stroke-width="2" fill="none" />
+      <path d="M233 195 L250 195 L250 170" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M233 225 L250 225 L250 250" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M225 210 L170 210" stroke="#10b981" stroke-width="2" fill="none" />
+      <circle cx="165" cy="210" r="4" fill="#10b981" /><text x="130" y="214" fill="#34d399" font-size="12" font-weight="bold">RF+</text>
+      <text x="240" y="212" fill="#34d399" font-size="10" font-weight="bold">M1 (W=${d.wRfUm}μm)</text>
+
+      <!-- M2 Transistor -->
+      <path d="M455 195 L455 225" stroke="#10b981" stroke-width="2.8" fill="none" />
+      <path d="M447 190 L447 230" stroke="#10b981" stroke-width="2" fill="none" />
+      <path d="M447 195 L430 195 L430 170" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M447 225 L430 225 L430 250" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M455 210 L510 210" stroke="#10b981" stroke-width="2" fill="none" />
+      <circle cx="515" cy="210" r="4" fill="#10b981" /><text x="525" y="214" fill="#34d399" font-size="12" font-weight="bold">RF-</text>
+      <text x="360" y="212" fill="#34d399" font-size="10" font-weight="bold">M2 (W=${d.wRfUm}μm)</text>
+
+      <!-- Common Tail Node & Current Source -->
+      <path d="M250 250 L430 250" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M340 250 L340 268" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <circle cx="340" cy="282" r="12" fill="#1e293b" stroke="#10b981" stroke-width="1.8" />
+      <path d="M340 274 L340 290 M336 284 L340 290 L344 284" stroke="#34d399" stroke-width="1.5" fill="none" />
+      <text x="360" y="286" fill="#34d399" font-size="10" font-weight="bold">Idc ${d.idcMa.toFixed(1)}mA</text>
+      <path d="M340 294 L340 310 M330 310 L350 310 M334 314 L346 314 M338 318 L342 318" stroke="#64748b" stroke-width="1.5" fill="none" />
     `;
   } else if (d.session === "switch") {
     // SPDT Switch Schematic with Authentic Transistor Symbols (Series Stacked FETs + Shunt FETs)
@@ -1984,99 +2090,99 @@ function drawSchematicSvg() {
 
       <!-- Antenna Port (ANT) Middle Left -->
       <circle cx="55" cy="165" r="5" fill="#f59e0b" /><text x="15" y="169" fill="#fbbf24" font-size="12" font-weight="bold">ANT</text>
-      <path d="M60 165 L140 165" stroke="#f59e0b" stroke-width="2.5" />
+      <path d="M60 165 L140 165" stroke="#f59e0b" stroke-width="2.5" fill="none" />
 
       <!-- Branch Split to TX (Top) and RX (Bottom) -->
-      <path d="M140 165 L140 95 L190 95" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M140 165 L140 235 L190 235" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M140 165 L140 95 L190 95" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M140 165 L140 235 L190 235" stroke="#cbd5e1" stroke-width="2" fill="none" />
 
       <!-- TX Branch: Series Stacked FETs (M_SER1, M_SER2) -->
       <!-- M_SER1 Symbol (Top Series 1) -->
-      <path d="M205 85 L205 105" stroke="#10b981" stroke-width="2.8" />
-      <path d="M198 80 L198 110" stroke="#10b981" stroke-width="2" />
-      <path d="M190 95 L198 95" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M205 85 L215 85 L215 95" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M205 105 L215 105 L215 95" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M215 95 L245 95" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M205 85 L205 105" stroke="#10b981" stroke-width="2.8" fill="none" />
+      <path d="M198 80 L198 110" stroke="#10b981" stroke-width="2" fill="none" />
+      <path d="M190 95 L198 95" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M205 85 L215 85 L215 95" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M205 105 L215 105 L215 95" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M215 95 L245 95" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <!-- Gate Resistor Rgate1 -->
-      <path d="M198 85 L180 70" stroke="#10b981" stroke-width="1.4" />
+      <path d="M198 85 L180 70" stroke="#10b981" stroke-width="1.4" fill="none" />
       <rect x="160" y="62" width="20" height="12" rx="2" fill="#1e293b" stroke="#10b981" stroke-width="1" />
       <text x="162" y="71" fill="#34d399" font-size="8">Rg</text>
 
       <!-- M_SER2 Symbol (Top Series 2) -->
-      <path d="M260 85 L260 105" stroke="#10b981" stroke-width="2.8" />
-      <path d="M253 80 L253 110" stroke="#10b981" stroke-width="2" />
-      <path d="M245 95 L253 95" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M260 85 L270 85 L270 95" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M260 105 L270 105 L270 95" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M270 95 L370 95" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M260 85 L260 105" stroke="#10b981" stroke-width="2.8" fill="none" />
+      <path d="M253 80 L253 110" stroke="#10b981" stroke-width="2" fill="none" />
+      <path d="M245 95 L253 95" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M260 85 L270 85 L270 95" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M260 105 L270 105 L270 95" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M270 95 L370 95" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <!-- Gate Resistor Rgate2 -->
-      <path d="M253 85 L240 70" stroke="#10b981" stroke-width="1.4" />
+      <path d="M253 85 L240 70" stroke="#10b981" stroke-width="1.4" fill="none" />
       <rect x="220" y="62" width="20" height="12" rx="2" fill="#1e293b" stroke="#10b981" stroke-width="1" />
       <text x="222" y="71" fill="#34d399" font-size="8">Rg</text>
       <text x="210" y="125" fill="#34d399" font-size="10" font-weight="bold">TX M_SER (N=${d.numStack}, W=${d.wSerUm.toFixed(0)}μm)</text>
 
       <!-- TX Shunt Transistor (M_SHUNT1) to GND -->
-      <path d="M370 95 L370 120" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M360 125 L380 125" stroke="#10b981" stroke-width="2.8" />
-      <path d="M355 133 L385 133" stroke="#10b981" stroke-width="2" />
-      <path d="M370 120 L370 125" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M360 125 L350 125 L350 145 L370 145" stroke="#cbd5e1" stroke-width="1.5" />
-      <path d="M380 125 L390 125 L390 145 L370 145" stroke="#cbd5e1" stroke-width="1.5" />
+      <path d="M370 95 L370 120" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M360 125 L380 125" stroke="#10b981" stroke-width="2.8" fill="none" />
+      <path d="M355 133 L385 133" stroke="#10b981" stroke-width="2" fill="none" />
+      <path d="M370 120 L370 125" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M360 125 L350 125 L350 145 L370 145" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
+      <path d="M380 125 L390 125 L390 145 L370 145" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
       <!-- Shunt Gate Control -->
-      <path d="M370 133 L370 142 L420 142" stroke="#10b981" stroke-width="1.4" />
+      <path d="M370 133 L370 142 L420 142" stroke="#10b981" stroke-width="1.4" fill="none" />
       <text x="425" y="145" fill="#34d399" font-size="9">Vctrl_bar</text>
       <!-- Shunt Ground -->
-      <path d="M370 145 L370 160 M362 160 L378 160 M365 163 L375 163 M368 166 L372 166" stroke="#64748b" stroke-width="1.5" />
+      <path d="M370 145 L370 160 M362 160 L378 160 M365 163 L375 163 M368 166 L372 166" stroke="#64748b" stroke-width="1.5" fill="none" />
       <text x="285" y="142" fill="#34d399" font-size="9" font-weight="bold">M_SHUNT (W=${d.wShuntUm.toFixed(0)}μm)</text>
 
       <!-- TX Port Output -->
-      <path d="M370 95 L540 95" stroke="#10b981" stroke-width="2.5" />
+      <path d="M370 95 L540 95" stroke="#10b981" stroke-width="2.5" fill="none" />
       <circle cx="545" cy="95" r="4" fill="#10b981" /><text x="555" y="99" fill="#34d399" font-size="12" font-weight="bold">TX Port</text>
       <text x="555" y="113" fill="#94a3b8" font-size="10">P1dB: ${d.targetP1db} dBm</text>
 
       <!-- RX Branch: Series Stacked FETs (M_SER_RX1, M_SER_RX2) -->
       <!-- M_SER_RX1 Symbol (Bottom Series 1) -->
-      <path d="M205 225 L205 245" stroke="#38bdf8" stroke-width="2.8" />
-      <path d="M198 220 L198 250" stroke="#38bdf8" stroke-width="2" />
-      <path d="M190 235 L198 235" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M205 225 L215 225 L215 235" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M205 245 L215 245 L215 235" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M215 235 L245 235" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M205 225 L205 245" stroke="#38bdf8" stroke-width="2.8" fill="none" />
+      <path d="M198 220 L198 250" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M190 235 L198 235" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M205 225 L215 225 L215 235" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M205 245 L215 245 L215 235" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M215 235 L245 235" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <!-- Gate Resistor -->
-      <path d="M198 245 L180 260" stroke="#38bdf8" stroke-width="1.4" />
+      <path d="M198 245 L180 260" stroke="#38bdf8" stroke-width="1.4" fill="none" />
       <rect x="160" y="255" width="20" height="12" rx="2" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
       <text x="162" y="264" fill="#38bdf8" font-size="8">Rg</text>
 
       <!-- M_SER_RX2 Symbol (Bottom Series 2) -->
-      <path d="M260 225 L260 245" stroke="#38bdf8" stroke-width="2.8" />
-      <path d="M253 220 L253 250" stroke="#38bdf8" stroke-width="2" />
-      <path d="M245 235 L253 235" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M260 225 L270 225 L270 235" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M260 245 L270 245 L270 235" stroke="#cbd5e1" stroke-width="1.8" />
-      <path d="M270 235 L370 235" stroke="#cbd5e1" stroke-width="2" />
+      <path d="M260 225 L260 245" stroke="#38bdf8" stroke-width="2.8" fill="none" />
+      <path d="M253 220 L253 250" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M245 235 L253 235" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M260 225 L270 225 L270 235" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M260 245 L270 245 L270 235" stroke="#cbd5e1" stroke-width="1.8" fill="none" />
+      <path d="M270 235 L370 235" stroke="#cbd5e1" stroke-width="2" fill="none" />
       <!-- Gate Resistor -->
-      <path d="M253 245 L240 260" stroke="#38bdf8" stroke-width="1.4" />
+      <path d="M253 245 L240 260" stroke="#38bdf8" stroke-width="1.4" fill="none" />
       <rect x="220" y="255" width="20" height="12" rx="2" fill="#1e293b" stroke="#38bdf8" stroke-width="1" />
       <text x="222" y="264" fill="#38bdf8" font-size="8">Rg</text>
       <text x="210" y="215" fill="#38bdf8" font-size="10" font-weight="bold">RX M_SER (N=${d.numStack}, W=${d.wSerUm.toFixed(0)}μm)</text>
 
       <!-- RX Shunt Transistor (M_SHUNT_RX) to GND -->
-      <path d="M370 235 L370 260" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M360 265 L380 265" stroke="#38bdf8" stroke-width="2.8" />
-      <path d="M355 273 L385 273" stroke="#38bdf8" stroke-width="2" />
-      <path d="M370 260 L370 265" stroke="#cbd5e1" stroke-width="2" />
-      <path d="M360 265 L350 265 L350 285 L370 285" stroke="#cbd5e1" stroke-width="1.5" />
-      <path d="M380 265 L390 265 L390 285 L370 285" stroke="#cbd5e1" stroke-width="1.5" />
+      <path d="M370 235 L370 260" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M360 265 L380 265" stroke="#38bdf8" stroke-width="2.8" fill="none" />
+      <path d="M355 273 L385 273" stroke="#38bdf8" stroke-width="2" fill="none" />
+      <path d="M370 260 L370 265" stroke="#cbd5e1" stroke-width="2" fill="none" />
+      <path d="M360 265 L350 265 L350 285 L370 285" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
+      <path d="M380 265 L390 265 L390 285 L370 285" stroke="#cbd5e1" stroke-width="1.5" fill="none" />
       <!-- Shunt Gate Control -->
-      <path d="M370 273 L370 282 L420 282" stroke="#38bdf8" stroke-width="1.4" />
+      <path d="M370 273 L370 282 L420 282" stroke="#38bdf8" stroke-width="1.4" fill="none" />
       <text x="425" y="285" fill="#38bdf8" font-size="9">Vctrl</text>
       <!-- Shunt Ground -->
-      <path d="M370 285 L370 300 M362 300 L378 300 M365 303 L375 303 M368 306 L372 306" stroke="#64748b" stroke-width="1.5" />
+      <path d="M370 285 L370 300 M362 300 L378 300 M365 303 L375 303 M368 306 L372 306" stroke="#64748b" stroke-width="1.5" fill="none" />
       <text x="285" y="282" fill="#38bdf8" font-size="9" font-weight="bold">M_SHUNT (W=${d.wShuntUm.toFixed(0)}μm)</text>
 
       <!-- RX Port Output -->
-      <path d="M370 235 L540 235" stroke="#38bdf8" stroke-width="2.5" />
+      <path d="M370 235 L540 235" stroke="#38bdf8" stroke-width="2.5" fill="none" />
       <circle cx="545" cy="235" r="4" fill="#38bdf8" /><text x="555" y="239" fill="#38bdf8" font-size="12" font-weight="bold">RX Port</text>
       <text x="555" y="253" fill="#94a3b8" font-size="10">IL: ${d.ilDb.toFixed(2)} dB</text>
     `;
@@ -2667,21 +2773,39 @@ function initApp() {
     tab5: document.getElementById("tabContent5")
   };
 
+  function switchToTab(target) {
+    state.activeTab = target;
+    navTabs.forEach(t => {
+      if (t.getAttribute("data-tab") === target) {
+        t.className = "nav-tab px-4 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
+      } else {
+        t.className = "nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap";
+      }
+    });
+    Object.keys(tabContents).forEach(k => {
+      if (k === target) tabContents[k]?.classList.remove("hidden");
+      else tabContents[k]?.classList.add("hidden");
+    });
+    if (target === "tab1") drawSmithChart();
+    else if (target === "tab2") drawWaveforms();
+    else if (target === "tab3") drawSchematicSvg();
+    else if (target === "tab5") {
+      tabContents.tab5?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   navTabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      const target = tab.getAttribute("data-tab");
-      state.activeTab = target;
-      navTabs.forEach(t => t.className = "nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap");
-      tab.className = "nav-tab px-4 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap";
-      Object.keys(tabContents).forEach(k => {
-        if (k === target) tabContents[k]?.classList.remove("hidden");
-        else tabContents[k]?.classList.add("hidden");
-      });
-      if (target === "tab1") drawSmithChart();
-      else if (target === "tab2") drawWaveforms();
-      else if (target === "tab3") drawSchematicSvg();
+      switchToTab(tab.getAttribute("data-tab"));
     });
   });
+
+  // Top Bar Glossary Buttons (Header & Session bar)
+  const topGlossaryBtn = document.getElementById("topGlossaryBtn");
+  topGlossaryBtn?.addEventListener("click", () => switchToTab("tab5"));
+
+  const sessionGlossaryBtn = document.getElementById("sessionGlossaryBtn");
+  sessionGlossaryBtn?.addEventListener("click", () => switchToTab("tab5"));
 
   // Theme Toggle
   document.getElementById("themeToggleBtn").addEventListener("click", () => {
