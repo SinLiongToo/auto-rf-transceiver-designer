@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoRF: Automated CMOS RF PA & LNA Design Suite</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --accent-glow: rgba(56, 189, 248, 0.2);
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    .card-panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+    }
+    .custom-range {
+      accent-color: var(--accent);
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-3 md:p-6">
+  <div class="max-w-7xl mx-auto space-y-5">
+
+    <!-- Header & Control Bar -->
+    <header class="card-panel rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div id="headerLogo" class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+          RF
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight" id="mainHeaderTitle" data-i18n="appTitle">AutoRF 射頻前端積體電路自動化設計系統</h1>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">v1.2.0</span>
+          </div>
+          <p class="text-xs md:text-sm text-slate-400" id="mainHeaderSubtitle" data-i18n="appSubtitle">整合式 CMOS 功率放大器 (PA) 與低雜訊放大器 (LNA) 端到端合成與模擬引擎</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Preset Dropdown -->
+        <select id="presetSelect" class="bg-slate-800 text-slate-200 text-xs md:text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-cyan-500">
+          <option value="wifi24" data-i18n="presetWifi24">⚡ 2.4 GHz Wi-Fi / BLE (65nm)</option>
+          <option value="wifi5" data-i18n="presetWifi5">⚡ 5.2 GHz Wi-Fi 6E / Sub-6G (40nm)</option>
+          <option value="mmwave28" data-i18n="presetMmwave28">⚡ 28 GHz 5G FR2 mmWave (28nm)</option>
+          <option value="mmwave39" data-i18n="presetMmwave39">⚡ 39 GHz 5G 高頻段與衛星通訊 (28nm)</option>
+          <option value="vband60" data-i18n="presetVband60">⚡ 60 GHz WiGig / 無線高畫質傳輸 (28nm)</option>
+          <option value="eband73" data-i18n="presetEband73">🌐 73 GHz 5G/6G E-Band Backhaul & Telecom (28nm)</option>
+          <option value="radar77" data-i18n="presetRadar77">🚗 77 GHz 車用 FMCW 雷達 (72-79 GHz, 28nm)</option>
+          <option value="imaging77" data-i18n="presetImaging77">🔬 77 GHz 工業微米級物位感測與成像 (28nm)</option>
+          <option value="subghz" data-i18n="presetSubGhz">⚡ Sub-1 GHz IoT 長距離物聯網 (180nm)</option>
+        </select>
+
+        <!-- Language Toggle -->
+        <button id="langToggleBtn" class="px-3 py-2 text-xs font-semibold rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors">
+          🌐 中文 / EN
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="px-3 py-2 text-sm rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors" title="Toggle Theme">
+          🌙
+        </button>
+      </div>
+    </header>
+
+    <!-- Top Session Switcher Tabs (PA vs LNA) -->
+    <div class="card-panel rounded-2xl p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <span class="text-xs font-bold text-slate-400 px-2 uppercase tracking-wider" data-i18n="circuitSession">設計模組</span>
+        <button id="sessionPaBtn" class="session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-sm flex items-center justify-center gap-2 transition-all">
+          <span>🚀</span> <span data-i18n="sessionPa">功率放大器 (PA Session)</span>
+        </button>
+        <button id="sessionLnaBtn" class="session-btn flex-1 sm:flex-initial px-6 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 border border-transparent flex items-center justify-center gap-2 transition-all">
+          <span>📡</span> <span data-i18n="sessionLna">低雜訊放大器 (LNA Session)</span>
+        </button>
+      </div>
+      <div class="text-xs text-slate-400 font-mono hidden md:flex items-center gap-2 pr-3">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="sessionStatusBadge">CURRENT: CMOS POWER AMPLIFIER (PA)</span>
+      </div>
+    </div>
+
+    <!-- Top Summary Metrics Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="metricsGrid">
+      <!-- Card 1 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel1" data-i18n="fomPout">輸出功率 Pout</span>
+        <div class="text-xl md:text-2xl font-bold text-cyan-400 mt-1" id="fomVal1">24.0 dBm</div>
+        <span class="text-xs text-slate-400" id="fomSub1">251.2 mW</span>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel2" data-i18n="fomPae">功率附加效率 PAE</span>
+        <div class="text-xl md:text-2xl font-bold text-emerald-400 mt-1" id="fomVal2">51.5 %</div>
+        <span class="text-xs text-slate-400" id="fomSub2">汲極效率: 54.5%</span>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel3" data-i18n="fomGain">功率增益 Gain (S21)</span>
+        <div class="text-xl md:text-2xl font-bold text-blue-400 mt-1" id="fomVal3">18.5 dB</div>
+        <span class="text-xs text-slate-400" id="fomSub3">逆向隔離: -50 dB</span>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel4" data-i18n="fomRopt">最佳阻抗 Ropt</span>
+        <div class="text-xl md:text-2xl font-bold text-amber-400 mt-1" id="fomVal4">15.8 Ω</div>
+        <span class="text-xs text-slate-400" id="fomSub4">差動 Ropt: 31.7 Ω</span>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel5" data-i18n="fomWtot">總電晶體寬度 Wtot</span>
+        <div class="text-xl md:text-2xl font-bold text-purple-400 mt-1" id="fomVal5">160 μm</div>
+        <span class="text-xs text-slate-400" id="fomSub5">80 指狀閘極 (NF)</span>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="card-panel rounded-xl p-4 shadow flex flex-col justify-between">
+        <span class="text-xs text-slate-400 font-medium" id="fomLabel6" data-i18n="fomStability">穩定度 Rollett K</span>
+        <div class="text-xl md:text-2xl font-bold text-green-400 mt-1" id="fomVal6">1.82</div>
+        <span class="text-xs text-green-400 font-semibold" id="fomSub6" data-i18n="stabUnconditional">✓ 絕對無條件穩定</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace Grid: Controls + Visualizations -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Design Parameter Controls (4 Cols) -->
+      <div class="lg:col-span-4 space-y-4">
+        <div class="card-panel rounded-2xl p-5 shadow-lg space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <h2 class="text-base font-bold flex items-center gap-2" id="specPanelTitle" data-i18n="specTitle">
+              <span>⚙️</span> 設計規格與製程設定
+            </h2>
+            <button id="resetBtn" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium" data-i18n="btnReset">重置</button>
+          </div>
+
+          <!-- Frequency Slider (Shared) -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblFreq">工作中心頻率 (GHz)</label>
+              <span class="text-cyan-400 font-bold" id="valFreq">2.4 GHz</span>
+            </div>
+            <input type="range" id="inputFreq" min="0.8" max="90.0" step="0.5" value="2.4" class="custom-range w-full">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>0.8 GHz (IoT)</span>
+              <span>2.4 / 5.2G</span>
+              <span>28 GHz (5G)</span>
+              <span>77 GHz (Radar)</span>
+            </div>
+          </div>
+
+          <!-- PA-Specific Parameter: Target Pout -->
+          <div id="groupPaPout" class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblPout">目標輸出功率 Pout (dBm)</label>
+              <span class="text-cyan-400 font-bold" id="valPout">24.0 dBm (250 mW)</span>
+            </div>
+            <input type="range" id="inputPout" min="10" max="33" step="0.5" value="24" class="custom-range w-full">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>10 dBm (10mW)</span>
+              <span>20 dBm (100mW)</span>
+              <span>27 dBm (500mW)</span>
+              <span>33 dBm (2W)</span>
+            </div>
+          </div>
+
+          <!-- LNA-Specific Parameter: Target Gain -->
+          <div id="groupLnaGain" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblLnaGain">目標功率增益 Gain (dB)</label>
+              <span class="text-cyan-400 font-bold" id="valLnaGain">18.0 dB</span>
+            </div>
+            <input type="range" id="inputLnaGain" min="10" max="28" step="0.5" value="18" class="custom-range w-full">
+          </div>
+
+          <!-- LNA-Specific Parameter: Target Bias Current Idc -->
+          <div id="groupLnaIdc" class="space-y-1.5 hidden">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblLnaIdc">直流偏置電流 Idc (mA)</label>
+              <span class="text-cyan-400 font-bold" id="valLnaIdc">6.0 mA</span>
+            </div>
+            <input type="range" id="inputLnaIdc" min="2" max="25" step="0.5" value="6" class="custom-range w-full">
+          </div>
+
+          <!-- Process Node Select (Shared) -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-medium text-slate-300" data-i18n="lblProcess">CMOS 製程技術節點</label>
+            <select id="selectNode" class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg p-2.5 border border-slate-700 focus:outline-none focus:border-cyan-500">
+              <option value="65nm_rf">TSMC 65nm RF CMOS (Vdd=1.2V, fT=160GHz)</option>
+              <option value="40nm_rf">TSMC 40nm RF LP (Vdd=1.1V, fT=190GHz)</option>
+              <option value="28nm_hpc">TSMC 28nm HPC+ RF (Vdd=0.9V, fT=240GHz)</option>
+              <option value="180nm_rf">TSMC 0.18μm RF CMOS (Vdd=1.8V, fT=55GHz)</option>
+            </select>
+          </div>
+
+          <!-- VDD Slider (Shared) -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblVdd">供電電壓 Vdd (V)</label>
+              <span class="text-cyan-400 font-bold" id="valVdd">1.2 V</span>
+            </div>
+            <input type="range" id="inputVdd" min="0.8" max="3.3" step="0.05" value="1.2" class="custom-range w-full">
+          </div>
+
+          <!-- PA-Specific Parameter: Amplifier Class -->
+          <div id="groupPaClass" class="space-y-1.5">
+            <label class="text-xs font-medium text-slate-300" data-i18n="lblClass">工作模式放大器類別 (Operation Class)</label>
+            <div class="grid grid-cols-5 gap-1 text-xs">
+              <button class="class-btn p-2 rounded border border-cyan-500 bg-cyan-500/20 text-cyan-400 font-bold text-center" data-class="AB">AB</button>
+              <button class="class-btn p-2 rounded border border-slate-700 bg-slate-800 text-slate-400 text-center" data-class="A">A</button>
+              <button class="class-btn p-2 rounded border border-slate-700 bg-slate-800 text-slate-400 text-center" data-class="B">B</button>
+              <button class="class-btn p-2 rounded border border-slate-700 bg-slate-800 text-slate-400 text-center" data-class="E">E</button>
+              <button class="class-btn p-2 rounded border border-slate-700 bg-slate-800 text-slate-400 text-center" data-class="F">F</button>
+            </div>
+          </div>
+
+          <!-- PA-Specific Parameter: Circuit Topology -->
+          <div id="groupPaTopology" class="space-y-1.5">
+            <label class="text-xs font-medium text-slate-300" data-i18n="lblTopology">電路架構拓樸</label>
+            <select id="selectTopology" class="w-full bg-slate-800 text-slate-200 text-xs rounded-lg p-2.5 border border-slate-700 focus:outline-none focus:border-cyan-500">
+              <option value="diff_cascode" data-i18n="topDiffCascode">差動疊接 (Differential Cascode) - 推薦</option>
+              <option value="diff_cs" data-i18n="topDiffCs">差動共源極 (Differential CS)</option>
+              <option value="single_cs" data-i18n="topSingleCs">單端共源極 (Single-Ended CS)</option>
+            </select>
+          </div>
+
+          <!-- Inductor Quality Factor Q (Shared) -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <label class="font-medium text-slate-300" data-i18n="lblIndQ">晶片上電感品質因子 Inductor Q</label>
+              <span class="text-cyan-400 font-bold" id="valIndQ">15</span>
+            </div>
+            <input type="range" id="inputIndQ" min="8" max="30" step="1" value="15" class="custom-range w-full">
+          </div>
+
+          <!-- PA-Specific Parameter: Cross Neutralization Toggle -->
+          <div id="groupPaNeu" class="pt-2 border-t border-slate-700/60 flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="text-xs font-medium text-slate-200" data-i18n="lblNeu">差動交叉中和電容 (Cneu)</span>
+              <span class="text-[11px] text-slate-400" data-i18n="descNeu">抵消 Cgd 彌勒效應，確保 k > 1 絕對穩定</span>
+            </div>
+            <input type="checkbox" id="checkNeu" checked class="w-4 h-4 text-cyan-500 rounded bg-slate-800 border-slate-700 focus:ring-0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Visualizations (8 Cols) -->
+      <div class="lg:col-span-8 space-y-4">
+
+        <!-- Tabs Navigation -->
+        <div class="card-panel rounded-2xl p-2 flex gap-1 shadow-md text-xs overflow-x-auto">
+          <button class="nav-tab px-4 py-2 rounded-xl font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 whitespace-nowrap" id="tabBtn1" data-tab="tab1" data-i18n="tabLoadpull">
+            🎯 史密斯圖與等高線 (Smith Chart)
+          </button>
+          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn2" data-tab="tab2" data-i18n="tabWaveforms">
+            🌊 暫態響應與頻寬 (Response)
+          </button>
+          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn3" data-tab="tab3" data-i18n="tabSchematic">
+            📐 晶片電路圖與架構 (Schematic)
+          </button>
+          <button class="nav-tab px-4 py-2 rounded-xl font-medium text-slate-400 hover:text-slate-200 whitespace-nowrap" id="tabBtn4" data-tab="tab4" data-i18n="tabSpice">
+            💻 SPICE 網表與導出 (Export)
+          </button>
+        </div>
+
+        <!-- Tab 1: Smith Chart (Load-Pull for PA / Noise Circles for LNA) -->
+        <div id="tabContent1" class="card-panel rounded-2xl p-5 shadow-lg space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200" id="smithCardTitle" data-i18n="smithTitle">複數負載牽引等功率等高線 (Smith Chart Load-Pull Contours)</h3>
+              <p class="text-xs text-slate-400" id="smithCardSubtitle" data-i18n="smithSubtitle">展示輸出端最佳阻抗 ZL,opt 與 -0.5dB, -1.0dB, -2.0dB 功率失配等高線</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs" id="smithLegendRow">
+              <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400"></span> Opt</span>
+              <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400"></span> Contour 1</span>
+              <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Contour 2</span>
+              <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Contour 3</span>
+            </div>
+          </div>
+
+          <div class="flex justify-center items-center py-2 bg-slate-900/40 rounded-xl border border-slate-800">
+            <canvas id="smithCanvas" width="460" height="460" class="max-w-full"></canvas>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs" id="smithStatsGrid">
+            <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-slate-400 block" id="smithSubLabel1" data-i18n="smithOptZ">最佳阻抗 Zopt</span>
+              <span class="font-bold text-cyan-300" id="smithStat1">15.8 + j4.2 Ω</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-slate-400 block" id="smithSubLabel2" data-i18n="smithOptGamma">最佳反射係數 Γopt</span>
+              <span class="font-bold text-cyan-300" id="smithStat2">0.52 ∠ 170°</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-slate-400 block" id="smithSubLabel3" data-i18n="smithPbo">6-dB 功率回退效率</span>
+              <span class="font-bold text-emerald-300" id="smithStat3">27.6 % PAE</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+              <span class="text-slate-400 block" id="smithSubLabel4" data-i18n="smith1dB">1-dB 壓縮點 P1dB</span>
+              <span class="font-bold text-amber-300" id="smithStat4">22.8 dBm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Waveforms / Frequency Response -->
+        <div id="tabContent2" class="card-panel rounded-2xl p-5 shadow-lg space-y-4 hidden">
+          <div>
+            <h3 class="text-sm font-bold text-slate-200" id="waveCardTitle" data-i18n="waveTitle">RF 暫態時域波形與動態負載線 (Vds(t) & Ids(t))</h3>
+            <p class="text-xs text-slate-400" id="waveCardSubtitle" data-i18n="waveSubtitle">根據導通角 (Conduction Angle) 與膝電壓 (Knee Voltage) 即時解析之大型訊號波形</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+              <span class="text-xs font-semibold text-slate-300 block mb-2" id="canvas1Title" data-i18n="waveTime">時域時鐘波形 (2 個 RF 週期)</span>
+              <canvas id="timeWaveCanvas" width="400" height="260" class="w-full"></canvas>
+            </div>
+            <div class="p-3 bg-slate-900/40 rounded-xl border border-slate-800">
+              <span class="text-xs font-semibold text-slate-300 block mb-2" id="canvas2Title" data-i18n="waveLoadline">動態 I-V 負載線軌跡 (Ids vs Vds)</span>
+              <canvas id="loadlineCanvas" width="400" height="260" class="w-full"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Schematic & BOM -->
+        <div id="tabContent3" class="card-panel rounded-2xl p-5 shadow-lg space-y-4 hidden">
+          <div>
+            <h3 class="text-sm font-bold text-slate-200" id="schCardTitle" data-i18n="schTitle">差動疊接中和型 CMOS PA 拓樸電路圖</h3>
+            <p class="text-xs text-slate-400" id="schCardSubtitle" data-i18n="schSubtitle">內含交叉中和電容 (Cneu)、輸入匹配 (IMN) 與晶片內建變壓器 Balun 輸出匹配</p>
+          </div>
+
+          <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 overflow-x-auto flex justify-center">
+            <svg id="schematicSvg" width="680" height="340" viewBox="0 0 680 340" class="text-slate-300 select-none">
+              <!-- SVG Schematic Content rendered by JS -->
+            </svg>
+          </div>
+
+          <!-- Component Bill of Materials Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-800/80 text-slate-400 border-b border-slate-700">
+                <tr>
+                  <th class="p-2.5" data-i18n="bomComp">元件名稱</th>
+                  <th class="p-2.5" data-i18n="bomType">類型</th>
+                  <th class="p-2.5" data-i18n="bomParam">尺寸 / 參數</th>
+                  <th class="p-2.5" data-i18n="bomDesc">設計作用說明</th>
+                </tr>
+              </thead>
+              <tbody id="bomTableBody" class="divide-y divide-slate-800">
+                <!-- Dynamically generated BOM rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 4: SPICE Deck & Export -->
+        <div id="tabContent4" class="card-panel rounded-2xl p-5 shadow-lg space-y-4 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-200" id="spiceCardTitle" data-i18n="spiceTitle">自動生成之 SPICE / Spectre 模擬電路網表</h3>
+              <p class="text-xs text-slate-400" id="spiceCardSubtitle" data-i18n="spiceSubtitle">包含差動驅動測試台、非線性電晶體卡、變壓器 Balun 與暫態量測敘述</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="copySpiceBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-400 border border-slate-700" data-i18n="btnCopy">
+                📋 複製網表
+              </button>
+              <button id="downloadSpiceBtn" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white shadow" data-i18n="btnDownloadSp">
+                ⬇️ 下載 .sp
+              </button>
+              <button id="downloadS2pBtn" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow" data-i18n="btnDownloadS2p">
+                ⬇️ 下載 .s2p
+              </button>
+              <button id="downloadJsonBtn" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white shadow" data-i18n="btnDownloadJson">
+                ⬇️ 下載 .json
+              </button>
+            </div>
+          </div>
+
+          <pre id="spiceCodeBlock" class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono overflow-x-auto max-h-[420px] select-all"></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Technical Architecture Info Footer -->
+    <footer class="card-panel rounded-2xl p-5 shadow-xl text-xs space-y-3">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-2 border-b border-slate-800 pb-3">
+        <span class="font-bold text-slate-300" id="footerEngineTitle" data-i18n="footerEngine">AutoRF 核心射頻積體電路演算法則與工程規範</span>
+        <span class="text-slate-400">Cripps Loadline · Shaeffer-Lee LNA Noise Optimization · Inductive Degeneration · Rollett K Stability</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-slate-400">
+        <div>
+          <strong class="text-slate-200 block mb-1" id="footCol1Title" data-i18n="footCol1Title">1. 功率放大器 (PA): 負載線與最大功率</strong>
+          <p id="footCol1Desc" data-i18n="footCol1Desc">依據 Cripps 準則合成汲極端最佳負載電阻 Ropt，由輸出變壓器 Balun 吸收 Cds 寄生電容並完成 50Ω 單端匹配。</p>
+        </div>
+        <div>
+          <strong class="text-slate-200 block mb-1" id="footCol2Title" data-i18n="footCol2Title">2. 低雜訊放大器 (LNA): 同步雜訊輸入匹配</strong>
+          <p id="footCol2Desc" data-i18n="footCol2Desc">源極退化電感 Ls 產生無熱雜訊之等效 50Ω 實數阻抗，搭配閘極微調電感 Lg 實現最低 NF 與極佳 S11。</p>
+        </div>
+        <div>
+          <strong class="text-slate-200 block mb-1" id="footCol3Title" data-i18n="footCol3Title">3. 壓控振盪器 (VCO): 負電導與 Leeson 雜訊</strong>
+          <p id="footCol3Desc" data-i18n="footCol3Desc">互補交叉耦合對 (NMOS+PMOS) 提供負電導抵消 LC 諧振腔損耗，依據 Barkhausen 準則提供 3x 啟振裕度與 Leeson 相位雜訊最佳化。</p>
+        </div>
+        <div>
+          <strong class="text-slate-200 block mb-1" id="footCol4Title" data-i18n="footCol4Title">4. 混頻器 (Mixer): 雙平衡 Gilbert 乘法單元</strong>
+          <p id="footCol4Desc" data-i18n="footCol4Desc">吉爾伯特雙平衡架構提供天然的 LO-RF 與 LO-IF 隔離度，高速電流切換開關實現轉換增益 Gc 與高線性度 IIP3。</p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
