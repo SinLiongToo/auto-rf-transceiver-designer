@@ -2811,12 +2811,9 @@ function initApp() {
     });
   });
 
-  // Top Bar Glossary Buttons (Header, Session bar, and Close button)
+  // Top Bar Glossary Buttons (Header and Close button)
   const topGlossaryBtn = document.getElementById("topGlossaryBtn");
   topGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
-
-  const sessionGlossaryBtn = document.getElementById("sessionGlossaryBtn");
-  sessionGlossaryBtn?.addEventListener("click", () => toggleTopGlossary());
 
   const closeGlossaryBtn = document.getElementById("closeGlossaryBtn");
   closeGlossaryBtn?.addEventListener("click", () => toggleTopGlossary(false));
