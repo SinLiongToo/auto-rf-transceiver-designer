@@ -137,7 +137,7 @@ rf_circuit_放大器/
 │   ├── eband_73ghz_backhaul_28nm.py # 71–76 GHz E-Band 電信骨幹回傳收發前端
 │   └── transceiver_77ghz_full_chain.py # 77 GHz 全鏈路收發機 (PA+LNA+VCO+Mixer)
 ├── tests/                       # 嚴格自動化測試與物理定律驗證
-│   ├── test_designer.py         # 單元測試集 (10 項全部通過)
+│   ├── test_designer.py         # 單元測試集 (12 項全部通過)
 │   ├── verify_all.py            # 20 項全系統物理定律與格式合規性稽核
 │   └── verify_frontend_math.js  # 前端 JavaScript 數學引擎無頭驗證
 ├── cli.py                       # 命令列終端設計工具

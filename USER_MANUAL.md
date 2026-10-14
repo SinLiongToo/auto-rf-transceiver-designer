@@ -16,20 +16,20 @@
    - [3.4 下混頻器 (Mixer - Down-Conversion Mixer)](#34-下混頻器-mixer---down-conversion-mixer)
    - [3.5 收發雙工開關 (T/R Switch)](#35-收發雙工開關-tr-switch)
    - [3.6 封裝天線 (AiP Antenna-in-Package)](#36-封裝天線-aip-antenna-in-package)
-4. [八大核心視覺化圖表與高階分析解讀 (Interactive Visualizations & Analysis Guide)](#4-八大核心視覺化圖表與高階分析解讀)
-   - [4.1 史密斯圓圖與等高線 (Smith Chart & Contours)](#41-史密斯圓圖與等高線)
-   - [4.2 暫態波形與動態負載線 (Waveforms & Dynamic Load-Line)](#42-暫態波形與動態負載線)
-   - [4.3 晶片電路圖與元件清單 (Schematic & BOM)](#43-晶片電路圖與元件清單)
-   - [4.4 全收發鏈路預算與相控陣列波束賦形 (Link Budget & Phased Array Beamforming)](#44-全收發鏈路預算與相控陣列波束賦形)
-   - [4.5 互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)](#45-互動式阻抗匹配網路合成器)
-   - [4.6 晶片面積估算與平面佈局 (Die Area Breakdown & Floorplan)](#46-晶片面積估算與平面佈局)
-   - [4.7 製程角 PVT 容差與敏感度分析 (PVT Corners Analysis)](#47-製程角-pvt-容差與敏感度分析)
-   - [4.8 模擬網表與一鍵工程規格書導出 (SPICE Decks, S2P & Full Spec Report)](#48-模擬網表與一鍵工程規格書導出)
+4. [八大核心視覺化圖表與高階分析解讀 (Interactive Visualizations & Analysis Guide)](#4-八大核心視覺化圖表與高階分析解讀-interactive-visualizations--analysis-guide)
+   - [4.1 史密斯圓圖與等高線 (Smith Chart & Contours)](#41-史密斯圓圖與等高線-smith-chart--contours)
+   - [4.2 暫態波形與動態負載線 (Waveforms & Dynamic Load-Line)](#42-暫態波形與動態負載線-waveforms--dynamic-load-line)
+   - [4.3 晶片電路圖與元件清單 (Schematic & BOM)](#43-晶片電路圖與元件清單-schematic--bom)
+   - [4.4 全收發鏈路預算與相控陣列波束賦形 (Link Budget & Phased Array Beamforming)](#44-全收發鏈路預算與相控陣列波束賦形-link-budget--phased-array-beamforming)
+   - [4.5 互動式阻抗匹配網路合成器 (Impedance Matching Synthesizer)](#45-互動式阻抗匹配網路合成器-impedance-matching-synthesizer)
+   - [4.6 晶片面積估算與平面佈局 (Die Area Breakdown & Floorplan)](#46-晶片面積估算與平面佈局-die-area-breakdown--floorplan)
+   - [4.7 製程角 PVT 容差與敏感度分析 (PVT Corners Analysis)](#47-製程角-pvt-容差與敏感度分析-pvt-corners-analysis)
+   - [4.8 模擬網表與一鍵工程規格書導出 (SPICE Decks, S2P & Full Spec Report)](#48-模擬網表與一鍵工程規格書導出-spice-decks-s2p--full-spec-report)
 5. [EDA 軟體整合教學 (EDA Tool Integration Guide)](#5-eda-軟體整合教學)
    - [5.1 Keysight ADS (先進設計系統) 整合](#51-keysight-ads-先進設計系統-整合)
    - [5.2 Cadence Virtuoso / Spectre 整合](#52-cadence-virtuoso--spectre-整合)
    - [5.3 LTspice 與 ngspice 獨立模擬](#53-ltspice-與-ngspice-獨立模擬)
-6. [常見問題與除錯指南 (FAQ & Troubleshooting)](#6-常見問題與除錯指南)
+6. [常見問題與除錯指南 (FAQ & Troubleshooting)](#6-常見問題與除錯指南-faq--troubleshooting)
 
 ---
 
@@ -136,7 +136,7 @@ flowchart LR
 
 ---
 
-## 4. 四大核心視覺化圖表解讀
+## 4. 八大核心視覺化圖表與高階分析解讀 (Interactive Visualizations & Analysis Guide)
 
 ### 4.1 史密斯圓圖與等高線 (Smith Chart & Contours)
 - **PA 負載牽引等功率線**：圓圖中心為 $50\,\Omega$ 標準系統阻抗。藍色亮點標示汲極端最佳負載反射係數 $\Gamma_{opt}$。外圍同心橢圓分別代表功率下降 $-0.5\text{ dB}$（紅）、$-1.0\text{ dB}$（黃）、$-2.0\text{ dB}$（綠）之負載容許失配區域。

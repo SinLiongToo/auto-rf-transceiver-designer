@@ -117,6 +117,10 @@ class TestPADesigner(unittest.TestCase):
         from pa_engine import AutomatedMixerDesigner
         mixer = AutomatedMixerDesigner("28nm_hpc")
         res = mixer.synthesize(rf_freq_ghz=77.0, lo_freq_ghz=76.5, target_gain_db=12.0)
+        self.assertGreater(res.conversion_gain_db, 5.0)
+        self.assertGreater(res.iip3_dbm, 0.0)
+        self.assertIn("M_LO_1", res.spice_netlist)
+
     def test_switch_synthesis(self):
         from pa_engine import AutomatedSwitchDesigner
         sw = AutomatedSwitchDesigner("28nm_hpc")
