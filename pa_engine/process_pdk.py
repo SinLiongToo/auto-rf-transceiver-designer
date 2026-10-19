@@ -109,6 +109,46 @@ PDK_LIBRARY: Dict[str, CMOSProcess] = {
         lambda_ch=0.05,
         default_inductor_q=12.0
     ),
+    "22nm_fdsoi": CMOSProcess(
+        name="GF 22FDX 22nm FD-SOI RF",
+        node_nm=22,
+        vdd_nom=0.8,
+        vdd_max=1.3,
+        vth=0.25,
+        v_knee=0.12,
+        kp=610.0,
+        j_max=1.25,
+        cox=21.0,
+        c_ov=0.20,
+        cj0=0.45,            # Ultra-low junction cap due to buried oxide (BOX)
+        cjsw=0.15,
+        r_poly_sheet=14.0,
+        ft_peak_ghz=350.0,
+        fmax_peak_ghz=370.0,
+        l_min_um=0.022,
+        lambda_ch=0.11,
+        default_inductor_q=21.0
+    ),
+    "130nm_sige": CMOSProcess(
+        name="SiGe BiCMOS 130nm (High-Speed HBT/RF)",
+        node_nm=130,
+        vdd_nom=1.8,
+        vdd_max=3.6,
+        vth=0.72,
+        v_knee=0.28,
+        kp=680.0,
+        j_max=1.60,
+        cox=12.0,
+        c_ov=0.22,
+        cj0=0.65,
+        cjsw=0.20,
+        r_poly_sheet=6.5,
+        ft_peak_ghz=300.0,
+        fmax_peak_ghz=450.0,
+        l_min_um=0.130,
+        lambda_ch=0.04,
+        default_inductor_q=19.0
+    ),
 }
 
 def get_process(name: str = "65nm_rf") -> CMOSProcess:

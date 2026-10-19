@@ -139,7 +139,98 @@ class TestPADesigner(unittest.TestCase):
         self.assertGreater(res.patch_length_um, 500.0)
         self.assertGreater(res.bandwidth_mhz, 500.0)
 
+    def test_new_pdks_and_class_c(self):
+        self.assertIn("22nm_fdsoi", PDK_LIBRARY)
+        self.assertIn("130nm_sige", PDK_LIBRARY)
+        self.assertEqual(PDK_LIBRARY["22nm_fdsoi"].ft_peak_ghz, 350.0)
+        self.assertEqual(PDK_LIBRARY["130nm_sige"].fmax_peak_ghz, 450.0)
+
+        res_c = calculate_cripps_loadline(
+            pout_dbm=20.0,
+            vdd=0.8,
+            v_knee=0.11,
+            op_class="C",
+            topology="differential"
+        )
+        self.assertEqual(res_c.conduction_angle_deg, 120.0)
+        self.assertGreater(res_c.theoretical_drain_eff, 65.0)
+
+        designer = AutomatedPADesigner("22nm_fdsoi")
+        out_c = designer.synthesize(freq_ghz=29.5, pout_dbm=19.5, op_class="C")
+        self.assertGreater(out_c.pae_pct, 35.0)
+
+    def test_linearity_and_thermal_soa(self):
+        from pa_engine import analyze_linearity_and_thermal
+        lin_raw = analyze_linearity_and_thermal(
+            pout_dbm=18.0,
+            gain_db=14.5,
+            p_dc_w=0.145,
+            op_class="AB",
+            is_differential=True,
+            modulation="64-QAM",
+            dpd_enabled=False,
+            package_type="qfn_exposed",
+            ambient_temp_c=25.0,
+        )
+        lin_dpd = analyze_linearity_and_thermal(
+            pout_dbm=18.0,
+            gain_db=14.5,
+            p_dc_w=0.145,
+            op_class="AB",
+            is_differential=True,
+            modulation="64-QAM",
+            dpd_enabled=True,
+            package_type="qfn_exposed",
+            ambient_temp_c=25.0,
+        )
+        self.assertGreater(lin_raw.oip3_dbm, 20.0)
+        self.assertLess(lin_dpd.evm_dpd_pct, lin_raw.evm_raw_pct)
+        self.assertLess(lin_dpd.aclr_dpd_dbc, lin_raw.aclr_raw_dbc)
+        self.assertGreater(lin_raw.junction_temp_c, 25.0)
+        self.assertGreater(lin_raw.mttf_years, 1.0)
+
+    def test_filter_and_signal_io_simulator(self):
+        from pa_engine import AutomatedFilterDesigner
+        flt_designer = AutomatedFilterDesigner()
+
+        # 1. Low-Pass (LP) Filter: LF passes, HF is strongly attenuated
+        lp_out = flt_designer.synthesize(
+            cutoff_freq_ghz=2.4,
+            filter_type="LP",
+            approximation="butterworth",
+            order_n=3,
+            vin_lf_v=0.80,
+            vin_hf_v=0.60,
+        )
+        self.assertEqual(lp_out.filter_type, "LP")
+        self.assertEqual(len(lp_out.elements), 3)
+        lf_comp_lp = next(c for c in lp_out.signal_components if "LF" in c.label)
+        hf_comp_lp = next(c for c in lp_out.signal_components if "HF" in c.label)
+        self.assertGreater(lf_comp_lp.vout_amp_v, 0.70)
+        self.assertLess(hf_comp_lp.vout_amp_v, 0.10)
+        self.assertLess(hf_comp_lp.gain_db, -25.0)
+
+        # 2. High-Pass (HP) Filter: LF is blocked, HF passes
+        hp_out = flt_designer.synthesize(
+            cutoff_freq_ghz=2.4,
+            filter_type="HP",
+            approximation="chebyshev_05",
+            order_n=3,
+            vin_lf_v=0.80,
+            vin_hf_v=0.60,
+        )
+        lf_comp_hp = next(c for c in hp_out.signal_components if "LF" in c.label)
+        hf_comp_hp = next(c for c in hp_out.signal_components if "HF" in c.label)
+        self.assertLess(lf_comp_hp.vout_amp_v, 0.10)
+        self.assertGreater(hf_comp_hp.vout_amp_v, 0.50)
+
+        # 3. Band-Pass (BPF) & Band-Stop (BSF)
+        bpf_out = flt_designer.synthesize(cutoff_freq_ghz=28.0, filter_type="BPF", order_n=3)
+        bsf_out = flt_designer.synthesize(cutoff_freq_ghz=28.0, filter_type="BSF", order_n=3)
+        f0_bpf = next(c for c in bpf_out.signal_components if "f0" in c.label)
+        f0_bsf = next(c for c in bsf_out.signal_components if "f0" in c.label)
+        self.assertGreater(f0_bpf.gain_db, -2.0)
+        self.assertLess(f0_bsf.gain_db, -25.0)
+
 if __name__ == "__main__":
     unittest.main()
-
-

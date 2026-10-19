@@ -61,7 +61,7 @@ try {
   console.log('[PASS] app.js evaluated successfully without syntax or execution errors.');
 
   // Test runSynthesis across classes
-  const classesToTest = ['A', 'AB', 'B', 'E', 'F'];
+  const classesToTest = ['A', 'AB', 'B', 'C', 'E', 'F'];
   classesToTest.forEach(c => {
     state.op_class = c;
     runSynthesis();
@@ -77,6 +77,14 @@ try {
     runSynthesis();
     drawWaveforms();
     console.log(`[PASS] drawWaveforms() executed cleanly for Class ${c}`);
+  });
+
+  // Verify new PDK nodes (22nm FD-SOI & 130nm SiGe)
+  ['22nm_fdsoi', '130nm_sige'].forEach(nk => {
+    state.node_key = nk;
+    state.vdd = PDK_LIBRARY[nk].vdd_nom;
+    runSynthesis();
+    console.log(`[PASS] PDK Node ${nk} (${PDK_LIBRARY[nk].name}): fT=${PDK_LIBRARY[nk].ft}GHz, PAE=${currentDesign.paePct.toFixed(1)}%`);
   });
 
   // Verify LNA session synthesis
@@ -156,6 +164,13 @@ try {
   drawLinkBudget();
   console.log(`[PASS] Cascaded Link Budget & Phased Array Beamforming rendered cleanly`);
 
+  // Verify Linearity, DPD & Thermal SOA (Tab 9)
+  state.session = 'pa';
+  state.modulation = '256-QAM';
+  state.dpd_enabled = true;
+  drawLinearityAndThermal();
+  console.log(`[PASS] Linearity (AM-AM/AM-PM/DPD), Two-Tone Spectrum & Thermal SOA rendered cleanly`);
+
   // Verify Matching Synthesizer
   state.match_rs = 50; state.match_rl = 15.8;
   drawMatchingSynthesizer();
@@ -173,7 +188,21 @@ try {
   downloadFullReport();
   console.log(`[PASS] 1-Click Full Engineering Spec Report generated cleanly`);
 
-  console.log('\n[ALL FRONTEND 6-SESSION & 6-ADVANCED-FEATURE CHECKS PASSED]');
+  // Verify RF & Analog Filter (LP / HP / BPF / BSF) & Input/Output Signal Simulator (Tab 10)
+  state.session = 'filter';
+  ['LP', 'HP', 'BPF', 'BSF'].forEach(ft => {
+    state.filter_type = ft;
+    ['lf_plus_hf', 'lf_vs_hf_dual', 'square_pulse', 'pa_harmonics'].forEach(sm => {
+      state.filter_sig_mode = sm;
+      updateUI();
+      drawFilterAndSignalSimulator();
+    });
+    const hLf = evaluateFilterTransferJS(0.6, 2.4, ft, 'butterworth', 3, 15);
+    const hHf = evaluateFilterTransferJS(7.2, 2.4, ft, 'butterworth', 3, 15);
+    console.log(`[PASS] Filter & Signal I/O Simulator (${ft}, N=3): LF_Gain=${hLf.magDb.toFixed(1)}dB, HF_Gain=${hHf.magDb.toFixed(1)}dB`);
+  });
+
+  console.log('\n[ALL FRONTEND 7-SESSION & 8-ADVANCED-FEATURE CHECKS PASSED]');
 } catch (e) {
   console.error('[FAIL] Frontend verification failed:', e);
   process.exit(1);

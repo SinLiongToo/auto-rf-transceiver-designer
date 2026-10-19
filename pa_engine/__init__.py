@@ -16,6 +16,14 @@ from .vco_designer import AutomatedVCODesigner, VCODesignOutput
 from .mixer_designer import AutomatedMixerDesigner, MixerDesignOutput
 from .switch_designer import AutomatedSwitchDesigner, SwitchDesignOutput
 from .antenna_designer import AutomatedAntennaDesigner, AntennaDesignOutput
+from .linearity_thermal import analyze_linearity_and_thermal, LinearityThermalResult, MODULATION_SPECS, PACKAGE_THERMAL_MODELS
+from .filter_designer import (
+    AutomatedFilterDesigner,
+    FilterDesignOutput,
+    FilterStageElement,
+    SignalComponentIO,
+    evaluate_filter_transfer_function,
+)
 
 __all__ = [
     "CMOSProcess",
@@ -47,4 +55,13 @@ __all__ = [
     "SwitchDesignOutput",
     "AutomatedAntennaDesigner",
     "AntennaDesignOutput",
+    "analyze_linearity_and_thermal",
+    "LinearityThermalResult",
+    "MODULATION_SPECS",
+    "PACKAGE_THERMAL_MODELS",
+    "AutomatedFilterDesigner",
+    "FilterDesignOutput",
+    "FilterStageElement",
+    "SignalComponentIO",
+    "evaluate_filter_transfer_function",
 ]

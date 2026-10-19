@@ -112,6 +112,22 @@ def calculate_cripps_loadline(
         p_dc = effective_vdd * i_dc
         eff_theory = 85.0
 
+    elif op_class_upper == "C":
+        # Class C pulsed conduction (conduction angle ~ 120 deg < 180 deg)
+        cond_angle_deg = 120.0
+        theta_rad = math.radians(cond_angle_deg)
+        half_theta = theta_rad / 2.0
+        denom = 1.0 - math.cos(half_theta)
+        alpha_dc = (math.sin(half_theta) - half_theta * math.cos(half_theta)) / (math.pi * denom)
+        alpha_fund = (theta_rad - math.sin(theta_rad)) / (2.0 * math.pi * denom)
+
+        branch_pout_w = (pout_device_w / 2.0) if "diff" in topology.lower() else pout_device_w
+        i_max_pk = (2.0 * branch_pout_w) / (v_swing_pk * alpha_fund)
+        r_opt = v_swing_pk / (alpha_fund * i_max_pk)
+        i_dc = (alpha_dc * i_max_pk) * (2.0 if "diff" in topology.lower() else 1.0)
+        p_dc = effective_vdd * i_dc
+        eff_theory = min(85.0, max(78.0, (0.5 * alpha_fund / alpha_dc) * (v_swing_pk / effective_vdd) * 100.0))
+
     else: # Default Class AB (conduction angle ~ 200 - 220 deg)
         cond_angle_deg = 210.0
         theta_rad = math.radians(cond_angle_deg)

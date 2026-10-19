@@ -17,14 +17,17 @@ const i18nData = {
     sessionAntenna: "封裝天線 (Antenna)",
     sessionLink: "全鏈路 (Link Budget)",
     sessionMatch: "阻抗匹配 (Matching)",
+    sessionFilter: "濾波與訊號 (Filter I/O)",
     presetWifi24: "⚡ 經典 Wi-Fi 2.4 GHz (65nm)",
     presetWifi5: "⚡ Wi-Fi 6 5.2 GHz (40nm)",
     presetMmwave28: "⚡ 5G 毫米波 28 GHz (28nm)",
+    presetSatcom28: "🛰️ 28 GHz 低軌衛星通訊 Ka-Band (22nm FD-SOI)",
     presetMmwave39: "⚡ 39 GHz 5G 高頻段與衛星通訊 (28nm)",
     presetVband60: "⚡ 60 GHz WiGig / 無線高畫質傳輸 (28nm)",
     presetEband73: "🌐 73 GHz 5G/6G E-Band 骨幹回傳與通訊 (28nm)",
     presetRadar77: "🚗 車用雷達 77 GHz (72-79 GHz, 28nm)",
     presetImaging77: "🔬 77 GHz 工業物位感測與無損成像 (28nm)",
+    presetWband94: "📡 90 GHz W-Band 高解析度雲霧雷達 (130nm SiGe)",
     presetSubGhz: "⚡ Sub-1 GHz IoT (180nm)",
     specTitle: "設計規格與製程設定",
     btnReset: "重置",
@@ -32,7 +35,7 @@ const i18nData = {
     lblPout: "目標輸出功率 Pout (dBm)",
     lblLnaGain: "目標功率增益 Gain (dB)",
     lblLnaIdc: "直流偏置電流 Idc (mA)",
-    lblProcess: "CMOS 製程技術節點",
+    lblProcess: "CMOS / SiGe 製程技術節點",
     lblVdd: "供電電壓 Vdd (V)",
     lblClass: "工作模式放大器類別 (Operation Class)",
     lblTopology: "電路架構拓樸",
@@ -49,6 +52,8 @@ const i18nData = {
     tabMatching: "🎛️ 匹配網路 (Matching)",
     tabDieArea: "📐 晶片面積 (Floorplan)",
     tabPvt: "🌡️ 製程角 (PVT)",
+    tabLinearity: "📊 線性度與熱阻 (Linearity & Thermal)",
+    tabFilterIo: "🔬 濾波與訊號變化 (Filter & Signal I/O)",
     tabSpice: "💻 網表導出 (Export)",
     tabGlossary: "📖 術語字典 (Glossary)",
     topGlossaryBtn: "📖 術語字典",
@@ -62,10 +67,24 @@ const i18nData = {
     dieAreaSubtitle: "依據電晶體主動區微米幾何尺寸、片上被動電感/Balun 與 I/O 銲墊環估算總晶片面積與晶圓成本",
     pvtTitle: "製程角 PVT 容差與極端環境敏感度分析 (PVT Corners Analysis)",
     pvtSubtitle: "評估在 TT (典型)、FF (快快/低溫)、SS (慢慢/高溫)、FS 與 SF 極端角之電路性能浮動與良率安全裕度",
+    linThermalTitle: "大訊號線性度、DPD 數位預失真與晶粒熱可靠性分析 (Linearity, DPD & Thermal SOA)",
+    linThermalSubtitle: "評估 AM-AM / AM-PM 非線性失真、雙音 IMD3、5G/Wi-Fi 調變 EVM & ACLR、DPD 補償效益與封裝結溫 Tj / 電遷移壽命 MTTF",
+    filterSimTitle: "射頻與類比濾波器合成 (LP 低通 / HP 高通 / 帶通 / 陷波) 與輸入/輸出訊號變化模擬器",
+    filterSimSubtitle: "即時合成 N 階 LC 梯形濾波器，並動態對比低頻 (LF Signal)、主頻 (f0) 與高頻諧波 (HF Signal) 通過濾波器前後之 Input vs. Output 波形與頻譜變化",
+    lblFilterType: "濾波器響應類型 (Filter Type)",
+    lblFilterPoly: "逼近函數與階數 (Poly & Order N)",
+    lblFilterSigMode: "輸入測試訊號波形 (Input Signal Waveform)",
+    lblFilterFcRatio: "截止/中心頻率比例 (fc / f0)",
+    lblFilterLfAmp: "低頻訊號輸入振幅 (LF Signal Vin)",
+    lblFilterHfAmp: "高頻訊號輸入振幅 (HF Signal Vin)",
+    lblModScheme: "調變格式 (Modulation)",
+    lblDpdToggle: "數位預失真 (DPD)",
+    lblPackageType: "IC 封裝散熱結構 (θJA)",
+    lblAmbientTemp: "環境溫度 Ta (°C)",
     manualTitle: "AutoRF 射頻前端積體電路設計平台使用指南 (User Manual)",
     manualSubtitle: "涵蓋 6 大射頻模組規格自訂、負載牽引圖表解讀、動態波形檢驗與 SPICE / S-參數導出操作流程",
     glossaryTitle: "射頻前端積體電路核心術語字典 (RF Front-End Glossary)",
-    glossarySubtitle: "包含 PA, LNA, VCO, Mixer, Switch, Antenna 六大關鍵模組理論公式與物理定義",
+    glossarySubtitle: "包含 PA, LNA, VCO, Mixer, Switch, Antenna, Filter 七大關鍵模組理論公式與物理定義",
     // PA labels
     fomPout: "輸出功率 Pout",
     fomPae: "功率附加效率 PAE",
@@ -202,14 +221,17 @@ const i18nData = {
     sessionAntenna: "Antenna",
     sessionLink: "Link Budget",
     sessionMatch: "Matching",
+    sessionFilter: "Filter (LP/HP)",
     presetWifi24: "⚡ Wi-Fi 2.4 GHz (65nm)",
     presetWifi5: "⚡ Wi-Fi 6 5.2 GHz (40nm)",
     presetMmwave28: "⚡ 5G mmWave 28 GHz (28nm)",
+    presetSatcom28: "🛰️ 28 GHz LEO Satcom Ka-Band (22nm FD-SOI)",
     presetMmwave39: "⚡ 39 GHz 5G High-Band & Satcom (28nm)",
     presetVband60: "⚡ 60 GHz WiGig / Wireless HDMI (28nm)",
     presetEband73: "🌐 73 GHz 5G/6G E-Band Backhaul & Telecom (28nm)",
     presetRadar77: "🚗 Automotive Radar 77 GHz (72-79 GHz, 28nm)",
     presetImaging77: "🔬 77 GHz Industrial Imaging & Level Sensing (28nm)",
+    presetWband94: "📡 90 GHz W-Band High-Res Cloud/Defense Radar (130nm SiGe)",
     presetSubGhz: "⚡ Sub-1 GHz IoT (180nm)",
     specTitle: "Design Specs & PDK Setup",
     btnReset: "Reset",
@@ -217,7 +239,7 @@ const i18nData = {
     lblPout: "Target Output Power Pout (dBm)",
     lblLnaGain: "Target Power Gain Gain (dB)",
     lblLnaIdc: "DC Drain Current Idc (mA)",
-    lblProcess: "CMOS Technology Node",
+    lblProcess: "CMOS / SiGe Technology Node",
     lblVdd: "Supply Voltage Vdd (V)",
     lblClass: "Operation Class",
     lblTopology: "Circuit Topology",
@@ -234,6 +256,8 @@ const i18nData = {
     tabMatching: "🎛️ Matching",
     tabDieArea: "📐 Floorplan",
     tabPvt: "🌡️ PVT Corners",
+    tabLinearity: "📊 Linearity & Thermal",
+    tabFilterIo: "🔬 Filter & Signal I/O",
     tabSpice: "💻 Netlist Export",
     tabGlossary: "📖 RF Glossary",
     topGlossaryBtn: "📖 RF Glossary",
@@ -247,10 +271,24 @@ const i18nData = {
     dieAreaSubtitle: "Estimates core active area, on-chip passive coils/baluns, and I/O pad ring with 300mm wafer cost modeling",
     pvtTitle: "PVT Corners & Environmental Sensitivity Analysis",
     pvtSubtitle: "Evaluates TT (Typical), FF (Fast/Cold), SS (Slow/Hot), FS, and SF corners for yield and stability robustness",
+    linThermalTitle: "Large-Signal Linearity, DPD Predistortion & Thermal SOA Analysis",
+    linThermalSubtitle: "Evaluates AM-AM / AM-PM distortion, two-tone IMD3, 5G/Wi-Fi OFDM EVM & ACLR, DPD linearization, and Junction Temp Tj / MTTF",
+    filterSimTitle: "RF & Analog Filter Synthesis (LP / HP / BPF / BSF) & Input/Output Signal Simulator",
+    filterSimSubtitle: "Synthesizes N-th order LC ladder filters and compares LF, Center (f0), and HF signals before and after filtering in time and frequency domains",
+    lblFilterType: "Filter Response Type",
+    lblFilterPoly: "Approximation & Order N",
+    lblFilterSigMode: "Input Test Signal Mode",
+    lblFilterFcRatio: "Cutoff Freq Ratio (fc / f0)",
+    lblFilterLfAmp: "LF Input Amplitude (Vin,LF)",
+    lblFilterHfAmp: "HF Input Amplitude (Vin,HF)",
+    lblModScheme: "Modulation Scheme",
+    lblDpdToggle: "Digital Predistortion (DPD)",
+    lblPackageType: "IC Package Thermal Model (θJA)",
+    lblAmbientTemp: "Ambient Temp Ta (°C)",
     manualTitle: "AutoRF RF Front-End Transceiver Synthesis User Manual",
     manualSubtitle: "Comprehensive operational manual covering 6 RF modules, load-pull contours, waveforms, and EDA SPICE/Touchstone export",
     glossaryTitle: "RF Front-End Integrated Circuits Glossary",
-    glossarySubtitle: "Fundamental physical definitions, formulations, and FOMs for PA, LNA, VCO, Mixer, Switch & Antenna",
+    glossarySubtitle: "Fundamental physical definitions, formulations, and FOMs for PA, LNA, VCO, Mixer, Switch, Antenna & Filter",
     // PA
     fomPout: "Output Power Pout",
     fomPae: "Power Added Eff. (PAE)",
@@ -456,6 +494,44 @@ const PDK_LIBRARY = {
     l_min: 0.180,
     lambda: 0.05,
     def_q: 12.0
+  },
+  "22nm_fdsoi": {
+    name: "GF 22FDX 22nm FD-SOI RF",
+    node_nm: 22,
+    vdd_nom: 0.8,
+    vth: 0.25,
+    v_knee: 0.12,
+    kp: 610.0,
+    j_max: 1.25,
+    cox: 21.0,
+    c_ov: 0.20,
+    cj0: 0.45,
+    cjsw: 0.15,
+    r_poly_sheet: 14.0,
+    ft_peak: 350.0,
+    fmax_peak: 370.0,
+    l_min: 0.022,
+    lambda: 0.11,
+    def_q: 21.0
+  },
+  "130nm_sige": {
+    name: "SiGe BiCMOS 130nm (HBT/RF)",
+    node_nm: 130,
+    vdd_nom: 1.8,
+    vth: 0.72,
+    v_knee: 0.28,
+    kp: 680.0,
+    j_max: 1.60,
+    cox: 12.0,
+    c_ov: 0.22,
+    cj0: 0.65,
+    cjsw: 0.20,
+    r_poly_sheet: 6.5,
+    ft_peak: 300.0,
+    fmax_peak: 450.0,
+    l_min: 0.130,
+    lambda: 0.04,
+    def_q: 19.0
   }
 };
 
@@ -503,7 +579,22 @@ const state = {
   match_rl: 15.8,
   match_xl: 0.0,
   match_topology: "l_lowpass",
-  match_qind: 15.0
+  match_qind: 15.0,
+
+  // Linearity, DPD & Thermal SOA
+  modulation: "256-QAM",
+  dpd_enabled: true,
+  package_type: "flip_chip_bga",
+  ambient_temp_c: 25.0,
+
+  // RF & Analog Filter & Signal I/O Simulator
+  filter_type: "LP",
+  filter_poly: "butterworth",
+  filter_order: 3,
+  filter_sig_mode: "lf_plus_hf",
+  filter_fc_ratio: 1.0,
+  filter_lf_amp: 0.70,
+  filter_hf_amp: 0.60
 };
 
 let currentDesign = null;
@@ -539,6 +630,16 @@ function runPaSynthesis() {
     iMaxPk = (2 * branchPoutW) / vSwingPk;
     iDc = (iMaxPk / Math.PI) * (isDiff ? 2 : 1);
     effTheory = 78.5;
+  } else if (state.op_class === "C") {
+    const theta = (120 * Math.PI) / 180;
+    const half = theta / 2;
+    const denom = 1 - Math.cos(half);
+    const alphaDc = (Math.sin(half) - half * Math.cos(half)) / (Math.PI * denom);
+    const alphaFund = (theta - Math.sin(theta)) / (2 * Math.PI * denom);
+    iMaxPk = (2 * branchPoutW) / (vSwingPk * alphaFund);
+    rOpt = vSwingPk / (alphaFund * iMaxPk);
+    iDc = alphaDc * iMaxPk * (isDiff ? 2 : 1);
+    effTheory = 82.5;
   } else if (state.op_class === "E") {
     rOpt = (0.5768 * vSwingPk * vSwingPk) / branchPoutW;
     iMaxPk = 2.86 * (branchPoutW / vSwingPk);
@@ -1082,6 +1183,39 @@ function updateUI() {
     document.getElementById("fomVal6").innerText = `${eff.toFixed(1)} %`;
     document.getElementById("fomSub6").innerText = eff > 85 ? "✓ 高效率匹配" : "⚠ 注意插損";
     document.getElementById("fomSub6").className = eff > 85 ? "text-xs text-green-400 font-semibold" : "text-xs text-amber-400 font-semibold";
+  } else if (state.session === "filter") {
+    const fcGhz = (state.freq_ghz || 2.4) * (state.filter_fc_ratio || 1.0);
+    const fType = state.filter_type || "LP";
+    const orderN = state.filter_order || 3;
+    document.getElementById("fomLabel1").innerText = currentLang === "zh" ? "濾波器響應型態" : "Filter Type";
+    document.getElementById("fomVal1").innerText = `${fType} (${orderN} 階)`;
+    document.getElementById("fomSub1").innerText = (state.filter_poly || "butterworth").toUpperCase();
+
+    document.getElementById("fomLabel2").innerText = currentLang === "zh" ? "截止/中心頻率 fc" : "Cutoff / Center fc";
+    document.getElementById("fomVal2").innerText = `${fcGhz.toFixed(2)} GHz`;
+    document.getElementById("fomSub2").innerText = `滾降斜率: -${20 * orderN} dB/dec`;
+
+    const lfDb = fType === "LP" || fType === "BSF" ? -0.05 : -20 * orderN * Math.log10(4);
+    const hfDb = fType === "HP" || fType === "BSF" ? -0.08 : -20 * orderN * Math.log10(3);
+    const f0Db = fType === "BSF" ? -34.0 : (fType === "BPF" ? -0.45 : -3.01);
+
+    document.getElementById("fomLabel3").innerText = currentLang === "zh" ? "低頻 LF 訊號變化" : "LF Signal Change";
+    document.getElementById("fomVal3").innerText = `${lfDb >= -3 ? "通過" : "濾除"} (${lfDb.toFixed(1)} dB)`;
+    document.getElementById("fomSub3").innerText = `0.25·fc 低頻分量`;
+
+    document.getElementById("fomLabel4").innerText = currentLang === "zh" ? "主頻 f0 訊號變化" : "Center f0 Change";
+    document.getElementById("fomVal4").innerText = `${f0Db >= -3.5 ? "通過" : "陷波"} (${f0Db.toFixed(1)} dB)`;
+    document.getElementById("fomSub4").innerText = `1.00·fc 主載波`;
+
+    document.getElementById("fomLabel5").innerText = currentLang === "zh" ? "高頻 HF 訊號變化" : "HF Signal Change";
+    document.getElementById("fomVal5").innerText = `${hfDb >= -3 ? "通過" : "抑制"} (${hfDb.toFixed(1)} dB)`;
+    document.getElementById("fomSub5").innerText = `3.00·fc 高頻諧波`;
+
+    document.getElementById("fomLabel6").innerText = currentLang === "zh" ? "通帶插入損耗 IL" : "Passband IL";
+    const ilFlt = (0.18 * orderN * (15.0 / Math.max(5, state.inductor_q || 15))).toFixed(2);
+    document.getElementById("fomVal6").innerText = `${ilFlt} dB`;
+    document.getElementById("fomSub6").innerText = `✓ 訊號濾波正常`;
+    document.getElementById("fomSub6").className = "text-xs text-green-400 font-semibold";
   } else if (d.session === "pa") {
     document.getElementById("valPout").innerText = `${d.pout.toFixed(1)} dBm (${d.poutMw.toFixed(0)} mW)`;
 
@@ -1374,6 +1508,8 @@ function updateUI() {
   drawMatchingSynthesizer();
   drawDieAreaFloorplan();
   drawPvtCorners();
+  drawLinearityAndThermal();
+  drawFilterAndSignalSimulator();
 }
 
 // --- 6. Interactive Smith Chart Canvas ---
@@ -1605,7 +1741,7 @@ function drawWaveforms() {
       else if (opClass === "F") vScalePeak = d.vdd * 2.4;
 
       function getVds(phase) {
-        if (opClass === "A" || opClass === "AB" || opClass === "B") {
+        if (opClass === "A" || opClass === "AB" || opClass === "B" || opClass === "C") {
           return d.vdd + (d.vdd - d.pdk.v_knee) * Math.sin(phase);
         } else if (opClass === "E") {
           const modPhase = (phase + Math.PI / 2) % (2 * Math.PI);
@@ -1621,6 +1757,7 @@ function drawWaveforms() {
         if (opClass === "A") return Math.max(0.05, 0.5 + 0.45 * (-Math.sin(phase)));
         if (opClass === "AB") return Math.max(0, -Math.sin(phase) + 0.18) / 1.18;
         if (opClass === "B") return Math.max(0, -Math.sin(phase));
+        if (opClass === "C") return Math.max(0, -Math.sin(phase) - 0.5) / 0.5;
         if (opClass === "E") {
           const modPhase = (phase + Math.PI / 2) % (2 * Math.PI);
           return modPhase < Math.PI ? Math.sin(modPhase) : 0;
@@ -1678,6 +1815,9 @@ function drawWaveforms() {
         if (opClass === "A") {
           vVal = d.vdd + (d.vdd - d.pdk.v_knee) * Math.cos(phase);
           iVal = (0.5 - 0.45 * Math.cos(phase)) * d.iMaxPk;
+        } else if (opClass === "C") {
+          vVal = Math.max(d.pdk.v_knee, d.vdd + (d.vdd - d.pdk.v_knee) * Math.cos(phase));
+          iVal = Math.max(0, (-Math.cos(phase) - 0.5) / 0.5) * d.iMaxPk;
         } else if (opClass === "E") {
           const modPhase = (phase + Math.PI / 2) % (2 * Math.PI);
           vVal = modPhase < Math.PI ? d.pdk.v_knee * 0.3 : (3.56 * d.vdd) * Math.pow(Math.sin(modPhase - Math.PI), 1.8);
@@ -3263,18 +3403,849 @@ function drawMatchingSynthesizer() {
   }
 }
 
+// --- 9.25 Linearity, DPD & Thermal SOA (Tab 9) ---
+function drawLinearityAndThermal() {
+  const f = state.freq_ghz || 28.0;
+  const pdk = PDK_LIBRARY[state.node_key] || PDK_LIBRARY["28nm_hpc"];
+  const d = currentDesign || {};
+
+  // Determine linear gain, P1dB, Pdc based on active session
+  const session = state.session || "pa";
+  let psatDbm = state.pout_dbm || 18.0;
+  let gainDb = d.gainDb !== undefined ? d.gainDb : 14.5;
+  let paePct = d.pae !== undefined ? d.pae : 38.0;
+  let wTotUm = d.w_tot || 160.0;
+
+  if (session === "lna") {
+    psatDbm = 6.0;
+    gainDb = d.gainDb || state.lna_gain_db || 18.0;
+    paePct = 15.0;
+    wTotUm = d.w_tot || 75.0;
+  } else if (session === "mixer") {
+    psatDbm = 4.0;
+    gainDb = d.gainDb || state.mixer_gc_db || 10.0;
+    paePct = 12.0;
+    wTotUm = d.w_rf || 50.0;
+  }
+
+  const opClass = state.op_class || "AB";
+  const compOffset = opClass === "A" ? 1.2 : (opClass === "AB" ? 1.8 : (opClass === "B" ? 2.2 : (opClass === "C" ? 2.8 : 3.2)));
+  const p1dbDbm = session === "lna" ? (d.iip3_dbm !== undefined ? d.iip3_dbm - 9.6 + gainDb : 2.5) : (psatDbm - compOffset);
+  const ip3Offset = opClass === "A" ? 10.6 : (opClass === "AB" ? 9.6 : (opClass === "B" ? 9.0 : 8.0));
+  const oip3Dbm = p1dbDbm + ip3Offset;
+  const iip3Dbm = oip3Dbm - gainDb;
+
+  const modSpecs = {
+    "QPSK":     { papr: 3.5,  limit: 17.5, label: "3GPP QPSK (≤17.5%)" },
+    "16-QAM":   { papr: 6.0,  limit: 12.5, label: "3GPP 16-QAM (≤12.5%)" },
+    "64-QAM":   { papr: 7.5,  limit: 8.0,  label: "3GPP 64-QAM (≤8.0%)" },
+    "256-QAM":  { papr: 9.2,  limit: 3.5,  label: "3GPP 256-QAM (≤3.5%)" },
+    "1024-QAM": { papr: 10.5, limit: 1.8,  label: "Wi-Fi 7 1024-QAM (≤1.8%)" }
+  };
+  const modKey = state.modulation || "64-QAM";
+  const mod = modSpecs[modKey] || modSpecs["64-QAM"];
+  const pAvgDbm = psatDbm - mod.papr;
+  const deltaBo = pAvgDbm - p1dbDbm;
+
+  // EVM & ACLR1
+  const evmLinearFloor = 0.65 + 0.008 * f;
+  const evmNonlinear = 3.8 * Math.pow(10, deltaBo / 10.0);
+  const evmRawPct = Math.min(45.0, Math.sqrt(evmLinearFloor * evmLinearFloor + evmNonlinear * evmNonlinear));
+  const dpdFactor = state.dpd_enabled ? 0.34 : 1.0;
+  const evmFinalPct = Math.sqrt(evmLinearFloor * evmLinearFloor + (evmNonlinear * dpdFactor) * (evmNonlinear * dpdFactor));
+
+  const imd3AtBackoff = 2.0 * (pAvgDbm - oip3Dbm);
+  const aclrRawDbc = Math.max(-62.0, Math.min(-18.0, imd3AtBackoff - 7.5));
+  const aclrFinalDbc = state.dpd_enabled ? Math.max(-65.0, aclrRawDbc - 13.5) : aclrRawDbc;
+
+  // Thermal SOA & MTTF
+  const pkgModels = {
+    "FCCSP_FlipChip": 28.0,
+    "QFN_ExposedPad": 38.0,
+    "WLCSP_WaferLevel": 45.0,
+    "AiP_BGA_Sub": 52.0
+  };
+  const thetaJa = pkgModels[state.package_type] || 38.0;
+  const poutMw = Math.pow(10, psatDbm / 10.0);
+  let pdcMw = d.pdc_mw || (poutMw / Math.max(0.08, paePct / 100.0));
+  const pdissW = Math.max(0.005, (pdcMw - poutMw * 0.75) / 1000.0);
+  const tAmb = state.ambient_temp_c !== undefined ? state.ambient_temp_c : 25.0;
+  const tjC = tAmb + pdissW * thetaJa;
+
+  // Black's equation electromigration MTTF
+  const idcMa = pdcMw / Math.max(0.5, state.vdd);
+  const jRatio = Math.max(0.25, (idcMa / Math.max(20.0, wTotUm)) / 0.85);
+  const kB = 8.617333262e-5;
+  const Ea = 0.7;
+  const mttfHours = Math.min(1.0e7, Math.max(100.0, 1.5e5 * Math.pow(jRatio, -2.0) * Math.exp(Ea / kB * (1.0 / (tjC + 273.15) - 1.0 / 398.15))));
+  const mttfYears = mttfHours / 8760.0;
+
+  // Update KPI DOM Cards
+  const elOip3 = document.getElementById("linKpiOip3");
+  if (elOip3) elOip3.innerText = `${(oip3Dbm >= 0 ? "+" : "")}${oip3Dbm.toFixed(1)} dBm`;
+  const elP1db = document.getElementById("linKpiP1dbSub");
+  if (elP1db) elP1db.innerText = `OP1dB: ${p1dbDbm.toFixed(1)} dBm | IIP3: ${iip3Dbm.toFixed(1)} dBm`;
+
+  const elEvm = document.getElementById("linKpiEvm");
+  if (elEvm) {
+    elEvm.innerText = `${evmFinalPct.toFixed(2)} %`;
+    elEvm.className = `text-lg font-bold font-mono mt-0.5 ${evmFinalPct <= mod.limit ? "text-emerald-400" : "text-rose-400"}`;
+  }
+  const elEvmSub = document.getElementById("linKpiEvmSub");
+  if (elEvmSub) elEvmSub.innerText = `${mod.label} ${evmFinalPct <= mod.limit ? "✓ PASS" : "⚠ WARN"}`;
+
+  const elAclr = document.getElementById("linKpiAclr");
+  if (elAclr) elAclr.innerText = `${aclrFinalDbc.toFixed(1)} dBc`;
+  const elAclrSub = document.getElementById("linKpiAclrSub");
+  if (elAclrSub) elAclrSub.innerText = `Back-off: -${mod.papr.toFixed(1)} dB (${state.dpd_enabled ? "DPD ON" : "Raw"})`;
+
+  const elTj = document.getElementById("linKpiTj");
+  if (elTj) {
+    elTj.innerText = `${tjC.toFixed(1)} °C`;
+    elTj.className = `text-lg font-bold font-mono mt-0.5 ${tjC < 105 ? "text-amber-400" : "text-rose-400"}`;
+  }
+  const elPdiss = document.getElementById("linKpiPdissSub");
+  if (elPdiss) elPdiss.innerText = `Pdiss: ${(pdissW * 1000).toFixed(0)} mW | θJA: ${thetaJa}°C/W`;
+
+  const elMttf = document.getElementById("linKpiMttf");
+  if (elMttf) elMttf.innerText = `${mttfYears >= 50 ? "> 50" : mttfYears.toFixed(1)} Yrs`;
+  const elSoa = document.getElementById("linKpiSoaSub");
+  if (elSoa) {
+    const status = tjC < 85 ? "SAFE (安全區)" : (tjC < 115 ? "DERATE (建議降額)" : "CRITICAL (過熱警告)");
+    elSoa.innerText = `SOA: ${status}`;
+  }
+
+  // Draw Canvas 1: AM-AM & AM-PM Compression Curve
+  const c1 = document.getElementById("amamCanvas");
+  if (c1) {
+    const ctx = c1.getContext("2d");
+    const w = c1.width, h = c1.height;
+    ctx.clearRect(0, 0, w, h);
+    const padL = 48, padR = 48, padT = 24, padB = 34;
+    const pw = w - padL - padR, ph = h - padT - padB;
+
+    // Grid
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (ph * i) / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    }
+    for (let i = 0; i <= 5; i++) {
+      const x = padL + (pw * i) / 5;
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
+    }
+
+    const pinMin = psatDbm - gainDb - 22;
+    const pinMax = psatDbm - gainDb + 4;
+    const gMin = gainDb - 8;
+    const gMax = gainDb + 2;
+
+    // Raw AM-AM curve (cyan)
+    const s = opClass === "A" ? 2.4 : (opClass === "AB" ? 2.0 : 1.6);
+    ctx.strokeStyle = "#22d3ee";
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    for (let i = 0; i <= 40; i++) {
+      const pin = pinMin + ((pinMax - pinMin) * i) / 40;
+      const poutLin = pin + gainDb;
+      const ratio = Math.pow(10, (poutLin - psatDbm) / 20.0);
+      const compDb = (10.0 / s) * Math.log10(1.0 + Math.pow(ratio, 2.0 * s));
+      const gCur = gainDb - compDb;
+      const x = padL + ((pin - pinMin) / (pinMax - pinMin)) * pw;
+      const y = padT + ((gMax - gCur) / (gMax - gMin)) * ph;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // DPD Linearized AM-AM curve (emerald dashed)
+    if (state.dpd_enabled) {
+      ctx.strokeStyle = "#34d399";
+      ctx.lineWidth = 2.0;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      for (let i = 0; i <= 40; i++) {
+        const pin = pinMin + ((pinMax - pinMin) * i) / 40;
+        const poutLin = pin + gainDb;
+        const ratio = Math.pow(10, (poutLin - psatDbm) / 20.0);
+        const sDpd = 4.8;
+        const compDb = (10.0 / sDpd) * Math.log10(1.0 + Math.pow(ratio, 2.0 * sDpd));
+        const gCur = gainDb - compDb;
+        const x = padL + ((pin - pinMin) / (pinMax - pinMin)) * pw;
+        const y = padT + ((gMax - gCur) / (gMax - gMin)) * ph;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // AM-PM Phase shift curve (fuchsia)
+    ctx.strokeStyle = "#e879f9";
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (let i = 0; i <= 40; i++) {
+      const pin = pinMin + ((pinMax - pinMin) * i) / 40;
+      const poutLin = pin + gainDb;
+      const ratio = Math.pow(10, (poutLin - psatDbm) / 20.0);
+      const maxPhi = state.dpd_enabled ? -6.5 : -24.0;
+      const phiDeg = maxPhi * (Math.pow(ratio, 2.4) / (1.0 + 0.85 * Math.pow(ratio, 2.4)));
+      // Map [-30 deg, +5 deg] to canvas height
+      const x = padL + ((pin - pinMin) / (pinMax - pinMin)) * pw;
+      const y = padT + ((5.0 - phiDeg) / 35.0) * ph;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Mark OP1dB vertical line
+    const pin1db = p1dbDbm - (gainDb - 1.0);
+    const x1db = padL + ((pin1db - pinMin) / (pinMax - pinMin)) * pw;
+    if (x1db > padL && x1db < w - padR) {
+      ctx.strokeStyle = "#f59e0b";
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(x1db, padT); ctx.lineTo(x1db, h - padB); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "10px monospace";
+      ctx.fillText(`P1dB (${p1dbDbm.toFixed(1)}dBm)`, Math.min(w - padR - 85, Math.max(padL + 4, x1db - 30)), padT + 14);
+    }
+
+    // Labels
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "10px monospace";
+    ctx.fillText(`${gainDb.toFixed(1)} dB`, 4, padT + 18);
+    ctx.fillText(`${(gainDb - 6).toFixed(1)} dB`, 4, h - padB - 4);
+    ctx.fillStyle = "#e879f9";
+    ctx.fillText("0°", w - padR + 6, padT + 20);
+    ctx.fillText("-25°", w - padR + 6, h - padB - 6);
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText(`Pin: ${pinMin.toFixed(0)} dBm`, padL, h - 10);
+    ctx.fillText(`Pin: ${pinMax.toFixed(0)} dBm`, w - padR - 68, h - 10);
+  }
+
+  // Draw Canvas 2: Two-Tone IMD3 & Harmonics Spectrum
+  const c2 = document.getElementById("spectrumCanvas");
+  if (c2) {
+    const ctx = c2.getContext("2d");
+    const w = c2.width, h = c2.height;
+    ctx.clearRect(0, 0, w, h);
+    const padL = 44, padR = 20, padT = 22, padB = 34;
+    const pw = w - padL - padR, ph = h - padT - padB;
+
+    // Grid
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (ph * i) / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    }
+
+    // Noise floor line
+    const floorY = h - padB - 8;
+    ctx.strokeStyle = "#334155";
+    ctx.beginPath(); ctx.moveTo(padL, floorY); ctx.lineTo(w - padR, floorY); ctx.stroke();
+
+    const pToneDbm = pAvgDbm - 3.0;
+    const pImd3Dbm = 3.0 * pToneDbm - 2.0 * oip3Dbm - (state.dpd_enabled ? 13.5 : 0.0);
+    const isDiff = (state.topology || "diff_cascode").includes("diff");
+    const h2Dbc = (isDiff ? -44.0 : -26.0) - (opClass === "F" ? 8.0 : 0.0);
+    const h3Dbc = (opClass === "F" ? -42.0 : (opClass === "E" ? -34.0 : -28.0));
+
+    const maxDbm = psatDbm + 5.0;
+    const minDbm = -75.0;
+    const dbmToY = (val) => {
+      const clamped = Math.max(minDbm, Math.min(maxDbm, val));
+      return padT + ((maxDbm - clamped) / (maxDbm - minDbm)) * (ph - 8);
+    };
+
+    const drawTone = (xNorm, dbmVal, color, label, freqLabel) => {
+      const x = padL + xNorm * pw;
+      const y = dbmToY(dbmVal);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3.0;
+      ctx.beginPath(); ctx.moveTo(x, floorY); ctx.lineTo(x, y); ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.font = "10px monospace";
+      ctx.fillText(label, x - 18, Math.max(padT + 10, y - 7));
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText(freqLabel, x - 14, h - 10);
+    };
+
+    // Draw 2f1-f2, f1, f2, 2f2-f1, 2f0, 3f0
+    drawTone(0.14, pImd3Dbm, "#f43f5e", `${pImd3Dbm.toFixed(0)}dBm`, "2f1-f2");
+    drawTone(0.26, pToneDbm, "#22d3ee", `${pToneDbm.toFixed(0)}dBm`, "f1");
+    drawTone(0.35, pToneDbm, "#22d3ee", `${pToneDbm.toFixed(0)}dBm`, "f2");
+    drawTone(0.47, pImd3Dbm, "#f43f5e", `IMD3`, "2f2-f1");
+    drawTone(0.68, pToneDbm + h2Dbc, "#fbbf24", `${h2Dbc.toFixed(0)}dBc`, `2f0`);
+    drawTone(0.88, pToneDbm + h3Dbc, "#a855f7", `${h3Dbc.toFixed(0)}dBc`, `3f0`);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "10px monospace";
+    ctx.fillText(`${maxDbm.toFixed(0)}dBm`, 2, padT + 10);
+    ctx.fillText(`-75dBm`, 2, floorY);
+  }
+}
+
+// --- 9.25 RF & Analog Filter (LP / HP / BPF / BSF) & Input/Output Signal Simulator ---
+function evaluateFilterTransferJS(fGhz, fcGhz, fType, poly, orderN, qInd) {
+  if (fGhz <= 1e-6) {
+    if (fType === "LP" || fType === "BSF") return { magLin: 1.0, magDb: 0.0, phaseDeg: 0.0 };
+    return { magLin: 1e-4, magDb: -80.0, phaseDeg: 90.0 * orderN };
+  }
+  const x = fGhz / Math.max(0.05, fcGhz);
+  const fbw = 0.40;
+  let omegaNorm = 0;
+  let phaseSign = 1.0;
+
+  if (fType === "LP") {
+    omegaNorm = x;
+    phaseSign = -1.0;
+  } else if (fType === "HP") {
+    omegaNorm = 1.0 / Math.max(1e-4, x);
+    phaseSign = 1.0;
+  } else if (fType === "BPF") {
+    const delta = (x - 1.0 / x) / fbw;
+    omegaNorm = Math.abs(delta);
+    phaseSign = delta >= 0 ? -1.0 : 1.0;
+  } else {
+    const delta = x - 1.0 / x;
+    omegaNorm = Math.abs(delta) < 1e-5 ? 1e4 : Math.abs(fbw / delta);
+    phaseSign = delta >= 0 ? 1.0 : -1.0;
+  }
+
+  let magSq = 1.0;
+  if (poly.includes("chebyshev")) {
+    const rippleDb = poly === "chebyshev_10" ? 1.0 : 0.5;
+    const epsSq = Math.pow(10, rippleDb / 10.0) - 1.0;
+    let tn = 1.0;
+    if (omegaNorm <= 1.0) {
+      tn = Math.cos(orderN * Math.acos(Math.max(-1.0, Math.min(1.0, omegaNorm))));
+    } else {
+      tn = Math.cosh(orderN * Math.acosh(omegaNorm));
+    }
+    magSq = 1.0 / (1.0 + epsSq * tn * tn);
+  } else if (poly === "bessel") {
+    magSq = 1.0 / Math.pow(1.0 + 0.65 * omegaNorm * omegaNorm, orderN);
+  } else {
+    magSq = 1.0 / (1.0 + Math.pow(omegaNorm, 2 * orderN));
+  }
+
+  const qLossLin = Math.pow(10, -(0.16 * orderN * (15.0 / Math.max(5.0, qInd))) / 20.0);
+  const magLin = Math.max(1e-4, Math.sqrt(magSq) * (omegaNorm < 1.3 ? qLossLin : 1.0));
+  const magDb = 20.0 * Math.log10(magLin);
+  const phaseDeg = phaseSign * orderN * Math.atan(omegaNorm) * (180.0 / Math.PI);
+  return { magLin, magDb, phaseDeg };
+}
+
+function drawFilterAndSignalSimulator() {
+  const f0 = state.freq_ghz || 2.4;
+  const fcRatio = state.filter_fc_ratio || 1.0;
+  const fcGhz = f0 * fcRatio;
+  const fType = state.filter_type || "LP";
+  const poly = state.filter_poly || "butterworth";
+  const orderN = parseInt(state.filter_order || 3, 10);
+  const sigMode = (state.filter_sig_mode || "lf_plus_hf").replace(/\s+/g, "");
+  const lfAmpIn = state.filter_lf_amp !== undefined ? state.filter_lf_amp : 0.70;
+  const hfAmpIn = state.filter_hf_amp !== undefined ? state.filter_hf_amp : 0.60;
+  const qInd = state.inductor_q || 15.0;
+
+  const valFcEl = document.getElementById("valFilterFcRatio");
+  if (valFcEl) valFcEl.innerText = `${fcRatio.toFixed(2)}x (${fcGhz.toFixed(2)} GHz)`;
+  const valLfEl = document.getElementById("valFilterLfAmp");
+  if (valLfEl) valLfEl.innerText = `${lfAmpIn.toFixed(2)} V`;
+  const valHfEl = document.getElementById("valFilterHfAmp");
+  if (valHfEl) valHfEl.innerText = `${hfAmpIn.toFixed(2)} V`;
+
+  const fLf = 0.25 * f0;
+  const fHf = 3.00 * f0;
+
+  // Define input frequency components according to signal mode
+  let tones = [];
+  if (sigMode === "lf_vs_hf_dual") {
+    tones = [
+      { key: "LF", label: "低頻 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#fbbf24" },
+      { key: "F0", label: "主頻 f0 (1.00f0)", freq: f0, ampIn: 0.0, phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "高頻 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#f43f5e" }
+    ];
+  } else if (sigMode === "square_pulse") {
+    const aBase = Math.max(0.25, lfAmpIn);
+    tones = [
+      { key: "LF", label: "基波 1f (0.5f0)", freq: 0.5 * f0, ampIn: aBase * 1.273, phaseIn: 0, color: "#fbbf24" },
+      { key: "F0", label: "3次奇諧波 (1.5f0)", freq: 1.5 * f0, ampIn: aBase * (1.273 / 3), phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "5次高頻邊緣 (2.5f0)", freq: 2.5 * f0, ampIn: Math.max(0.15, hfAmpIn * (1.273 / 5)), phaseIn: 0, color: "#f43f5e" },
+      { key: "H7", label: "7次高頻邊緣 (3.5f0)", freq: 3.5 * f0, ampIn: Math.max(0.10, hfAmpIn * (1.273 / 7)), phaseIn: 0, color: "#a855f7" }
+    ];
+  } else if (sigMode === "pa_harmonics") {
+    tones = [
+      { key: "LF", label: "DC/包絡基頻 (0.15f0)", freq: 0.15 * f0, ampIn: lfAmpIn * 0.65, phaseIn: 0, color: "#fbbf24" },
+      { key: "F0", label: "PA 主載波 (1.0f0)", freq: f0, ampIn: 1.00, phaseIn: 0, color: "#22d3ee" },
+      { key: "H2", label: "二次諧波 2f0", freq: 2.0 * f0, ampIn: hfAmpIn * 0.65, phaseIn: -35, color: "#a855f7" },
+      { key: "HF", label: "三次諧波 3f0 (HF)", freq: 3.0 * f0, ampIn: hfAmpIn * 0.50, phaseIn: -70, color: "#f43f5e" }
+    ];
+  } else {
+    // Default: lf_plus_hf (Composite LF + f0 + HF)
+    tones = [
+      { key: "LF", label: "低頻 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#fbbf24" },
+      { key: "F0", label: "主頻 f0 (1.00f0)", freq: f0, ampIn: 0.85, phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "高頻 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#f43f5e" }
+    ];
+  }
+
+  // Evaluate transfer function H(jw) for each tone
+  tones.forEach(t => {
+    const h = evaluateFilterTransferJS(t.freq, fcGhz, fType, poly, orderN, qInd);
+    t.magLin = h.magLin;
+    t.magDb = h.magDb;
+    t.phaseShift = h.phaseDeg;
+    t.ampOut = t.ampIn * h.magLin;
+    t.phaseOut = t.phaseIn + h.phaseDeg;
+  });
+
+  // Evaluate standard reference points LF (0.25*f0), F0 (1.0*f0), HF (3.0*f0) for KPIs
+  const hLfRef = evaluateFilterTransferJS(fLf, fcGhz, fType, poly, orderN, qInd);
+  const hF0Ref = evaluateFilterTransferJS(f0, fcGhz, fType, poly, orderN, qInd);
+  const hHfRef = evaluateFilterTransferJS(fHf, fcGhz, fType, poly, orderN, qInd);
+
+  const lfTone = tones.find(t => t.key === "LF") || tones[0];
+  const f0Tone = tones.find(t => t.key === "F0") || tones[1];
+  const hfTone = tones.find(t => t.key === "HF") || tones[tones.length - 1];
+
+  const kpiFc = document.getElementById("fltKpiFc");
+  if (kpiFc) kpiFc.innerText = `${fcGhz.toFixed(2)} GHz`;
+  const kpiSlope = document.getElementById("fltKpiSlope");
+  if (kpiSlope) kpiSlope.innerText = `${fType} -${20 * orderN} dB/dec`;
+
+  const kpiLf = document.getElementById("fltKpiLfChange");
+  if (kpiLf) kpiLf.innerText = `${lfTone.ampIn.toFixed(2)}V → ${lfTone.ampOut.toFixed(2)}V`;
+  const kpiLfBadge = document.getElementById("fltKpiLfBadge");
+  if (kpiLfBadge) {
+    const passLf = hLfRef.magDb >= -3.5;
+    kpiLfBadge.innerText = `${hLfRef.magDb.toFixed(1)} dB (${passLf ? "通過 PASS" : "阻隔 STOP"})`;
+    kpiLfBadge.className = passLf ? "text-[10px] text-emerald-400 font-semibold mt-0.5" : "text-[10px] text-rose-400 font-semibold mt-0.5";
+  }
+
+  const kpiF0 = document.getElementById("fltKpiF0Change");
+  if (kpiF0) kpiF0.innerText = `${f0Tone.ampIn.toFixed(2)}V → ${f0Tone.ampOut.toFixed(2)}V`;
+  const kpiF0Badge = document.getElementById("fltKpiF0Badge");
+  if (kpiF0Badge) {
+    const passF0 = hF0Ref.magDb >= -3.5;
+    kpiF0Badge.innerText = `${hF0Ref.magDb.toFixed(1)} dB (Δφ=${hF0Ref.phaseDeg.toFixed(0)}°)`;
+    kpiF0Badge.className = passF0 ? "text-[10px] text-cyan-400 font-semibold mt-0.5" : "text-[10px] text-amber-400 font-semibold mt-0.5";
+  }
+
+  const kpiHf = document.getElementById("fltKpiHfChange");
+  if (kpiHf) kpiHf.innerText = `${hfTone.ampIn.toFixed(2)}V → ${hfTone.ampOut.toFixed(2)}V`;
+  const kpiHfBadge = document.getElementById("fltKpiHfBadge");
+  if (kpiHfBadge) {
+    const passHf = hHfRef.magDb >= -3.5;
+    kpiHfBadge.innerText = `${hHfRef.magDb.toFixed(1)} dB (${passHf ? "通過 PASS" : "濾除 REJECT"})`;
+    kpiHfBadge.className = passHf ? "text-[10px] text-emerald-400 font-semibold mt-0.5" : "text-[10px] text-rose-400 font-semibold mt-0.5";
+  }
+
+  // Compute Output Purity / Rejection Ratio
+  const pOutTotal = tones.reduce((acc, t) => acc + t.ampOut * t.ampOut, 0) + 1e-9;
+  let wantedPwr = 0;
+  if (fType === "LP") wantedPwr = lfTone.ampOut * lfTone.ampOut + (fcRatio >= 1.0 ? f0Tone.ampOut * f0Tone.ampOut : 0);
+  else if (fType === "HP") wantedPwr = hfTone.ampOut * hfTone.ampOut + (fcRatio <= 1.0 ? f0Tone.ampOut * f0Tone.ampOut : 0);
+  else if (fType === "BPF") wantedPwr = f0Tone.ampOut * f0Tone.ampOut;
+  else wantedPwr = lfTone.ampOut * lfTone.ampOut + hfTone.ampOut * hfTone.ampOut;
+  const purityPct = Math.min(99.9, Math.max(15.0, (wantedPwr / pOutTotal) * 100.0));
+
+  const kpiPurity = document.getElementById("fltKpiPurity");
+  if (kpiPurity) kpiPurity.innerText = `${purityPct.toFixed(1)} %`;
+  const kpiRej = document.getElementById("fltKpiRejectSub");
+  if (kpiRej) {
+    const rejDb = Math.max(Math.abs(hLfRef.magDb), Math.abs(hHfRef.magDb));
+    kpiRej.innerText = `帶外抑制度: -${rejDb.toFixed(1)} dBc`;
+  }
+
+  // 1. Draw Time-Domain Input vs. Output Waveform Canvas (#filterIoTimeCanvas)
+  const timeCanvas = document.getElementById("filterIoTimeCanvas");
+  if (timeCanvas) {
+    const ctx = timeCanvas.getContext("2d");
+    const w = timeCanvas.width;
+    const h = timeCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16";
+    ctx.fillRect(0, 0, w, h);
+
+    const padL = 46, padR = 18, padT = 22, padB = 28;
+    const pw = w - padL - padR;
+    const ph = h - padT - padB;
+    const midY = padT + ph / 2;
+
+    // Grid lines
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (ph * i) / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    }
+    for (let i = 0; i <= 8; i++) {
+      const x = padL + (pw * i) / 8;
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
+    }
+    ctx.strokeStyle = "#334155";
+    ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(w - padR, midY); ctx.stroke();
+
+    // Time window: 2 full cycles of LF signal (T_window = 2 / fLf = 8 / f0 ns)
+    const tMaxNs = 4.0 / Math.max(0.1, f0);
+    const numPts = 240;
+    const vInArr = [];
+    const vOutArr = [];
+    const vLfOutArr = [];
+    const vHfOutArr = [];
+    let maxPeak = 1.2;
+
+    for (let i = 0; i <= numPts; i++) {
+      const tNs = (i / numPts) * tMaxNs;
+      let vIn = 0;
+      let vOut = 0;
+      tones.forEach(t => {
+        const radIn = 2.0 * Math.PI * t.freq * tNs + (t.phaseIn * Math.PI) / 180.0;
+        const radOut = 2.0 * Math.PI * t.freq * tNs + (t.phaseOut * Math.PI) / 180.0;
+        vIn += t.ampIn * Math.sin(radIn);
+        vOut += t.ampOut * Math.sin(radOut);
+      });
+      const vLfOut = lfTone.ampOut * Math.sin(2.0 * Math.PI * lfTone.freq * tNs + (lfTone.phaseOut * Math.PI) / 180.0);
+      const vHfOut = hfTone.ampOut * Math.sin(2.0 * Math.PI * hfTone.freq * tNs + (hfTone.phaseOut * Math.PI) / 180.0);
+
+      vInArr.push(vIn);
+      vOutArr.push(vOut);
+      vLfOutArr.push(vLfOut);
+      vHfOutArr.push(vHfOut);
+      maxPeak = Math.max(maxPeak, Math.abs(vIn), Math.abs(vOut));
+    }
+
+    const vScale = (ph * 0.44) / maxPeak;
+
+    // Draw Input Signal Vin(t) (Dashed Slate)
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    for (let i = 0; i <= numPts; i++) {
+      const x = padL + (i / numPts) * pw;
+      const y = midY - vInArr[i] * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw Output LF Component (Amber Thin Curve)
+    ctx.strokeStyle = "rgba(251, 191, 36, 0.78)";
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let i = 0; i <= numPts; i++) {
+      const x = padL + (i / numPts) * pw;
+      const y = midY - vLfOutArr[i] * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Draw Output HF Component (Rose Thin Curve)
+    ctx.strokeStyle = "rgba(244, 63, 94, 0.75)";
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let i = 0; i <= numPts; i++) {
+      const x = padL + (i / numPts) * pw;
+      const y = midY - vHfOutArr[i] * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Draw Filtered Total Output Signal Vout(t) (Bold Cyan)
+    ctx.strokeStyle = "#22d3ee";
+    ctx.lineWidth = 2.8;
+    ctx.beginPath();
+    for (let i = 0; i <= numPts; i++) {
+      const x = padL + (i / numPts) * pw;
+      const y = midY - vOutArr[i] * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Axis Labels & Annotations
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "10px monospace";
+    ctx.fillText(`+${maxPeak.toFixed(1)}V`, 4, padT + 8);
+    ctx.fillText(`0.0V`, 10, midY + 3);
+    ctx.fillText(`-${maxPeak.toFixed(1)}V`, 4, h - padB);
+    ctx.fillText(`0 ns`, padL, h - 8);
+    ctx.fillText(`${(tMaxNs * 0.5).toFixed(2)} ns`, padL + pw * 0.46, h - 8);
+    ctx.fillText(`${tMaxNs.toFixed(2)} ns`, w - padR - 45, h - 8);
+
+    ctx.fillStyle = "#22d3ee";
+    ctx.font = "bold 11px monospace";
+    const modeDesc = fType === "LP" ? "LP 低通: 保留低頻 LF 慢波、濾除高頻 HF 毛刺" :
+                     (fType === "HP" ? "HP 高通: 阻隔低頻 LF 漂移、保留高頻 HF 震盪" :
+                     (fType === "BPF" ? "BPF 帶通: 僅提取主載波 f0、抑制 LF 與 HF" : "BSF 帶拒: 陷波濾除 f0、保留 LF 與 HF"));
+    ctx.fillText(modeDesc, padL + 8, padT + 12);
+  }
+
+  // 2. Draw Bode Magnitude |H(jw)| & Phase Canvas (#filterBodeCanvas)
+  const bodeCanvas = document.getElementById("filterBodeCanvas");
+  if (bodeCanvas) {
+    const ctx = bodeCanvas.getContext("2d");
+    const w = bodeCanvas.width;
+    const h = bodeCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16";
+    ctx.fillRect(0, 0, w, h);
+
+    const padL = 42, padR = 36, padT = 18, padB = 26;
+    const pw = w - padL - padR;
+    const ph = h - padT - padB;
+    const fMax = 4.0 * f0;
+
+    ctx.strokeStyle = "#1e293b";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (ph * i) / 4;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    }
+
+    // -3dB threshold line
+    const y3db = padT + (3.0 / 60.0) * ph;
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(padL, y3db); ctx.lineTo(w - padR, y3db); ctx.stroke();
+
+    // Cutoff frequency vertical marker
+    const xFc = padL + Math.min(1.0, fcGhz / fMax) * pw;
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+    ctx.beginPath(); ctx.moveTo(xFc, padT); ctx.lineTo(xFc, h - padB); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw Phase Curve (Dashed Purple)
+    ctx.strokeStyle = "rgba(168, 85, 247, 0.65)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    const nSweep = 120;
+    for (let i = 1; i <= nSweep; i++) {
+      const f = (i / nSweep) * fMax;
+      const res = evaluateFilterTransferJS(f, fcGhz, fType, poly, orderN, qInd);
+      const x = padL + (f / fMax) * pw;
+      const normP = Math.max(-1.0, Math.min(1.0, res.phaseDeg / (90.0 * orderN)));
+      const y = padT + ph * 0.5 - normP * (ph * 0.42);
+      if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw Magnitude Curve |S21| dB (Bold Cyan)
+    ctx.strokeStyle = "#22d3ee";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 1; i <= nSweep; i++) {
+      const f = (i / nSweep) * fMax;
+      const res = evaluateFilterTransferJS(f, fcGhz, fType, poly, orderN, qInd);
+      const x = padL + (f / fMax) * pw;
+      const dbClamped = Math.max(-60.0, Math.min(2.0, res.magDb));
+      const y = padT + ((0.0 - dbClamped) / 60.0) * ph;
+      if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Plot LF, f0, HF Tone Markers on the Bode Curve
+    const markPoints = [
+      { f: fLf, res: hLfRef, color: "#fbbf24", name: "LF" },
+      { f: f0, res: hF0Ref, color: "#22d3ee", name: "f0" },
+      { f: fHf, res: hHfRef, color: "#f43f5e", name: "HF" }
+    ];
+    markPoints.forEach(mp => {
+      const x = padL + Math.min(0.98, mp.f / fMax) * pw;
+      const dbClamped = Math.max(-58.0, Math.min(0.0, mp.res.magDb));
+      const y = padT + ((0.0 - dbClamped) / 60.0) * ph;
+      ctx.fillStyle = mp.color;
+      ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.font = "bold 10px monospace";
+      ctx.fillText(`${mp.name}(${mp.res.magDb.toFixed(0)}dB)`, Math.max(padL + 2, x - 24), Math.max(padT + 11, y - 7));
+    });
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "10px monospace";
+    ctx.fillText("0dB", 6, padT + 8);
+    ctx.fillText("-30dB", 2, padT + ph * 0.5 + 3);
+    ctx.fillText("-60dB", 2, h - padB);
+    ctx.fillText(`fc=${fcGhz.toFixed(1)}G`, Math.max(padL, xFc - 18), h - 8);
+    ctx.fillText(`${fMax.toFixed(1)}GHz`, w - padR - 36, h - 8);
+  }
+
+  // 3. Draw Frequency Spectrum Input vs Output Bars (#filterIoSpecCanvas)
+  const specCanvas = document.getElementById("filterIoSpecCanvas");
+  if (specCanvas) {
+    const ctx = specCanvas.getContext("2d");
+    const w = specCanvas.width;
+    const h = specCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16";
+    ctx.fillRect(0, 0, w, h);
+
+    const padL = 42, padR = 16, padT = 22, padB = 30;
+    const pw = w - padL - padR;
+    const ph = h - padT - padB;
+    const floorY = h - padB;
+
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, floorY); ctx.lineTo(w - padR, floorY); ctx.stroke();
+
+    const maxAmp = 1.5;
+    const nTones = tones.length;
+    tones.forEach((t, idx) => {
+      const groupX = padL + ((idx + 0.5) / nTones) * pw;
+      const barW = 18;
+
+      // Input Amplitude Bar (Slate)
+      const hIn = Math.min(ph, (t.ampIn / maxAmp) * ph);
+      ctx.fillStyle = "rgba(148, 163, 184, 0.45)";
+      ctx.fillRect(groupX - barW - 2, floorY - hIn, barW, hIn);
+      ctx.strokeStyle = "#94a3b8";
+      ctx.beginPath();
+      ctx.moveTo(groupX - barW - 2, floorY - hIn);
+      ctx.lineTo(groupX - 2, floorY - hIn);
+      ctx.lineTo(groupX - 2, floorY);
+      ctx.lineTo(groupX - barW - 2, floorY);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Output Amplitude Bar (Tone Color)
+      const hOut = Math.min(ph, (t.ampOut / maxAmp) * ph);
+      ctx.fillStyle = t.color;
+      ctx.fillRect(groupX + 2, floorY - hOut, barW, hOut);
+
+      // Value labels
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "9px monospace";
+      ctx.fillText(`In:${t.ampIn.toFixed(2)}V`, groupX - barW - 10, Math.max(padT + 8, floorY - hIn - 4));
+      ctx.fillStyle = t.color;
+      ctx.font = "bold 9px monospace";
+      ctx.fillText(`Out:${t.ampOut.toFixed(2)}V`, groupX + 2, Math.max(padT + 18, floorY - hOut - 4));
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "10px monospace";
+      ctx.fillText(`${t.key}(${t.freq.toFixed(1)}G)`, groupX - 24, h - 10);
+    });
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "10px monospace";
+    ctx.fillText("1.5V", 6, padT + 8);
+    ctx.fillText("0.75V", 2, padT + ph * 0.5);
+    ctx.fillText("0.0V", 6, floorY);
+  }
+
+  // 4. Synthesize L/C Ladder Elements & Populate SVG (#filterLadderSvg) + BOM Table (#filterBomBody)
+  const gTable = {
+    1: [2.0000],
+    2: [1.4142, 1.4142],
+    3: [1.0000, 2.0000, 1.0000],
+    5: [0.6180, 1.6180, 2.0000, 1.6180, 0.6180],
+    7: [0.4450, 1.2470, 1.8019, 2.0000, 1.8019, 1.2470, 0.4450]
+  };
+  const gArr = gTable[orderN] || gTable[3];
+  const w0 = 2.0 * Math.PI * fcGhz * 1e9;
+  const z0 = 50.0;
+
+  const svgLadder = document.getElementById("filterLadderSvg");
+  if (svgLadder) {
+    let nodesSvg = `
+      <rect x="8" y="8" width="464" height="104" rx="8" fill="#090d16" stroke="#1e293b" />
+      <line x1="25" y1="46" x2="455" y2="46" stroke="#38bdf8" stroke-width="2" />
+      <line x1="25" y1="96" x2="455" y2="96" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,4" />
+      <text x="16" y="42" fill="#94a3b8" font-size="9" font-family="monospace">Vin</text>
+      <text x="442" y="42" fill="#22d3ee" font-size="9" font-family="monospace">Vout</text>
+    `;
+    gArr.forEach((gk, idx) => {
+      const k = idx + 1;
+      const isShunt = k % 2 === 1;
+      const xPos = 65 + (idx / Math.max(1, gArr.length - 1)) * 340;
+      const lNh = (gk * z0) / w0 * 1e9;
+      const cPf = (gk / (z0 * w0)) * 1e12;
+      let label = "";
+      let color = "#22d3ee";
+      if (fType === "LP") {
+        label = isShunt ? `C${k}=${cPf.toFixed(2)}pF` : `L${k}=${lNh.toFixed(2)}nH`;
+        color = isShunt ? "#34d399" : "#fbbf24";
+      } else if (fType === "HP") {
+        const lHp = (z0 / (gk * w0)) * 1e9;
+        const cHp = (1.0 / (gk * z0 * w0)) * 1e12;
+        label = isShunt ? `L${k}=${lHp.toFixed(2)}nH` : `C${k}=${cHp.toFixed(2)}pF`;
+        color = isShunt ? "#fbbf24" : "#34d399";
+      } else {
+        label = isShunt ? `Tank_${k} (Shunt)` : `Tank_${k} (Series)`;
+        color = "#a855f7";
+      }
+
+      if (isShunt) {
+        nodesSvg += `
+          <line x1="${xPos}" y1="46" x2="${xPos}" y2="96" stroke="${color}" stroke-width="2.2" />
+          <circle cx="${xPos}" cy="46" r="3.5" fill="${color}" />
+          <rect x="${xPos - 28}" y="62" width="56" height="18" rx="3" fill="#0f172a" stroke="${color}" stroke-width="1.2" />
+          <text x="${xPos}" y="74" text-anchor="middle" fill="${color}" font-size="8.5" font-family="monospace">${label}</text>
+        `;
+      } else {
+        nodesSvg += `
+          <rect x="${xPos - 30}" y="22" width="60" height="18" rx="3" fill="#0f172a" stroke="${color}" stroke-width="1.5" />
+          <text x="${xPos}" y="34" text-anchor="middle" fill="${color}" font-size="8.5" font-family="monospace">${label}</text>
+        `;
+      }
+    });
+    svgLadder.innerHTML = nodesSvg;
+  }
+
+  const bomBody = document.getElementById("filterBomBody");
+  if (bomBody) {
+    bomBody.innerHTML = tones.map(t => {
+      const pass = t.magDb >= -3.5;
+      const badgeCls = pass
+        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+        : "bg-rose-500/20 text-rose-300 border-rose-500/30";
+      const statusTxt = pass ? "✓ 通過 (PASS)" : "✕ 濾除 (STOP)";
+      return `
+        <tr class="hover:bg-slate-800/40 transition-colors">
+          <td class="p-2 font-bold text-slate-200">${t.label}</td>
+          <td class="p-2 text-slate-400">${t.freq.toFixed(2)} GHz | Vin=${t.ampIn.toFixed(2)}V</td>
+          <td class="p-2 text-cyan-400 font-bold">Vout=${t.ampOut.toFixed(2)}V (${t.magDb.toFixed(1)} dB, Δφ=${t.phaseShift.toFixed(0)}°)</td>
+          <td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeCls}">${statusTxt}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
 // --- 9.3 Die Area Breakdown & Silicon Floorplan ---
 function drawDieAreaFloorplan() {
   const nodeKey = state.node_key || "28nm_hpc";
-  const pdk = PDK_LIBRARY[nodeKey];
+  const pdk = PDK_LIBRARY[nodeKey] || PDK_LIBRARY["28nm_hpc"];
+  const f = state.freq_ghz || 28.0;
 
-  const coreAreaMm2 = nodeKey === "28nm_hpc" ? 0.075 : (nodeKey === "40nm_rf" ? 0.088 : (nodeKey === "65nm_rf" ? 0.115 : 0.220));
-  const passiveAreaMm2 = 0.680;
+  const coreScaleMap = {
+    "22nm_fdsoi": 0.068,
+    "28nm_hpc": 0.075,
+    "40nm_rf": 0.088,
+    "65nm_rf": 0.115,
+    "130nm_sige": 0.145,
+    "180nm_rf": 0.220
+  };
+  const coreAreaMm2 = coreScaleMap[nodeKey] || 0.085;
+  // Passives scale inversely with frequency (mmWave inductors/transformers are much smaller than Sub-6GHz)
+  const freqPassiveFactor = Math.max(0.42, Math.min(1.45, Math.pow(28.0 / Math.max(1.0, f), 0.28)));
+  const passiveAreaMm2 = 0.680 * freqPassiveFactor;
   const padAreaMm2 = 0.540;
   const totalDieMm2 = coreAreaMm2 + passiveAreaMm2 + padAreaMm2;
   const dieSideMm = Math.sqrt(totalDieMm2).toFixed(2);
 
-  const waferCostUsd = nodeKey === "28nm_hpc" ? 5800 : (nodeKey === "40nm_rf" ? 4200 : (nodeKey === "65nm_rf" ? 2800 : 1500));
+  const waferCostMap = {
+    "22nm_fdsoi": 6400,
+    "28nm_hpc": 5800,
+    "40nm_rf": 4200,
+    "65nm_rf": 2800,
+    "130nm_sige": 3400,
+    "180nm_rf": 1500
+  };
+  const waferCostUsd = waferCostMap[nodeKey] || 4500;
   const grossDies = Math.floor((Math.PI * 150 * 150) / (totalDieMm2 * 1.15));
   const costPerDieUsd = (waferCostUsd / (grossDies * 0.88)).toFixed(2);
 
@@ -3344,13 +4315,18 @@ function drawPvtCorners() {
 
   const vdd = state.vdd;
   const pout = state.pout_dbm || 18.0;
+  const d = currentDesign || {};
+  const basePae = (state.session === "pa" && d.pae) ? d.pae : 45.2;
+  const baseLnaGain = state.lna_gain_db || 18.0;
+  const baseLnaNf = (state.session === "lna" && d.nf_db) ? d.nf_db : (1.55 + 0.022 * (state.freq_ghz || 28.0));
+  const fShiftMhz = Math.round((state.freq_ghz || 28.0) * 5.8);
 
   const corners = [
-    { name: "TT (Typical)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${pout.toFixed(1)} dBm / 52.4%`, lna: "18.0 dB / 2.15 dB", vco: "0 MHz / 2.8x", sw: "0.88 dB", status: "✓ PASS", color: "emerald" },
-    { name: "FF (Fast-Fast)", cond: `${(vdd * 1.1).toFixed(2)}V, -40°C`, pa: `${(pout + 0.8).toFixed(1)} dBm / 54.1%`, lna: "19.5 dB / 1.95 dB", vco: "+165 MHz / 3.4x", sw: "0.75 dB", status: "✓ PASS", color: "emerald" },
-    { name: "SS (Slow-Slow)", cond: `${(vdd * 0.9).toFixed(2)}V, +125°C`, pa: `${(pout - 0.9).toFixed(1)} dBm / 48.6%`, lna: "16.2 dB / 2.45 dB", vco: "-210 MHz / 2.1x", sw: "1.05 dB", status: "✓ PASS", color: "emerald" },
-    { name: "FS (Fast N / Slow P)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${pout.toFixed(1)} dBm / 51.8%`, lna: "18.3 dB / 2.20 dB", vco: "+45 MHz / 2.6x", sw: "0.85 dB", status: "✓ PASS", color: "emerald" },
-    { name: "SF (Slow N / Fast P)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${(pout - 0.2).toFixed(1)} dBm / 50.9%`, lna: "17.6 dB / 2.25 dB", vco: "-55 MHz / 2.5x", sw: "0.92 dB", status: "✓ PASS", color: "emerald" }
+    { name: "TT (Typical)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${pout.toFixed(1)} dBm / ${basePae.toFixed(1)}%`, lna: `${baseLnaGain.toFixed(1)} dB / ${baseLnaNf.toFixed(2)} dB`, vco: `0 MHz / 2.8x`, sw: "0.88 dB", status: "✓ PASS", color: "emerald" },
+    { name: "FF (Fast-Fast)", cond: `${(vdd * 1.1).toFixed(2)}V, -40°C`, pa: `${(pout + 0.8).toFixed(1)} dBm / ${(basePae + 1.8).toFixed(1)}%`, lna: `${(baseLnaGain + 1.5).toFixed(1)} dB / ${Math.max(0.8, baseLnaNf - 0.22).toFixed(2)} dB`, vco: `+${fShiftMhz} MHz / 3.4x`, sw: "0.75 dB", status: "✓ PASS", color: "emerald" },
+    { name: "SS (Slow-Slow)", cond: `${(vdd * 0.9).toFixed(2)}V, +125°C`, pa: `${(pout - 0.9).toFixed(1)} dBm / ${Math.max(10, basePae - 3.6).toFixed(1)}%`, lna: `${(baseLnaGain - 1.8).toFixed(1)} dB / ${(baseLnaNf + 0.35).toFixed(2)} dB`, vco: `-${Math.round(fShiftMhz * 1.25)} MHz / 2.1x`, sw: "1.05 dB", status: "✓ PASS", color: "emerald" },
+    { name: "FS (Fast N / Slow P)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${pout.toFixed(1)} dBm / ${(basePae - 0.5).toFixed(1)}%`, lna: `${(baseLnaGain + 0.3).toFixed(1)} dB / ${(baseLnaNf + 0.05).toFixed(2)} dB`, vco: `+${Math.round(fShiftMhz * 0.28)} MHz / 2.6x`, sw: "0.85 dB", status: "✓ PASS", color: "emerald" },
+    { name: "SF (Slow N / Fast P)", cond: `${vdd.toFixed(2)}V, 25°C`, pa: `${(pout - 0.2).toFixed(1)} dBm / ${(basePae - 1.2).toFixed(1)}%`, lna: `${(baseLnaGain - 0.4).toFixed(1)} dB / ${(baseLnaNf + 0.10).toFixed(2)} dB`, vco: `-${Math.round(fShiftMhz * 0.32)} MHz / 2.5x`, sw: "0.92 dB", status: "✓ PASS", color: "emerald" }
   ];
 
   tbody.innerHTML = corners.map(c => `
@@ -3373,7 +4349,11 @@ function drawPvtCorners() {
 // --- 9.5 Full Engineering Report HTML Generator ---
 function downloadFullReport() {
   const f = state.freq_ghz;
-  const pdk = PDK_LIBRARY[state.node_key];
+  const pdk = PDK_LIBRARY[state.node_key] || PDK_LIBRARY["28nm_hpc"];
+  const d = currentDesign || {};
+  const rOptStr = (d.rOpt || 15.8).toFixed(1);
+  const wTotStr = (d.w_tot || 160).toFixed(0);
+  const paeStr = (d.pae || 45.0).toFixed(1);
 
   const html = `<!DOCTYPE html>
 <html lang="zh-TW">
@@ -3393,44 +4373,36 @@ function downloadFullReport() {
 </head>
 <body>
   <button class="print-btn" onclick="window.print()">🖨️ 列印 / 另存為 PDF 檔案 (Print to PDF)</button>
-  <h1>AutoRF 射頻前端積體電路完整工程規格書 (Full Engineering Spec Report)</h1>
+  <h1>AutoRF v1.4.0 射頻前端積體電路完整工程規格書 (Full Engineering Spec Report)</h1>
   <p><b>設計中心頻率:</b> ${f} GHz | <b>製程技術節點:</b> ${pdk.name} | <b>供電電壓 Vdd:</b> ${state.vdd} V | <b>生成時間:</b> ${new Date().toLocaleString()}</p>
   
   <h2>1. 收發機全鏈路串接預算總覽 (Transceiver Link Budget)</h2>
   <table>
     <tr><th>鏈路項目</th><th>指標參數</th><th>設計數值</th><th>工程意義</th></tr>
-    <tr><td>接收機 (RX Chain)</td><td>總接收轉換增益 (Gain_rx)</td><td><b>+24.5 dB</b></td><td>LNA + Mixer 扣除開關插損</td></tr>
-    <tr><td>接收機 (RX Chain)</td><td>Friis 級聯雜訊指數 (NF_rx)</td><td><b>2.65 dB</b></td><td>決定接收微弱訊號能力</td></tr>
+    <tr><td>接收機 (RX Chain)</td><td>總接收轉換增益 (Gain_rx)</td><td><b>+${(state.lna_gain_db + state.mixer_gc_db - 1.2).toFixed(1)} dB</b></td><td>LNA + Mixer 扣除開關插損</td></tr>
+    <tr><td>接收機 (RX Chain)</td><td>Friis 級聯雜訊指數 (NF_rx)</td><td><b>${(1.8 + 0.025 * f).toFixed(2)} dB</b></td><td>決定接收微弱訊號能力</td></tr>
     <tr><td>接收機 (RX Chain)</td><td>級聯輸入三階截斷點 (IIP3)</td><td><b>-6.8 dBm</b></td><td>抗強干擾失真能力</td></tr>
     <tr><td>接收機 (RX Chain)</td><td>接收靈敏度 (Sensitivity)</td><td><b>-88.3 dBm</b></td><td>最小可解調訊號功率 (BW=20MHz)</td></tr>
-    <tr><td>發射機 (TX Chain)</td><td>PA 飽和輸出功率 (Pout)</td><td><b>${state.pout_dbm} dBm</b></td><td>大訊號輸出功率傳輸</td></tr>
+    <tr><td>發射機 (TX Chain)</td><td>PA 飽和輸出功率 (Pout)</td><td><b>${state.pout_dbm} dBm (Class-${state.op_class})</b></td><td>大訊號輸出功率傳輸</td></tr>
     <tr><td>發射機 (TX Chain)</td><td>單單元等效全向輻射功率 (EIRP)</td><td><b>+${(state.pout_dbm + 4.3).toFixed(1)} dBm</b></td><td>含天線 5.2 dBi 增益</td></tr>
-    <tr><td>相控陣列 (Phased Array)</td><td>4x4 陣列 EIRP (16-Elements)</td><td><b>+${(state.pout_dbm + 4.3 + 24.1).toFixed(1)} dBm</b></td><td>同相空間功率合成</td></tr>
+    <tr><td>相控陣列 (Phased Array)</td><td>${state.array_size || 16}-Elements 陣列 EIRP</td><td><b>+${(state.pout_dbm + 4.3 + 20 * Math.log10(state.array_size || 16)).toFixed(1)} dBm</b></td><td>同相空間功率合成</td></tr>
   </table>
 
   <h2>2. 六大模組核心物理合成數據 (6 Modules Specifications)</h2>
   <table>
     <tr><th>模組名稱</th><th>核心拓樸架構</th><th>關鍵性能指標 (FOM)</th><th>主要尺寸 / 被動參數</th></tr>
-    <tr><td><b>PA (功率放大器)</b></td><td>差動疊接 + 交叉中和電容 + Balun</td><td>Pout=${state.pout_dbm}dBm, PAE=51.5%, K=1.28</td><td>Ropt=15.8Ω, Wtot=160μm, Cneu=24.5fF</td></tr>
-    <tr><td><b>LNA (低雜訊放大器)</b></td><td>電感源極退化 (IDCS Cascode)</td><td>Gain=18.0dB, NF=2.15dB, S11=-18.5dB</td><td>Ls=0.08nH, Lg=1.25nH, Wtot=75μm</td></tr>
-    <tr><td><b>VCO (壓控振盪器)</b></td><td>互補交叉耦合負電導 (-Gm Tank)</td><td>PN=-126.9dBc/Hz@1MHz, FTR=15%</td><td>Ltank=0.036nH, Cvar=1.2pF, Margin=2.8x</td></tr>
-    <tr><td><b>Mixer (混頻器)</b></td><td>吉爾伯特雙平衡單晶混頻 (Gilbert)</td><td>Gc=10.0dB, IIP3=+10.0dBm, ISO>35dB</td><td>RF gm=14.5mS, RL=550Ω</td></tr>
-    <tr><td><b>Switch (天線開關)</b></td><td>SPDT 串並聯 + FET Stacking</td><td>IL=0.88dB, ISO=26.5dB, P1dB=24dBm</td><td>Ron=2.8Ω, Coff=35fF, 2-Stack</td></tr>
-    <tr><td><b>Antenna (封裝天線)</b></td><td>矩形微帶貼片天線 (Inset-Fed)</td><td>Gain=5.8dBi, S11=-22.0dB, 效率=78%</td><td>W=1.35mm, L=1.05mm, Inset y0=0.32mm</td></tr>
+    <tr><td><b>PA (功率放大器)</b></td><td>差動疊接 + 交叉中和電容 + Balun</td><td>Pout=${state.pout_dbm}dBm, PAE=${paeStr}%, Class-${state.op_class}</td><td>Ropt=${rOptStr}Ω, Wtot=${wTotStr}μm</td></tr>
+    <tr><td><b>LNA (低雜訊放大器)</b></td><td>電感源極退化 (IDCS Cascode)</td><td>Gain=${state.lna_gain_db}dB, NF=${(1.55 + 0.022 * f).toFixed(2)}dB, S11=-18.5dB</td><td>Idc=${state.lna_idc_ma}mA, SNIM 匹配</td></tr>
+    <tr><td><b>VCO (壓控振盪器)</b></td><td>互補交叉耦合負電導 (-Gm Tank)</td><td>FTR=${state.vco_ftr_pct}%, Idc=${state.vco_idc_ma}mA</td><td>Leeson 相位雜訊最佳化</td></tr>
+    <tr><td><b>Mixer (混頻器)</b></td><td>吉爾伯特雙平衡單晶混頻 (Gilbert)</td><td>Gc=${state.mixer_gc_db}dB, IIP3=+10.0dBm, ISO>35dB</td><td>Idc=${state.mixer_idc_ma}mA, Quad Switches</td></tr>
+    <tr><td><b>Switch (天線開關)</b></td><td>SPDT 串並聯 + FET Stacking</td><td>IL=0.88dB, ISO=26.5dB, P1dB=${state.switch_p1db_dbm}dBm</td><td>Series-Shunt 疊接耐壓架構</td></tr>
+    <tr><td><b>Antenna (封裝天線)</b></td><td>矩形微帶貼片天線 (${state.antenna_substrate})</td><td>Gain=5.8dBi, S11=-22.0dB, 效率=78%</td><td>Balanis 諧振腔與嵌饋合成</td></tr>
   </table>
 
-  <h2>3. 晶片面積與矽片成本預估 (Silicon Die Area & Floorplan)</h2>
-  <p>總晶片面積: <b>1.32 mm² (1.15 mm x 1.15 mm)</b> | 預估 300mm 晶圓每顆裸晶成本: <b>$0.18 USD</b></p>
+  <h2>3. 大訊號線性度、DPD 與封裝熱阻可靠度 (Linearity, DPD & Thermal SOA)</h2>
+  <p>調變格式: <b>${state.modulation || "64-QAM"}</b> | 數位預失真 (DPD): <b>${state.dpd_enabled ? "啟用 (ON)" : "關閉 (OFF)"}</b> | 封裝型式: <b>${state.package_type || "QFN_ExposedPad"}</b> | 環境溫度: <b>${state.ambient_temp_c || 25}°C</b></p>
 
-  <h2>4. 製程角 PVT 容差矩陣 (PVT Corner Sensitivity)</h2>
-  <table>
-    <tr><th>Corner</th><th>溫度 / 電壓條件</th><th>PA Pout/PAE</th><th>LNA Gain/NF</th><th>VCO 頻偏/起振裕度</th><th>判定</th></tr>
-    <tr><td>TT (典型)</td><td>25°C, 1.20V</td><td>${state.pout_dbm} dBm / 52.4%</td><td>18.0 dB / 2.15 dB</td><td>0 MHz / 2.8x</td><td>✓ PASS</td></tr>
-    <tr><td>FF (快快)</td><td>-40°C, 1.32V</td><td>${(state.pout_dbm + 0.8).toFixed(1)} dBm / 54.1%</td><td>19.5 dB / 1.95 dB</td><td>+165 MHz / 3.4x</td><td>✓ PASS</td></tr>
-    <tr><td>SS (慢慢)</td><td>+125°C, 1.08V</td><td>${(state.pout_dbm - 0.9).toFixed(1)} dBm / 48.6%</td><td>16.2 dB / 2.45 dB</td><td>-210 MHz / 2.1x</td><td>✓ PASS</td></tr>
-  </table>
-
-  <h2>5. SPICE / Spectre 模擬網表預覽</h2>
+  <h2>4. SPICE / Spectre 模擬網表預覽</h2>
   <pre style="background:#f8fafc; padding:15px; border-radius:6px; font-size:11px; overflow-x:auto;">${generateSpiceString()}</pre>
 </body>
 </html>`;
@@ -3441,7 +4413,6 @@ function downloadFullReport() {
 // --- 10. Initialization & Event Listeners ---
 function initApp() {
   // Session Switch Buttons
-  // Session Switch Buttons
   const paBtn = document.getElementById("sessionPaBtn");
   const lnaBtn = document.getElementById("sessionLnaBtn");
   const vcoBtn = document.getElementById("sessionVcoBtn");
@@ -3450,6 +4421,7 @@ function initApp() {
   const antennaBtn = document.getElementById("sessionAntennaBtn");
   const linkBtn = document.getElementById("sessionLinkBtn");
   const matchBtn = document.getElementById("sessionMatchBtn");
+  const filterBtn = document.getElementById("sessionFilterBtn");
 
   const logo = document.getElementById("headerLogo");
   const statusBadge = document.getElementById("sessionStatusBadge");
@@ -3472,7 +4444,8 @@ function initApp() {
     switch: switchBtn,
     antenna: antennaBtn,
     link: linkBtn,
-    match: matchBtn
+    match: matchBtn,
+    filter: filterBtn
   };
 
   // Tabs
@@ -3485,18 +4458,21 @@ function initApp() {
     tab5: document.getElementById("tabContent5"),
     tab6: document.getElementById("tabContent6"),
     tab7: document.getElementById("tabContent7"),
-    tab8: document.getElementById("tabContent8")
+    tab8: document.getElementById("tabContent8"),
+    tab9: document.getElementById("tabContent9"),
+    tab10: document.getElementById("tabContent10")
   };
 
   const SESSION_TABS = {
-    pa: ["tab1", "tab2", "tab3", "tab6", "tab8", "tab4"],
-    lna: ["tab1", "tab2", "tab3", "tab6", "tab8", "tab4"],
+    pa: ["tab1", "tab2", "tab9", "tab10", "tab3", "tab6", "tab8", "tab4"],
+    lna: ["tab1", "tab2", "tab9", "tab10", "tab3", "tab6", "tab8", "tab4"],
     vco: ["tab3", "tab2", "tab8", "tab4"],
-    mixer: ["tab3", "tab2", "tab8", "tab4"],
+    mixer: ["tab3", "tab2", "tab10", "tab9", "tab8", "tab4"],
     switch: ["tab3", "tab2", "tab8", "tab4"],
     antenna: ["tab3", "tab2", "tab4"],
-    link: ["tab5", "tab7", "tab8", "tab4"],
-    match: ["tab6", "tab4"]
+    link: ["tab5", "tab10", "tab9", "tab7", "tab8", "tab4"],
+    match: ["tab6", "tab10", "tab4"],
+    filter: ["tab10", "tab6", "tab4"]
   };
 
   function switchToTab(target) {
@@ -3519,6 +4495,8 @@ function initApp() {
     else if (target === "tab6") drawMatchingSynthesizer();
     else if (target === "tab7") drawDieAreaFloorplan();
     else if (target === "tab8") drawPvtCorners();
+    else if (target === "tab9") drawLinearityAndThermal();
+    else if (target === "tab10") drawFilterAndSignalSimulator();
   }
 
   function updateTabsForSession(sessionName) {
@@ -3631,6 +4609,10 @@ function initApp() {
       logo.innerText = "MAT";
       logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-700 flex items-center justify-center text-white font-bold text-xl shadow-lg";
       statusBadge.innerText = "CURRENT: IMPEDANCE MATCHING SYNTHESIZER";
+    } else if (sessionName === "filter") {
+      logo.innerText = "FLT";
+      logo.className = "w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-700 flex items-center justify-center text-white font-bold text-xl shadow-lg";
+      statusBadge.innerText = "CURRENT: RF & ANALOG FILTER (LP / HP / BPF / BSF) & SIGNAL I/O SIMULATOR";
     }
 
     updateTabsForSession(sessionName);
@@ -3645,6 +4627,7 @@ function initApp() {
   antennaBtn?.addEventListener("click", () => setSession("antenna"));
   linkBtn?.addEventListener("click", () => setSession("link"));
   matchBtn?.addEventListener("click", () => setSession("match"));
+  filterBtn?.addEventListener("click", () => setSession("filter"));
 
   // Inputs
   const freqInput = document.getElementById("inputFreq");
@@ -3757,6 +4740,8 @@ function initApp() {
       state.freq_ghz = 5.2; state.pout_dbm = 22.0; state.node_key = "40nm_rf"; state.vdd = 1.1;
     } else if (val === "mmwave28") {
       state.freq_ghz = 28.0; state.pout_dbm = 18.0; state.node_key = "28nm_hpc"; state.vdd = 0.9;
+    } else if (val === "satcom28") {
+      state.freq_ghz = 29.5; state.pout_dbm = 19.5; state.node_key = "22nm_fdsoi"; state.vdd = 0.8;
     } else if (val === "mmwave39") {
       state.freq_ghz = 39.0; state.pout_dbm = 17.0; state.node_key = "28nm_hpc"; state.vdd = 0.9;
     } else if (val === "vband60") {
@@ -3767,6 +4752,8 @@ function initApp() {
       state.freq_ghz = 76.5; state.pout_dbm = 14.5; state.node_key = "28nm_hpc"; state.vdd = 0.9;
     } else if (val === "imaging77") {
       state.freq_ghz = 78.0; state.pout_dbm = 15.0; state.node_key = "28nm_hpc"; state.vdd = 0.9;
+    } else if (val === "wband94") {
+      state.freq_ghz = 90.0; state.pout_dbm = 17.5; state.node_key = "130nm_sige"; state.vdd = 1.8;
     } else if (val === "subghz") {
       state.freq_ghz = 0.9; state.pout_dbm = 27.0; state.node_key = "180nm_rf"; state.vdd = 1.8;
     }
@@ -3782,6 +4769,8 @@ function initApp() {
     state.freq_ghz = 2.4; state.pout_dbm = 24.0; state.node_key = "65nm_rf"; state.vdd = 1.2;
     state.op_class = "AB"; state.topology = "diff_cascode"; state.inductor_q = 15.0;
     state.use_neutralization = true; state.lna_gain_db = 18.0; state.lna_idc_ma = 6.0;
+    state.filter_type = "LP"; state.filter_poly = "butterworth"; state.filter_order = 3;
+    state.filter_sig_mode = "lf_plus_hf"; state.filter_fc_ratio = 1.0; state.filter_lf_amp = 0.70; state.filter_hf_amp = 0.60;
     freqInput.value = 2.4; poutInput.value = 24; nodeSelect.value = "65nm_rf";
     vddInput.value = 1.2; indqInput.value = 15;
     runSynthesis();
@@ -3836,7 +4825,7 @@ function initApp() {
     const isDark = html.getAttribute("data-theme") === "dark";
     html.setAttribute("data-theme", isDark ? "light" : "dark");
     document.getElementById("themeToggleBtn").innerText = isDark ? "☀️" : "🌙";
-    drawSmithChart(); drawWaveforms();
+    drawSmithChart(); drawWaveforms(); drawLinearityAndThermal(); drawFilterAndSignalSimulator();
   });
 
   // Language Toggle
@@ -3867,7 +4856,7 @@ function initApp() {
 ! Freq       S11_dB   S11_deg   S21_dB   S21_deg   S12_dB   S12_deg   S22_dB   S22_deg
 ${(d.freq * 0.8).toFixed(3)}   -12.50   -144.0     ${(d.gainDb - 2.5).toFixed(2)}    -144.0   -45.00    -144.0   -11.20   -144.0
 ${d.freq.toFixed(3)}   -18.50   -180.0     ${d.gainDb.toFixed(2)}    -180.0   -45.00    -180.0   -15.00   -180.0
-${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)}    -216.0   -45.00    -216.0   -11.80   -216.0
+${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)}    -216.0   -45.00    -180.0   -11.80   -216.0
 `;
     downloadFile(`${prefix}_${state.freq_ghz}ghz.s2p`, s2p);
   });
@@ -3900,6 +4889,63 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
   phaseBitsSelect?.addEventListener("change", (e) => {
     state.phase_bits = parseInt(e.target.value, 10);
     drawLinkBudget();
+  });
+
+  // Linearity, DPD & Thermal SOA Controls (Tab 9)
+  const modSelect = document.getElementById("selectModulation");
+  modSelect?.addEventListener("change", (e) => {
+    state.modulation = e.target.value;
+    drawLinearityAndThermal();
+  });
+
+  const checkDpd = document.getElementById("checkDpd");
+  checkDpd?.addEventListener("change", (e) => {
+    state.dpd_enabled = e.target.checked;
+    drawLinearityAndThermal();
+  });
+
+  const pkgSelect = document.getElementById("selectPackageThermal");
+  pkgSelect?.addEventListener("change", (e) => {
+    state.package_type = e.target.value;
+    drawLinearityAndThermal();
+  });
+
+  const ambTempInput = document.getElementById("inputAmbientTemp");
+  ambTempInput?.addEventListener("input", (e) => {
+    state.ambient_temp_c = parseFloat(e.target.value) || 25.0;
+    const valEl = document.getElementById("valAmbientTemp");
+    if (valEl) valEl.innerText = `${state.ambient_temp_c}°C`;
+    drawLinearityAndThermal();
+  });
+
+  // Filter & Signal I/O Simulator Controls (Tab 10)
+  document.getElementById("selectFilterType")?.addEventListener("change", (e) => {
+    state.filter_type = e.target.value;
+    updateUI();
+  });
+  document.getElementById("selectFilterPoly")?.addEventListener("change", (e) => {
+    state.filter_poly = e.target.value;
+    updateUI();
+  });
+  document.getElementById("selectFilterOrder")?.addEventListener("change", (e) => {
+    state.filter_order = parseInt(e.target.value, 10) || 3;
+    updateUI();
+  });
+  document.getElementById("selectFilterSignalMode")?.addEventListener("change", (e) => {
+    state.filter_sig_mode = e.target.value;
+    updateUI();
+  });
+  document.getElementById("inputFilterFcRatio")?.addEventListener("input", (e) => {
+    state.filter_fc_ratio = parseFloat(e.target.value) || 1.0;
+    updateUI();
+  });
+  document.getElementById("inputFilterLfAmp")?.addEventListener("input", (e) => {
+    state.filter_lf_amp = parseFloat(e.target.value);
+    updateUI();
+  });
+  document.getElementById("inputFilterHfAmp")?.addEventListener("input", (e) => {
+    state.filter_hf_amp = parseFloat(e.target.value);
+    updateUI();
   });
 
   // Matching Synthesizer Controls
@@ -3958,7 +5004,104 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
 
 // --- 11. Comprehensive RF Terms Glossary (術語字典) ---
 const RF_GLOSSARY = [
-  // PA terms
+  // Filter & Signal I/O terms
+  {
+    term: "Low-Pass Filter (LP / LF Pass, HF Reject)",
+    category: "filter",
+    module: "Filter / PA",
+    badgeColor: "cyan",
+    zh: {
+      name: "低通濾波器 (LP) 與高低頻訊號變化",
+      formula: "|H(jω)|² = 1 / [1 + (ω / ωc)²ᴺ],  f < fc 通過、f > fc 衰減",
+      desc: "由並聯對地電容 C 與串聯電感 L 組成。當輸入複合訊號 (低頻 LF + 高頻 HF) 進入低通濾波器時，電感對低頻呈短路、電容對高頻呈對地旁路，使輸出訊號平滑化並保留低頻 LF 基頻包絡，徹底濾除高頻 HF 諧波與雜訊毛刺。"
+    },
+    en: {
+      name: "Low-Pass Filter (LP) & LF/HF Signal Transformation",
+      formula: "|H(jω)|² = 1 / [1 + (ω / ωc)²ᴺ],  Passes f < fc, Rejects f > fc",
+      desc: "Composed of shunt capacitors and series inductors. Passes low-frequency (LF) envelopes with minimal loss while shunting high-frequency (HF) harmonics and noise spikes to ground."
+    }
+  },
+  {
+    term: "High-Pass Filter (HP / HF Pass, LF Block)",
+    category: "filter",
+    module: "Filter / LNA",
+    badgeColor: "emerald",
+    zh: {
+      name: "高通濾波器 (HP) 與高低頻訊號變化",
+      formula: "|H(jω)|² = 1 / [1 + (ωc / ω)²ᴺ],  f > fc 通過、f < fc 阻隔",
+      desc: "由串聯耦合電容 C 與並聯對地電感 L 組成。能完全阻隔直流 (DC Block) 與低頻 LF 慢速基線漂移干擾，僅允許高於截止頻率 fc 的高頻射頻載波與快速轉態邊緣通過。"
+    },
+    en: {
+      name: "High-Pass Filter (HP) & LF/HF Signal Transformation",
+      formula: "|H(jω)|² = 1 / [1 + (ωc / ω)²ᴺ],  Passes f > fc, Blocks f < fc",
+      desc: "Composed of series capacitors and shunt inductors. Blocks DC offset and low-frequency (LF) baseline wander while passing high-frequency (HF) RF carriers and fast edges."
+    }
+  },
+  {
+    term: "Butterworth vs. Chebyshev vs. Bessel Filter",
+    category: "filter",
+    module: "Filter",
+    badgeColor: "amber",
+    zh: {
+      name: "巴特沃斯 / 切比雪夫 / 貝索濾波多項式",
+      formula: "Roll-off Slope ≈ -20·N dB/decade",
+      desc: "Butterworth 具備最平坦通帶響應 (零漣波)；Chebyshev 允許通帶內微小等波紋漣波以換取極陡峭的帶外滾降抑制；Bessel 則具備最平坦群延遲 (線性相位)，可確保數位方波與寬頻脈衝訊號不發生振鈴失真。"
+    },
+    en: {
+      name: "Butterworth vs. Chebyshev vs. Bessel Polynomials",
+      formula: "Roll-off Slope ≈ -20·N dB/decade",
+      desc: "Butterworth offers maximally flat passband magnitude; Chebyshev trades small passband ripple for steeper stopband roll-off; Bessel preserves linear phase (constant group delay) to prevent pulse ringing."
+    }
+  },
+  // PA & Linearity terms
+  {
+    term: "EVM & DPD (Error Vector Magnitude & Digital Predistortion)",
+    category: "pa",
+    module: "PA / Link",
+    badgeColor: "cyan",
+    zh: {
+      name: "誤差向量幅度 EVM 與數位預失真 DPD",
+      formula: "EVM(%) = √(P_error / P_ref) × 100%",
+      desc: "衡量正交調變星座點受放大器 AM-AM 增益壓縮與 AM-PM 相位偏移後偏離理想位置的程度。透過基頻數位預失真 (DPD) 植入反向非線性函數，可將壓縮區擴展 3~4 dB 並大幅降低 EVM。"
+    },
+    en: {
+      name: "Error Vector Magnitude & Digital Predistortion",
+      formula: "EVM(%) = √(P_error / P_ref) × 100%",
+      desc: "Quantifies constellation distortion from AM-AM gain compression and AM-PM phase shift. Digital Predistortion (DPD) applies an inverse nonlinear transfer function in baseband to linearize the PA."
+    }
+  },
+  {
+    term: "ACLR & IMD3 (Adjacent Channel Leakage Ratio)",
+    category: "pa",
+    module: "PA / Mixer",
+    badgeColor: "cyan",
+    zh: {
+      name: "鄰道洩漏比 ACLR 與三階交調失真 IMD3",
+      formula: "IMD3 (dBc) = 2 · (Pout - OIP3)",
+      desc: "雙音或多載波 OFDM 訊號通過非線性放大器時，三階非線性項會在主頻帶兩側產生頻譜再生 (Spectral Regrowth)，導致能量洩漏至相鄰通道並干擾鄰近用戶。"
+    },
+    en: {
+      name: "Adjacent Channel Leakage Ratio & IMD3",
+      formula: "IMD3 (dBc) = 2 · (Pout - OIP3)",
+      desc: "Measures spectral regrowth into adjacent channels caused by 3rd-order intermodulation distortion when amplifying wide-bandwidth modulated signals."
+    }
+  },
+  {
+    term: "Tj & Black's Equation MTTF (Junction Temp & Electromigration)",
+    category: "pa",
+    module: "PA / Reliability",
+    badgeColor: "amber",
+    zh: {
+      name: "接面溫度 Tj 與 Black 電遷移壽命方程",
+      formula: "Tj = Tamb + Pdiss·θJA,  MTTF = A·J⁻ⁿ·exp(Ea / kB·Tj)",
+      desc: "晶片消耗之直流功率扣除輸出射頻功率後轉化為熱能，經封裝熱阻 θJA 抬升接面溫度 Tj。高溫與高電流密度 J 會呈指數加速金屬互連層電遷移 (Electromigration) 老化。"
+    },
+    en: {
+      name: "Junction Temperature & Black's Electromigration MTTF",
+      formula: "Tj = Tamb + Pdiss·θJA,  MTTF = A·J⁻ⁿ·exp(Ea / kB·Tj)",
+      desc: "Dissipated power raises die junction temperature Tj through package thermal resistance θJA. Elevated Tj and current density J exponentially accelerate metal electromigration failure."
+    }
+  },
   {
     term: "Ropt (Optimum Load Resistance)",
     category: "pa",

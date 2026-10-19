@@ -119,7 +119,7 @@ def run_verification():
     print("\n[STAGE 2] Matrix Sweep & Edge Conditions Audit:")
 
     nodes = list(PDK_LIBRARY.keys())
-    classes = ["A", "AB", "B", "E", "F"]
+    classes = ["A", "AB", "B", "C", "E", "F"]
     topologies = ["differential_cascode", "differential_cs", "single_ended"]
     freqs = [0.9, 2.4, 5.2, 28.0, 60.0]
     pouts = [14.0, 20.0, 24.0, 28.0]
@@ -234,6 +234,52 @@ def run_verification():
                 all_inside = False
                 break
     report.assert_test(all_inside, "All Load-Pull reflection points bounded within unit Smith Chart (|Gamma| <= 1.0)")
+
+    # ------------------------------------------------------------
+    # STAGE 7: Linearity, DPD & Thermal SOA Physical Audit
+    # ------------------------------------------------------------
+    print("\n[STAGE 7] Linearity (AM-AM/AM-PM/DPD) & Thermal SOA Audit:")
+    from pa_engine import analyze_linearity_and_thermal
+    lin = analyze_linearity_and_thermal(
+        pout_dbm=18.0,
+        gain_db=14.5,
+        p_dc_w=0.145,
+        op_class="AB",
+        is_differential=True,
+        modulation="64-QAM",
+        dpd_enabled=True,
+        package_type="flip_chip_bga",
+        ambient_temp_c=25.0,
+    )
+    report.assert_test(
+        lin.evm_dpd_pct < lin.evm_raw_pct and lin.aclr_dpd_dbc < lin.aclr_raw_dbc,
+        "Digital Predistortion (DPD) improves EVM and suppresses ACLR1",
+        f"EVM: {lin.evm_raw_pct}% -> {lin.evm_dpd_pct}%, ACLR1: {lin.aclr_raw_dbc}dBc -> {lin.aclr_dpd_dbc}dBc"
+    )
+    report.assert_test(
+        lin.junction_temp_c > 25.0 and lin.mttf_years > 0.0,
+        "Thermal resistance & Black's Equation Electromigration MTTF physical consistency",
+        f"Tj={lin.junction_temp_c}°C, MTTF={lin.mttf_years} yrs"
+    )
+
+    # ------------------------------------------------------------
+    # STAGE 8: RF & Analog Filter (LP / HP / BPF / BSF) & Signal I/O Audit
+    # ------------------------------------------------------------
+    print("\n[STAGE 8] RF & Analog Filter (LP / HP / BPF / BSF) & Signal I/O Audit:")
+    from pa_engine import AutomatedFilterDesigner
+    flt = AutomatedFilterDesigner()
+    lp_res = flt.synthesize(cutoff_freq_ghz=2.4, filter_type="LP", approximation="butterworth", order_n=3, vin_lf_v=0.8, vin_hf_v=0.6)
+    hp_res = flt.synthesize(cutoff_freq_ghz=2.4, filter_type="HP", approximation="butterworth", order_n=3, vin_lf_v=0.8, vin_hf_v=0.6)
+    report.assert_test(
+        lp_res.signal_components[0].vout_amp_v > 0.7 and lp_res.signal_components[2].vout_amp_v < 0.08,
+        "Low-Pass Filter (LP): Passes LF (0.25*fc) signal & rejects HF (3.0*fc) signal",
+        f"LF Out={lp_res.signal_components[0].vout_amp_v}V, HF Out={lp_res.signal_components[2].vout_amp_v}V"
+    )
+    report.assert_test(
+        hp_res.signal_components[0].vout_amp_v < 0.05 and hp_res.signal_components[2].vout_amp_v > 0.50,
+        "High-Pass Filter (HP): Blocks LF (0.25*fc) signal & passes HF (3.0*fc) signal",
+        f"LF Out={hp_res.signal_components[0].vout_amp_v}V, HF Out={hp_res.signal_components[2].vout_amp_v}V"
+    )
 
     return report.summary()
 
