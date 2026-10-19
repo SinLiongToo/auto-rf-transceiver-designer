@@ -595,7 +595,9 @@ const state = {
   filter_fc_ratio: 1.0,
   filter_lf_amp: 0.70,
   filter_hf_amp: 0.60,
-  filter_view_mode: "split"
+  filter_view_mode: "split",
+  filter_anim_playing: true,
+  filter_anim_phase: 0.0
 };
 
 let currentDesign = null;
@@ -3916,20 +3918,24 @@ function drawFilterAndSignalSimulator() {
     const vHfOutArr = [];
     let maxPeak = 1.0;
 
+    const flowPhase = state.filter_anim_playing ? (state.filter_anim_phase || 0.0) : 0.0;
+    const tShift = flowPhase * 0.15 * (1.0 / Math.max(0.1, f0));
+
     for (let i = 0; i <= numPts; i++) {
       const tNs = (i / numPts) * tMaxNs;
+      const tEff = tNs - tShift;
       let vIn = 0;
       let vOut = 0;
       tones.forEach(t => {
-        const radIn = 2.0 * Math.PI * t.freq * tNs + (t.phaseIn * Math.PI) / 180.0;
-        const radOut = 2.0 * Math.PI * t.freq * tNs + (t.phaseOut * Math.PI) / 180.0;
+        const radIn = 2.0 * Math.PI * t.freq * tEff + (t.phaseIn * Math.PI) / 180.0;
+        const radOut = 2.0 * Math.PI * t.freq * tEff + (t.phaseOut * Math.PI) / 180.0;
         vIn += t.ampIn * Math.sin(radIn);
         vOut += t.ampOut * Math.sin(radOut);
       });
-      const vLfIn = lfTone.ampIn * Math.sin(2.0 * Math.PI * lfTone.freq * tNs + (lfTone.phaseIn * Math.PI) / 180.0);
-      const vHfIn = hfTone.ampIn * Math.sin(2.0 * Math.PI * hfTone.freq * tNs + (hfTone.phaseIn * Math.PI) / 180.0);
-      const vLfOut = lfTone.ampOut * Math.sin(2.0 * Math.PI * lfTone.freq * tNs + (lfTone.phaseOut * Math.PI) / 180.0);
-      const vHfOut = hfTone.ampOut * Math.sin(2.0 * Math.PI * hfTone.freq * tNs + (hfTone.phaseOut * Math.PI) / 180.0);
+      const vLfIn = lfTone.ampIn * Math.sin(2.0 * Math.PI * lfTone.freq * tEff + (lfTone.phaseIn * Math.PI) / 180.0);
+      const vHfIn = hfTone.ampIn * Math.sin(2.0 * Math.PI * hfTone.freq * tEff + (hfTone.phaseIn * Math.PI) / 180.0);
+      const vLfOut = lfTone.ampOut * Math.sin(2.0 * Math.PI * lfTone.freq * tEff + (lfTone.phaseOut * Math.PI) / 180.0);
+      const vHfOut = hfTone.ampOut * Math.sin(2.0 * Math.PI * hfTone.freq * tEff + (hfTone.phaseOut * Math.PI) / 180.0);
 
       vInArr.push(vIn);
       vOutArr.push(vOut);
@@ -4016,6 +4022,18 @@ function drawFilterAndSignalSimulator() {
       ctx.lineTo(padL, 178);
       ctx.closePath();
       ctx.stroke();
+
+      // Flowing particle dots moving left to right
+      const nParticles = 8;
+      for (let p = 0; p < nParticles; p++) {
+        const pFrac = ((p / nParticles) + (flowPhase * 0.06)) % 1.0;
+        const px = padL + pFrac * pw;
+        ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
+        ctx.beginPath();
+        ctx.arc(px, 167, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 10px monospace";
       const transText = `▼ 通過【${fType} ${poly.toUpperCase()} 濾波器】(階數 N=${orderN}, 截止頻率 fc = ${fcGhz.toFixed(2)} GHz) ▼`;
@@ -5166,6 +5184,54 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
     state.filter_view_mode = "decomp";
     drawFilterAndSignalSimulator();
   });
+
+  // Live Waveform Animation Toggle & Loop
+  const btnFilterAnimToggle = document.getElementById("btnFilterAnimToggle");
+  const iconFilterAnim = document.getElementById("iconFilterAnim");
+  const lblFilterAnim = document.getElementById("lblFilterAnim");
+
+  function updateFilterAnimButtonUI() {
+    if (!btnFilterAnimToggle || !lblFilterAnim || !iconFilterAnim) return;
+    if (state.filter_anim_playing) {
+      btnFilterAnimToggle.className = "px-2.5 py-1 text-[11px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all flex items-center gap-1 shadow-sm";
+      iconFilterAnim.textContent = "⏸️";
+      lblFilterAnim.textContent = "波形流動中 (Live Flow)";
+    } else {
+      btnFilterAnimToggle.className = "px-2.5 py-1 text-[11px] font-bold rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-1 shadow-sm";
+      iconFilterAnim.textContent = "▶️";
+      lblFilterAnim.textContent = "已暫停流動 (Paused)";
+    }
+  }
+
+  btnFilterAnimToggle?.addEventListener("click", () => {
+    state.filter_anim_playing = !state.filter_anim_playing;
+    updateFilterAnimButtonUI();
+    if (!state.filter_anim_playing) {
+      drawFilterAndSignalSimulator();
+    }
+  });
+  updateFilterAnimButtonUI();
+
+  let lastFilterAnimTimestamp = 0;
+  function runFilterAnimationLoop(timestamp) {
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      if (lastFilterAnimTimestamp === 0) lastFilterAnimTimestamp = timestamp;
+      const dt = Math.min(0.1, (timestamp - lastFilterAnimTimestamp) / 1000.0);
+      lastFilterAnimTimestamp = timestamp;
+
+      const isFilterTabActive = state.activeTab === "tab10" || (!state.activeTab && state.session === "filter");
+      if (state.filter_anim_playing && isFilterTabActive) {
+        state.filter_anim_phase = (state.filter_anim_phase || 0.0) + dt * 2.5;
+        if (state.filter_anim_phase > 10000.0) state.filter_anim_phase = state.filter_anim_phase % 1000.0;
+        drawFilterAndSignalSimulator();
+      }
+      window.requestAnimationFrame(runFilterAnimationLoop);
+    }
+  }
+
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(runFilterAnimationLoop);
+  }
 
   // Matching Synthesizer Controls
   const mRs = document.getElementById("inputMatchRs");
