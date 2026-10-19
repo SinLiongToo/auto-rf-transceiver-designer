@@ -207,7 +207,9 @@ const i18nData = {
     footCol5Title: "5. 天線開關 (Switch): 串並聯與 FET Stacking 耐壓",
     footCol5Desc: "採用 Series-Shunt 架構降低導通電阻 Ron 並提升隔離度，多級 FET 串聯堆疊技術承受瓦級射頻擺幅，大幅推升 P1dB 壓縮點。",
     footCol6Title: "6. 封裝天線 (Antenna): 微帶貼片與凹槽匹配",
-    footCol6Desc: "薄膜頂層金屬構建矩形微帶貼片諧振腔，藉由精確內凹槽深度 y0 實現 50Ω 純阻抗共振，提供高天線輻射效率與平坦波束。"
+    footCol6Desc: "薄膜頂層金屬構建矩形微帶貼片諧振腔，藉由精確內凹槽深度 y0 實現 50Ω 純阻抗共振，提供高天線輻射效率與平坦波束。",
+    footerStatusText: "系統狀態：運作正常 · 雙語 (中文/EN) 即時架構支援",
+    footerUpdateLabel: "🕒 最後更新時間 (Last Updated):"
   },
   en: {
     appTitle: "AutoRF Integrated CMOS RF Front-End Design & Synthesis Guide",
@@ -411,7 +413,9 @@ const i18nData = {
     footCol5Title: "5. T/R Switch: Series-Shunt & FET Stacking",
     footCol5Desc: "Series-shunt configuration minimizes Ron while maximizing off-isolation; stacked FET topology divides peak RF voltage to sustain high transmit power and elevate P1dB.",
     footCol6Title: "6. On-Package Antenna: Microstrip Patch & Inset Feed",
-    footCol6Desc: "Top-metal microstrip patch radiator achieves 50Ω input resonance via calibrated notch inset depth y0, delivering high radiation efficiency and directive main beam."
+    footCol6Desc: "Top-metal microstrip patch radiator achieves 50Ω input resonance via calibrated notch inset depth y0, delivering high radiation efficiency and directive main beam.",
+    footerStatusText: "System Status: Operational · Bilingual (ZH/EN) Real-time Synthesis",
+    footerUpdateLabel: "🕒 Last Updated:"
   }
 };
 
