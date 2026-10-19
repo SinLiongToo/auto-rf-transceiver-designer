@@ -19,6 +19,7 @@ const mockCanvas = {
     moveTo: () => {},
     lineTo: () => {},
     stroke: () => {},
+    strokeRect: () => {},
     arc: () => {},
     fill: () => {},
     fillText: () => {},
@@ -192,10 +193,13 @@ try {
   state.session = 'filter';
   ['LP', 'HP', 'BPF', 'BSF'].forEach(ft => {
     state.filter_type = ft;
-    ['lf_plus_hf', 'lf_vs_hf_dual', 'square_pulse', 'pa_harmonics'].forEach(sm => {
+    ['lf_plus_hf', 'lf_plus_f0_plus_hf', 'lf_vs_hf_dual', 'square_pulse', 'pa_harmonics'].forEach(sm => {
       state.filter_sig_mode = sm;
-      updateUI();
-      drawFilterAndSignalSimulator();
+      ['split', 'overlay', 'decomp'].forEach(vm => {
+        state.filter_view_mode = vm;
+        updateUI();
+        drawFilterAndSignalSimulator();
+      });
     });
     const hLf = evaluateFilterTransferJS(0.6, 2.4, ft, 'butterworth', 3, 15);
     const hHf = evaluateFilterTransferJS(7.2, 2.4, ft, 'butterworth', 3, 15);

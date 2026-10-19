@@ -594,7 +594,8 @@ const state = {
   filter_sig_mode: "lf_plus_hf",
   filter_fc_ratio: 1.0,
   filter_lf_amp: 0.70,
-  filter_hf_amp: 0.60
+  filter_hf_amp: 0.60,
+  filter_view_mode: "split"
 };
 
 let currentDesign = null;
@@ -3758,36 +3759,43 @@ function drawFilterAndSignalSimulator() {
 
   const fLf = 0.25 * f0;
   const fHf = 3.00 * f0;
+  const isBpfBsf = fType === "BPF" || fType === "BSF";
 
   // Define input frequency components according to signal mode
   let tones = [];
   if (sigMode === "lf_vs_hf_dual") {
     tones = [
-      { key: "LF", label: "低頻 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#fbbf24" },
-      { key: "F0", label: "主頻 f0 (1.00f0)", freq: f0, ampIn: 0.0, phaseIn: 0, color: "#22d3ee" },
-      { key: "HF", label: "高頻 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#f43f5e" }
+      { key: "LF", label: "低頻慢波 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#38bdf8" },
+      { key: "F0", label: "中心主頻 f0 (1.00f0)", freq: f0, ampIn: 0.0, phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "高頻諧波/毛刺 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#fb7185" }
+    ];
+  } else if (sigMode === "lf_plus_f0_plus_hf") {
+    tones = [
+      { key: "LF", label: "低頻慢波 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#38bdf8" },
+      { key: "F0", label: "中心主頻 f0 (1.00f0)", freq: f0, ampIn: 0.85, phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "高頻諧波/毛刺 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#fb7185" }
     ];
   } else if (sigMode === "square_pulse") {
     const aBase = Math.max(0.25, lfAmpIn);
     tones = [
-      { key: "LF", label: "基波 1f (0.5f0)", freq: 0.5 * f0, ampIn: aBase * 1.273, phaseIn: 0, color: "#fbbf24" },
+      { key: "LF", label: "基波 1f (0.5f0)", freq: 0.5 * f0, ampIn: aBase * 1.273, phaseIn: 0, color: "#38bdf8" },
       { key: "F0", label: "3次奇諧波 (1.5f0)", freq: 1.5 * f0, ampIn: aBase * (1.273 / 3), phaseIn: 0, color: "#22d3ee" },
-      { key: "HF", label: "5次高頻邊緣 (2.5f0)", freq: 2.5 * f0, ampIn: Math.max(0.15, hfAmpIn * (1.273 / 5)), phaseIn: 0, color: "#f43f5e" },
+      { key: "HF", label: "5次高頻邊緣 (2.5f0)", freq: 2.5 * f0, ampIn: Math.max(0.15, hfAmpIn * (1.273 / 5)), phaseIn: 0, color: "#fb7185" },
       { key: "H7", label: "7次高頻邊緣 (3.5f0)", freq: 3.5 * f0, ampIn: Math.max(0.10, hfAmpIn * (1.273 / 7)), phaseIn: 0, color: "#a855f7" }
     ];
   } else if (sigMode === "pa_harmonics") {
     tones = [
-      { key: "LF", label: "DC/包絡基頻 (0.15f0)", freq: 0.15 * f0, ampIn: lfAmpIn * 0.65, phaseIn: 0, color: "#fbbf24" },
+      { key: "LF", label: "DC/包絡基頻 (0.15f0)", freq: 0.15 * f0, ampIn: lfAmpIn * 0.65, phaseIn: 0, color: "#38bdf8" },
       { key: "F0", label: "PA 主載波 (1.0f0)", freq: f0, ampIn: 1.00, phaseIn: 0, color: "#22d3ee" },
       { key: "H2", label: "二次諧波 2f0", freq: 2.0 * f0, ampIn: hfAmpIn * 0.65, phaseIn: -35, color: "#a855f7" },
-      { key: "HF", label: "三次諧波 3f0 (HF)", freq: 3.0 * f0, ampIn: hfAmpIn * 0.50, phaseIn: -70, color: "#f43f5e" }
+      { key: "HF", label: "三次諧波 3f0 (HF)", freq: 3.0 * f0, ampIn: hfAmpIn * 0.50, phaseIn: -70, color: "#fb7185" }
     ];
   } else {
-    // Default: lf_plus_hf (Composite LF + f0 + HF)
+    // Default: lf_plus_hf (Classic pure Low-Freq + High-Freq composition)
     tones = [
-      { key: "LF", label: "低頻 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#fbbf24" },
-      { key: "F0", label: "主頻 f0 (1.00f0)", freq: f0, ampIn: 0.85, phaseIn: 0, color: "#22d3ee" },
-      { key: "HF", label: "高頻 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#f43f5e" }
+      { key: "LF", label: "低頻慢波 LF (0.25f0)", freq: fLf, ampIn: lfAmpIn, phaseIn: 0, color: "#38bdf8" },
+      { key: "F0", label: "中心主頻 f0 (1.00f0)", freq: f0, ampIn: isBpfBsf ? 0.85 : 0.0, phaseIn: 0, color: "#22d3ee" },
+      { key: "HF", label: "高頻諧波/毛刺 HF (3.00f0)", freq: fHf, ampIn: hfAmpIn, phaseIn: 0, color: "#fb7185" }
     ];
   }
 
@@ -3812,8 +3820,8 @@ function drawFilterAndSignalSimulator() {
 
   const kpiFc = document.getElementById("fltKpiFc");
   if (kpiFc) kpiFc.innerText = `${fcGhz.toFixed(2)} GHz`;
-  const kpiSlope = document.getElementById("fltKpiSlope");
-  if (kpiSlope) kpiSlope.innerText = `${fType} -${20 * orderN} dB/dec`;
+  const kpiSlope = document.getElementById("fltKpiRolloffSub");
+  if (kpiSlope) kpiSlope.innerText = `${fType} -${20 * orderN} dB/dec | IL: ${(0.18 * orderN * (15.0 / Math.max(5, qInd))).toFixed(2)} dB`;
 
   const kpiLf = document.getElementById("fltKpiLfChange");
   if (kpiLf) kpiLf.innerText = `${lfTone.ampIn.toFixed(2)}V → ${lfTone.ampOut.toFixed(2)}V`;
@@ -3859,7 +3867,32 @@ function drawFilterAndSignalSimulator() {
     kpiRej.innerText = `帶外抑制度: -${rejDb.toFixed(1)} dBc`;
   }
 
-  // 1. Draw Time-Domain Input vs. Output Waveform Canvas (#filterIoTimeCanvas)
+  // Update Dynamic Explanatory Banner
+  const bannerEl = document.getElementById("filterBannerText");
+  if (bannerEl) {
+    let bText = "";
+    if (fType === "LP") {
+      bText = `【低通 LP 成果】輸入端含有高頻毛刺 (${hfTone.ampIn.toFixed(2)}V)，通過低通後高頻被徹底濾除 (衰減 ${hHfRef.magDb.toFixed(1)} dB)，輸出 CH2 還原為乾淨平滑的低頻慢波 (${lfTone.ampOut.toFixed(2)}V)！`;
+    } else if (fType === "HP") {
+      bText = `【高通 HP 成果】輸入端含有低頻慢波漂移 (${lfTone.ampIn.toFixed(2)}V)，通過高通後低頻被完全阻隔 (阻隔 ${hLfRef.magDb.toFixed(1)} dB)，輸出 CH2 僅剩以 0V 為中心對稱震盪的高頻純淨波形 (${hfTone.ampOut.toFixed(2)}V)！`;
+    } else if (fType === "BPF") {
+      bText = `【帶通 BPF 成果】僅中心頻率 f0 順利通過 (損耗 ${hF0Ref.magDb.toFixed(1)} dB)，帶外之低頻慢波與高頻毛刺皆被有效壓制！`;
+    } else {
+      bText = `【帶拒/陷波 BSF 成果】中心干擾頻率 f0 被精確陷波挖除 (衰減 ${hF0Ref.magDb.toFixed(1)} dB)，兩側之低頻與高頻信號完整保留！`;
+    }
+    bannerEl.innerHTML = `<span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-bold">即時解讀</span><span>${bText}</span>`;
+  }
+
+  // Update View Mode Buttons Highlight
+  const curViewMode = state.filter_view_mode || "split";
+  const btnSplit = document.getElementById("btnFilterViewSplit");
+  const btnOverlay = document.getElementById("btnFilterViewOverlay");
+  const btnDecomp = document.getElementById("btnFilterViewDecomp");
+  if (btnSplit) btnSplit.className = curViewMode === "split" ? "px-2.5 py-1 text-[11px] font-bold rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 transition-all" : "px-2.5 py-1 text-[11px] font-medium rounded text-slate-400 hover:text-slate-200 border border-transparent transition-all";
+  if (btnOverlay) btnOverlay.className = curViewMode === "overlay" ? "px-2.5 py-1 text-[11px] font-bold rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 transition-all" : "px-2.5 py-1 text-[11px] font-medium rounded text-slate-400 hover:text-slate-200 border border-transparent transition-all";
+  if (btnDecomp) btnDecomp.className = curViewMode === "decomp" ? "px-2.5 py-1 text-[11px] font-bold rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 transition-all" : "px-2.5 py-1 text-[11px] font-medium rounded text-slate-400 hover:text-slate-200 border border-transparent transition-all";
+
+  // 1. Draw Multi-Channel Time-Domain Oscilloscope Canvas (#filterIoTimeCanvas)
   const timeCanvas = document.getElementById("filterIoTimeCanvas");
   if (timeCanvas) {
     const ctx = timeCanvas.getContext("2d");
@@ -3869,33 +3902,19 @@ function drawFilterAndSignalSimulator() {
     ctx.fillStyle = "#090d16";
     ctx.fillRect(0, 0, w, h);
 
-    const padL = 46, padR = 18, padT = 22, padB = 28;
+    const padL = 52, padR = 24;
     const pw = w - padL - padR;
-    const ph = h - padT - padB;
-    const midY = padT + ph / 2;
-
-    // Grid lines
-    ctx.strokeStyle = "#1e293b";
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padT + (ph * i) / 4;
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
-    }
-    for (let i = 0; i <= 8; i++) {
-      const x = padL + (pw * i) / 8;
-      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
-    }
-    ctx.strokeStyle = "#334155";
-    ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(w - padR, midY); ctx.stroke();
 
     // Time window: 2 full cycles of LF signal (T_window = 2 / fLf = 8 / f0 ns)
     const tMaxNs = 4.0 / Math.max(0.1, f0);
-    const numPts = 240;
+    const numPts = 260;
     const vInArr = [];
     const vOutArr = [];
+    const vLfInArr = [];
+    const vHfInArr = [];
     const vLfOutArr = [];
     const vHfOutArr = [];
-    let maxPeak = 1.2;
+    let maxPeak = 1.0;
 
     for (let i = 0; i <= numPts; i++) {
       const tNs = (i / numPts) * tMaxNs;
@@ -3907,80 +3926,266 @@ function drawFilterAndSignalSimulator() {
         vIn += t.ampIn * Math.sin(radIn);
         vOut += t.ampOut * Math.sin(radOut);
       });
+      const vLfIn = lfTone.ampIn * Math.sin(2.0 * Math.PI * lfTone.freq * tNs + (lfTone.phaseIn * Math.PI) / 180.0);
+      const vHfIn = hfTone.ampIn * Math.sin(2.0 * Math.PI * hfTone.freq * tNs + (hfTone.phaseIn * Math.PI) / 180.0);
       const vLfOut = lfTone.ampOut * Math.sin(2.0 * Math.PI * lfTone.freq * tNs + (lfTone.phaseOut * Math.PI) / 180.0);
       const vHfOut = hfTone.ampOut * Math.sin(2.0 * Math.PI * hfTone.freq * tNs + (hfTone.phaseOut * Math.PI) / 180.0);
 
       vInArr.push(vIn);
       vOutArr.push(vOut);
+      vLfInArr.push(vLfIn);
+      vHfInArr.push(vHfIn);
       vLfOutArr.push(vLfOut);
       vHfOutArr.push(vHfOut);
       maxPeak = Math.max(maxPeak, Math.abs(vIn), Math.abs(vOut));
     }
 
-    const vScale = (ph * 0.44) / maxPeak;
+    if (curViewMode === "split") {
+      // --- SPLIT 2-CHANNEL OSCILLOSCOPE (CH1 INPUT on top, CH2 OUTPUT on bottom) ---
+      const ch1_top = 18, ch1_bot = 152, ch1_mid = 85;
+      const ch1_h = ch1_bot - ch1_top;
+      const ch2_top = 182, ch2_bot = 316, ch2_mid = 249;
+      const ch2_h = ch2_bot - ch2_top;
+      const vScaleCh = (ch1_h * 0.40) / maxPeak;
 
-    // Draw Input Signal Vin(t) (Dashed Slate)
-    ctx.strokeStyle = "#94a3b8";
-    ctx.lineWidth = 1.6;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    for (let i = 0; i <= numPts; i++) {
-      const x = padL + (i / numPts) * pw;
-      const y = midY - vInArr[i] * vScale;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      // Draw CH1 Background Grid
+      ctx.strokeStyle = "#162032";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 8; i++) {
+        const x = padL + (pw * i) / 8;
+        ctx.beginPath(); ctx.moveTo(x, ch1_top); ctx.lineTo(x, ch1_bot); ctx.stroke();
+      }
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+      ctx.beginPath(); ctx.moveTo(padL, ch1_mid); ctx.lineTo(w - padR, ch1_mid); ctx.stroke();
+
+      // CH1 Header Banner
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 11px monospace";
+      ctx.fillText(`CH 1 [輸入端] 複合訊號 Vin(t) = LF低頻慢波 (${lfTone.ampIn.toFixed(2)}V) + HF高頻毛刺 (${hfTone.ampIn.toFixed(2)}V)`, padL + 8, ch1_top + 13);
+
+      // CH1 Faint Ingredients (LF slow wave & HF ripple)
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = ch1_mid - vLfInArr[i] * vScaleCh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(251, 113, 133, 0.40)";
+      ctx.lineWidth = 1.0;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = ch1_mid - vHfInArr[i] * vScaleCh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // CH1 Solid Composite Vin(t)
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = ch1_mid - vInArr[i] * vScaleCh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // CH1 Voltage labels
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "9px monospace";
+      ctx.fillText(`+${maxPeak.toFixed(1)}V`, 4, ch1_top + 10);
+      ctx.fillText(` 0.0V`, 8, ch1_mid + 3);
+      ctx.fillText(`-${maxPeak.toFixed(1)}V`, 4, ch1_bot - 2);
+
+      // --- MIDDLE FILTER TRANSITION BAR ---
+      ctx.fillStyle = "#0c1322";
+      ctx.fillRect(padL, 156, pw, 22);
+      ctx.strokeStyle = "#334155";
+      ctx.beginPath();
+      ctx.moveTo(padL, 156);
+      ctx.lineTo(padL + pw, 156);
+      ctx.lineTo(padL + pw, 178);
+      ctx.lineTo(padL, 178);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "bold 10px monospace";
+      const transText = `▼ 通過【${fType} ${poly.toUpperCase()} 濾波器】(階數 N=${orderN}, 截止頻率 fc = ${fcGhz.toFixed(2)} GHz) ▼`;
+      ctx.fillText(transText, padL + 16, 171);
+
+      // Draw CH2 Background Grid
+      ctx.strokeStyle = "#162032";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 8; i++) {
+        const x = padL + (pw * i) / 8;
+        ctx.beginPath(); ctx.moveTo(x, ch2_top); ctx.lineTo(x, ch2_bot); ctx.stroke();
+      }
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+      ctx.beginPath(); ctx.moveTo(padL, ch2_mid); ctx.lineTo(w - padR, ch2_mid); ctx.stroke();
+
+      // CH2 Header Banner
+      ctx.fillStyle = "#34d399";
+      ctx.font = "bold 11px monospace";
+      ctx.fillText(`CH 2 [輸出端] 濾波後輸出訊號 Vout(t) — 【結果對比】`, padL + 8, ch2_top + 13);
+
+      // CH2 Ghost Vin(t) for instant comparison
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.20)";
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = ch2_mid - vInArr[i] * vScaleCh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // CH2 Bold Filtered Output Vout(t)
+      ctx.strokeStyle = "#22d3ee";
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = ch2_mid - vOutArr[i] * vScaleCh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // CH2 Voltage labels
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "9px monospace";
+      ctx.fillText(`+${maxPeak.toFixed(1)}V`, 4, ch2_top + 10);
+      ctx.fillText(` 0.0V`, 8, ch2_mid + 3);
+      ctx.fillText(`-${maxPeak.toFixed(1)}V`, 4, ch2_bot - 2);
+
+      // Bottom Verdict Text Tag
+      ctx.fillStyle = "#34d399";
+      ctx.font = "bold 10px monospace";
+      let verdictTag = "";
+      if (fType === "LP") verdictTag = `✓ 輸出為平滑低頻波形 (HF 毛刺衰減 -${Math.abs(hHfRef.magDb).toFixed(1)} dB)`;
+      else if (fType === "HP") verdictTag = `✓ 輸出為水平對稱高頻波 (LF 慢波阻隔 -${Math.abs(hLfRef.magDb).toFixed(1)} dB)`;
+      else if (fType === "BPF") verdictTag = `✓ 僅中心頻率 f0 順利通過 (帶外 LF/HF 皆已濾除)`;
+      else verdictTag = `✓ 中心干擾 f0 已被陷波挖除 (兩側 LF/HF 保留)`;
+      ctx.fillText(verdictTag, padL + 8, ch2_bot - 6);
+
+      // Time scale labels
+      ctx.fillStyle = "#64748b";
+      ctx.font = "9px monospace";
+      ctx.fillText(`0 ns`, padL, h - 8);
+      ctx.fillText(`${(tMaxNs * 0.5).toFixed(2)} ns`, padL + pw * 0.48, h - 8);
+      ctx.fillText(`${tMaxNs.toFixed(2)} ns`, w - padR - 38, h - 8);
+    } else if (curViewMode === "overlay") {
+      // --- OVERLAY VIEW (Both Vin and Vout on same full-height axis) ---
+      const padT = 24, padB = 28;
+      const ph = h - padT - padB;
+      const midY = padT + ph / 2;
+      const vScale = (ph * 0.42) / maxPeak;
+
+      ctx.strokeStyle = "#162032";
+      for (let i = 0; i <= 8; i++) {
+        const x = padL + (pw * i) / 8;
+        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
+      }
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+      ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(w - padR, midY); ctx.stroke();
+
+      // Vin (Dashed Amber)
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = midY - vInArr[i] * vScale;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Vout (Bold Emerald/Cyan)
+      ctx.strokeStyle = "#22d3ee";
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      for (let i = 0; i <= numPts; i++) {
+        const x = padL + (i / numPts) * pw;
+        const y = midY - vOutArr[i] * vScale;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "9px monospace";
+      ctx.fillText(`+${maxPeak.toFixed(1)}V`, 4, padT + 8);
+      ctx.fillText(` 0.0V`, 8, midY + 3);
+      ctx.fillText(`-${maxPeak.toFixed(1)}V`, 4, h - padB);
+      ctx.fillText(`0 ns`, padL, h - 8);
+      ctx.fillText(`${(tMaxNs * 0.5).toFixed(2)} ns`, padL + pw * 0.48, h - 8);
+      ctx.fillText(`${tMaxNs.toFixed(2)} ns`, w - padR - 38, h - 8);
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 11px monospace";
+      ctx.fillText(`-- 輸入 Vin(t) [黃虛線] vs. 實線 輸出 Vout(t) [青實線] 重疊對比`, padL + 8, padT + 12);
+    } else {
+      // --- 3-TRACK DECOMPOSITION (LF / HF / Total) ---
+      const subH = (h - 50) / 3;
+      const tracks = [
+        { name: `1. 低頻 LF 分量 (${lfTone.freq.toFixed(2)} GHz)`, inArr: vLfInArr, outArr: vLfOutArr, color: "#38bdf8", change: `${hLfRef.magDb.toFixed(1)} dB` },
+        { name: `2. 高頻 HF 分量 (${hfTone.freq.toFixed(2)} GHz)`, inArr: vHfInArr, outArr: vHfOutArr, color: "#fb7185", change: `${hHfRef.magDb.toFixed(1)} dB` },
+        { name: `3. 總合成訊號 (Vin vs. Vout)`, inArr: vInArr, outArr: vOutArr, color: "#34d399", change: `Purity: ${purityPct.toFixed(1)}%` }
+      ];
+
+      tracks.forEach((tr, tIdx) => {
+        const topY = 16 + tIdx * (subH + 6);
+        const botY = topY + subH;
+        const mid = topY + subH / 2;
+        const vSc = (subH * 0.38) / maxPeak;
+
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.2)";
+        ctx.beginPath(); ctx.moveTo(padL, mid); ctx.lineTo(w - padR, mid); ctx.stroke();
+
+        ctx.fillStyle = tr.color;
+        ctx.font = "bold 10px monospace";
+        ctx.fillText(`${tr.name} | 變化: ${tr.change}`, padL + 6, topY + 11);
+
+        // Input in track (faint dashed)
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        for (let i = 0; i <= numPts; i++) {
+          const x = padL + (i / numPts) * pw;
+          const y = mid - tr.inArr[i] * vSc;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Output in track (bold solid)
+        ctx.strokeStyle = tr.color;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (let i = 0; i <= numPts; i++) {
+          const x = padL + (i / numPts) * pw;
+          const y = mid - tr.outArr[i] * vSc;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "9px monospace";
+      ctx.fillText(`0 ns`, padL, h - 4);
+      ctx.fillText(`${tMaxNs.toFixed(2)} ns`, w - padR - 38, h - 4);
     }
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Draw Output LF Component (Amber Thin Curve)
-    ctx.strokeStyle = "rgba(251, 191, 36, 0.78)";
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    for (let i = 0; i <= numPts; i++) {
-      const x = padL + (i / numPts) * pw;
-      const y = midY - vLfOutArr[i] * vScale;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Draw Output HF Component (Rose Thin Curve)
-    ctx.strokeStyle = "rgba(244, 63, 94, 0.75)";
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    for (let i = 0; i <= numPts; i++) {
-      const x = padL + (i / numPts) * pw;
-      const y = midY - vHfOutArr[i] * vScale;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Draw Filtered Total Output Signal Vout(t) (Bold Cyan)
-    ctx.strokeStyle = "#22d3ee";
-    ctx.lineWidth = 2.8;
-    ctx.beginPath();
-    for (let i = 0; i <= numPts; i++) {
-      const x = padL + (i / numPts) * pw;
-      const y = midY - vOutArr[i] * vScale;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Axis Labels & Annotations
-    ctx.fillStyle = "#94a3b8";
-    ctx.font = "10px monospace";
-    ctx.fillText(`+${maxPeak.toFixed(1)}V`, 4, padT + 8);
-    ctx.fillText(`0.0V`, 10, midY + 3);
-    ctx.fillText(`-${maxPeak.toFixed(1)}V`, 4, h - padB);
-    ctx.fillText(`0 ns`, padL, h - 8);
-    ctx.fillText(`${(tMaxNs * 0.5).toFixed(2)} ns`, padL + pw * 0.46, h - 8);
-    ctx.fillText(`${tMaxNs.toFixed(2)} ns`, w - padR - 45, h - 8);
-
-    ctx.fillStyle = "#22d3ee";
-    ctx.font = "bold 11px monospace";
-    const modeDesc = fType === "LP" ? "LP 低通: 保留低頻 LF 慢波、濾除高頻 HF 毛刺" :
-                     (fType === "HP" ? "HP 高通: 阻隔低頻 LF 漂移、保留高頻 HF 震盪" :
-                     (fType === "BPF" ? "BPF 帶通: 僅提取主載波 f0、抑制 LF 與 HF" : "BSF 帶拒: 陷波濾除 f0、保留 LF 與 HF"));
-    ctx.fillText(modeDesc, padL + 8, padT + 12);
   }
 
   // 2. Draw Bode Magnitude |H(jw)| & Phase Canvas (#filterBodeCanvas)
@@ -4946,6 +5151,20 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
   document.getElementById("inputFilterHfAmp")?.addEventListener("input", (e) => {
     state.filter_hf_amp = parseFloat(e.target.value);
     updateUI();
+  });
+
+  // Oscilloscope View Mode Switcher
+  document.getElementById("btnFilterViewSplit")?.addEventListener("click", () => {
+    state.filter_view_mode = "split";
+    drawFilterAndSignalSimulator();
+  });
+  document.getElementById("btnFilterViewOverlay")?.addEventListener("click", () => {
+    state.filter_view_mode = "overlay";
+    drawFilterAndSignalSimulator();
+  });
+  document.getElementById("btnFilterViewDecomp")?.addEventListener("click", () => {
+    state.filter_view_mode = "decomp";
+    drawFilterAndSignalSimulator();
   });
 
   // Matching Synthesizer Controls
