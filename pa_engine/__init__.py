@@ -24,6 +24,11 @@ from .filter_designer import (
     SignalComponentIO,
     evaluate_filter_transfer_function,
 )
+from .polarization_simulator import (
+    AntennaPolarizationSimulator,
+    PolarizationState,
+    PolarizationLinkBudget,
+)
 
 __all__ = [
     "CMOSProcess",
@@ -64,4 +69,7 @@ __all__ = [
     "FilterStageElement",
     "SignalComponentIO",
     "evaluate_filter_transfer_function",
+    "AntennaPolarizationSimulator",
+    "PolarizationState",
+    "PolarizationLinkBudget",
 ]

@@ -54,6 +54,9 @@ const i18nData = {
     tabPvt: "🌡️ 製程角 (PVT)",
     tabLinearity: "📊 線性度與熱阻 (Linearity & Thermal)",
     tabFilterIo: "🔬 濾波與訊號變化 (Filter & Signal I/O)",
+    tabAntennaPolarization: "🌀 天線極化與3D波束 (Polarization)",
+    polarTitle: "天線極化物理與圓極化波束動畫 (Antenna Polarization & 3D Wave Simulator)",
+    polarSubtitle: "空間正交天線與 90° 相位延遲激發空間旋轉螺旋電磁波 (RHCP/LHCP)，展示飛行器姿態翻滾下之極化不匹配消除",
     tabSpice: "💻 網表導出 (Export)",
     tabGlossary: "📖 術語字典 (Glossary)",
     topGlossaryBtn: "📖 術語字典",
@@ -260,6 +263,9 @@ const i18nData = {
     tabPvt: "🌡️ PVT Corners",
     tabLinearity: "📊 Linearity & Thermal",
     tabFilterIo: "🔬 Filter & Signal I/O",
+    tabAntennaPolarization: "🌀 Antenna Polarization (3D Wave)",
+    polarTitle: "Antenna Polarization Physics & 3D Helical Wave Simulator",
+    polarSubtitle: "Superposition of orthogonal Ex/Ey with 90° phase delay generating 3D circular polarization (RHCP/LHCP) and eliminating aircraft tilt mismatch",
     tabSpice: "💻 Netlist Export",
     tabGlossary: "📖 RF Glossary",
     topGlossaryBtn: "📖 RF Glossary",
@@ -601,7 +607,15 @@ const state = {
   filter_hf_amp: 0.60,
   filter_view_mode: "split",
   filter_anim_playing: true,
-  filter_anim_phase: 0.0
+  filter_anim_phase: 0.0,
+
+  // Antenna Polarization & 3D Wave Simulator
+  polar_ey_ratio: 1.0,
+  polar_phase_diff: 90.0,
+  polar_aircraft_heading: 66.0,
+  polar_anim_playing: true,
+  polar_anim_phase: 0.0,
+  polar_anim_speed: 2.5
 };
 
 let currentDesign = null;
@@ -4442,6 +4456,612 @@ function drawFilterAndSignalSimulator() {
   }
 }
 
+// --- 9.25 Antenna Polarization & 3D Wave Propagation Simulator ---
+function calculatePolarizationMetrics(exAmp, eyAmp, phaseDiffDeg) {
+  const ex = Math.max(0.001, exAmp);
+  const ey = Math.max(0.0, eyAmp);
+  const deltaRad = (phaseDiffDeg * Math.PI) / 180.0;
+
+  if (ey < 1e-4) {
+    return {
+      ex, ey: 0, deltaDeg: 0,
+      arLinear: 1e4, arDb: 40.0,
+      majorA: ex, minorB: 0,
+      tauDeg: 0.0,
+      classification: "LINEAR (Horizontal)",
+      isCircular: false, isLinear: true,
+      sense: "線性振盪 (Linear)"
+    };
+  }
+
+  const cos2d = Math.cos(2.0 * deltaRad);
+  const term1 = ex * ex + ey * ey;
+  const radical = Math.sqrt(Math.max(0.0, Math.pow(ex, 4) + Math.pow(ey, 4) + 2.0 * ex * ex * ey * ey * cos2d));
+
+  const oa = Math.sqrt(Math.max(0.0, 0.5 * (term1 + radical)));
+  const ob = Math.sqrt(Math.max(0.0, 0.5 * (term1 - radical)));
+
+  const arLinear = ob < 1e-5 ? 1e4 : oa / ob;
+  const arDb = ob < 1e-5 ? 40.0 : Math.min(40.0, 20.0 * Math.log10(Math.max(1.0, arLinear)));
+
+  const denomTau = ex * ex - ey * ey;
+  let tauDeg = 0.0;
+  if (Math.abs(denomTau) < 1e-5) {
+    tauDeg = Math.cos(deltaRad) >= 0 ? 45.0 : -45.0;
+  } else {
+    const tan2tau = (2.0 * ex * ey * Math.cos(deltaRad)) / denomTau;
+    tauDeg = (0.5 * Math.atan(tan2tau) * 180.0) / Math.PI;
+  }
+
+  const sinDelta = Math.sin(deltaRad);
+  const isCircular = arDb <= 3.0;
+  const isLinear = arDb >= 30.0 || Math.abs(phaseDiffDeg) < 1.0 || Math.abs(Math.abs(phaseDiffDeg) - 180.0) < 1.0;
+
+  let classification = "";
+  let sense = "";
+  if (Math.abs(sinDelta) < 1e-3) {
+    sense = "線性振盪 (Linear)";
+  } else if (sinDelta > 0) {
+    sense = "順時鐘 (CW / RHCP)";
+  } else {
+    sense = "逆時鐘 (CCW / LHCP)";
+  }
+
+  if (isCircular) {
+    classification = sinDelta > 0 ? "CIRCULAR · RHCP" : "CIRCULAR · LHCP";
+  } else if (isLinear) {
+    classification = "LINEAR POLARIZATION";
+  } else {
+    classification = sinDelta > 0 ? "ELLIPTICAL (RH)" : "ELLIPTICAL (LH)";
+  }
+
+  return {
+    ex, ey, deltaDeg: phaseDiffDeg,
+    arLinear, arDb,
+    majorA: oa, minorB: ob,
+    tauDeg,
+    classification,
+    isCircular, isLinear,
+    sense
+  };
+}
+
+function drawAntennaPolarizationSimulator() {
+  const eyRatio = typeof state.polar_ey_ratio === "number" ? state.polar_ey_ratio : 1.0;
+  const phaseDiffDeg = typeof state.polar_phase_diff === "number" ? state.polar_phase_diff : 90.0;
+  const headingDeg = typeof state.polar_aircraft_heading === "number" ? state.polar_aircraft_heading : 66.0;
+  const exAmp = 1.0;
+  const eyAmp = eyRatio;
+
+  const metrics = calculatePolarizationMetrics(exAmp, eyAmp, phaseDiffDeg);
+  const deltaRad = (phaseDiffDeg * Math.PI) / 180.0;
+  const flowPhase = state.polar_anim_playing ? (state.polar_anim_phase || 0.0) : 0.0;
+
+  // 1. Update Readout Labels & Badges
+  const lblEy = document.getElementById("lblPolarEyRatio");
+  if (lblEy) lblEy.innerText = `${(eyRatio * 100).toFixed(0)} %`;
+
+  const lblPhase = document.getElementById("lblPolarPhaseDiff");
+  if (lblPhase) {
+    const delayTxt = Math.abs(phaseDiffDeg - 90) < 1e-2 ? " (λ/4 延遲)" : Math.abs(phaseDiffDeg + 90) < 1e-2 ? " (-λ/4 延遲)" : phaseDiffDeg === 0 ? " (同相)" : "";
+    lblPhase.innerText = `${phaseDiffDeg >= 0 ? "+" : ""}${phaseDiffDeg.toFixed(1)}°${delayTxt}`;
+  }
+
+  const lblHeading = document.getElementById("lblPolarAircraftHeading");
+  if (lblHeading) {
+    const headTxt = headingDeg === 0 ? " (水平對齊)" : headingDeg === 90 ? " (90° 正交十字)" : " (翻滾傾斜)";
+    lblHeading.innerText = `${headingDeg.toFixed(0)}°${headTxt}`;
+  }
+
+  const badgeStatus = document.getElementById("badgePolarStatus");
+  if (badgeStatus) {
+    badgeStatus.innerText = metrics.classification;
+    if (metrics.isCircular) {
+      badgeStatus.className = "px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+    } else if (metrics.isLinear) {
+      badgeStatus.className = "px-2 py-0.5 rounded text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40";
+    } else {
+      badgeStatus.className = "px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+    }
+  }
+
+  const valAr = document.getElementById("valPolarAxialRatio");
+  if (valAr) {
+    valAr.innerText = `AR: ${metrics.arDb >= 35.0 ? "> 35" : metrics.arDb.toFixed(1)} dB`;
+  }
+
+  const subStatus = document.getElementById("subPolarStatus");
+  if (subStatus) {
+    subStatus.innerText = metrics.isCircular
+      ? "AR ≤ 3 dB 符合國際衛星通訊標準圓極化"
+      : metrics.isLinear
+      ? "AR > 30 dB 單向直線極化 (易受姿態偏轉失配)"
+      : "3 dB < AR < 30 dB 橢圓極化 (非完全平衡)";
+  }
+
+  const txtMajor = document.getElementById("polarMajorAxis");
+  if (txtMajor) txtMajor.innerText = metrics.majorA.toFixed(2);
+  const txtMinor = document.getElementById("polarMinorAxis");
+  if (txtMinor) txtMinor.innerText = metrics.minorB.toFixed(2);
+  const txtTilt = document.getElementById("polarTiltAngle");
+  if (txtTilt) txtTilt.innerText = `${metrics.tauDeg.toFixed(1)}°`;
+  const txtSense = document.getElementById("polarRotationSense");
+  if (txtSense) txtSense.innerText = metrics.sense;
+  const txtArBadge = document.getElementById("polarArBadge");
+  if (txtArBadge) txtArBadge.innerText = `AR = ${metrics.arDb >= 35.0 ? "> 35" : metrics.arDb.toFixed(1)} dB`;
+
+  // 2. Draw 3D Wave Propagation Canvas (#polarWave3DCanvas)
+  const c3d = document.getElementById("polarWave3DCanvas");
+  if (c3d) {
+    const ctx = c3d.getContext("2d");
+    const w = c3d.width, h = c3d.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Deep space gradient background
+    const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+    bgGrad.addColorStop(0, "#080c16");
+    bgGrad.addColorStop(1, "#03060d");
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // 3D Oblique Perspective Origin & End Points
+    const x0 = 110, y0 = 295; // Antenna location
+    const x1 = 560, y1 = 135; // Observation plane center
+    const zLenX = x1 - x0;    // 450
+    const zLenY = y1 - y0;    // -160
+
+    function proj3D(X, Y, Z) {
+      // Z in [0, 1]
+      const cx = x0 + Z * zLenX;
+      const cy = y0 + Z * zLenY;
+      const u = cx + X * 52;
+      const v = cy + X * 24 - Y * 74;
+      return { u, v, cx, cy };
+    }
+
+    // A. Draw 3D Ground & Back Grid
+    ctx.strokeStyle = "rgba(30, 41, 59, 0.45)";
+    ctx.lineWidth = 1;
+    // Ground Grid lines along Z
+    [-1.2, -0.6, 0.0, 0.6, 1.2].forEach(gx => {
+      const pA = proj3D(gx, 0, 0);
+      const pB = proj3D(gx, 0, 1);
+      ctx.beginPath(); ctx.moveTo(pA.u, pA.v); ctx.lineTo(pB.u, pB.v); ctx.stroke();
+    });
+    // Ground Grid lines across X
+    [0.0, 0.25, 0.5, 0.75, 1.0].forEach(gz => {
+      const pA = proj3D(-1.2, 0, gz);
+      const pB = proj3D(1.2, 0, gz);
+      ctx.beginPath(); ctx.moveTo(pA.u, pA.v); ctx.lineTo(pB.u, pB.v); ctx.stroke();
+    });
+
+    // Vertical Plane Grid lines (at X = -1.2)
+    [-1.2, -0.6, 0.0, 0.6, 1.2].forEach(gy => {
+      const pA = proj3D(-1.2, gy, 0);
+      const pB = proj3D(-1.2, gy, 1);
+      ctx.strokeStyle = "rgba(30, 41, 59, 0.35)";
+      ctx.beginPath(); ctx.moveTo(pA.u, pA.v); ctx.lineTo(pB.u, pB.v); ctx.stroke();
+    });
+
+    // Central Propagation Beam Axis (Z axis)
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.3)";
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // B. Draw Antenna Source Structure at Z = 0
+    // Support pole down to base
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x0 - 45, y0 + 10); ctx.lineTo(x0 - 45, h - 20); ctx.stroke();
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(x0 - 60, h - 24, 30, 8);
+
+    // 90-Degree Hybrid Coupler / Delay Line Feed Box
+    ctx.fillStyle = "#1e293b";
+    ctx.strokeStyle = "#475569";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x0 - 75, y0 - 24, 45, 48, 6) : ctx.rect(x0 - 75, y0 - 24, 45, 48);
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 9px monospace";
+    ctx.fillText("λ/4", x0 - 64, y0 - 4);
+    ctx.fillText("Delay", x0 - 70, y0 + 10);
+
+    // Horizontal Dipole (Blue rod, along X)
+    const pD1 = proj3D(-1.1, 0, 0);
+    const pD2 = proj3D(1.1, 0, 0);
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 4.5;
+    ctx.beginPath(); ctx.moveTo(pD1.u, pD1.v); ctx.lineTo(pD2.u, pD2.v); ctx.stroke();
+
+    // Vertical Dipole (Purple rod, along Y)
+    const pV1 = proj3D(0, -1.1, 0);
+    const pV2 = proj3D(0, 1.1, 0);
+    ctx.strokeStyle = "#c084fc";
+    ctx.lineWidth = 4.5;
+    ctx.beginPath(); ctx.moveTo(pV1.u, pV1.v); ctx.lineTo(pV2.u, pV2.v); ctx.stroke();
+
+    // Antenna Central Feed Hub
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(x0, y0, 4.5, 0, 2 * Math.PI); ctx.fill();
+
+    // Antenna Labels
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 10px monospace";
+    ctx.fillText("天線保持靜止 (Antenna Stays Still)", x0 - 80, y0 - 45);
+    ctx.fillStyle = "#38bdf8"; ctx.fillText("Ex 水平偶極", pD2.u + 6, pD2.v + 4);
+    ctx.fillStyle = "#c084fc"; ctx.fillText("Ey 垂直偶極", pV2.u - 20, pV2.v - 8);
+
+    // C. Calculate Wave Points along Propagation Axis Z
+    const nPts = 220;
+    const wavePts = [];
+    for (let i = 0; i <= nPts; i++) {
+      const z = i / nPts;
+      const kZ = 2.5 * 2.0 * Math.PI * z;
+      const angle = kZ - flowPhase;
+      const ex = exAmp * Math.cos(angle);
+      const ey = eyAmp * Math.cos(angle + deltaRad);
+
+      const pX = proj3D(ex, 0, z);       // Horizontal wave point
+      const pY = proj3D(0, ey, z);       // Vertical wave point
+      const pComp = proj3D(ex, ey, z);   // 3D vector resultant point
+      const pCenter = proj3D(0, 0, z);
+
+      wavePts.push({ z, ex, ey, pX, pY, pComp, pCenter });
+    }
+
+    // D. Draw Horizontal Ex Wave (Blue sinusoid on ground plane)
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.85)";
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    wavePts.forEach((pt, i) => {
+      if (i === 0) ctx.moveTo(pt.pX.u, pt.pX.v); else ctx.lineTo(pt.pX.u, pt.pX.v);
+    });
+    ctx.stroke();
+
+    // Faint fill to center line
+    ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
+    ctx.beginPath();
+    ctx.moveTo(wavePts[0].pCenter.u, wavePts[0].pCenter.v);
+    wavePts.forEach(pt => ctx.lineTo(pt.pX.u, pt.pX.v));
+    ctx.lineTo(wavePts[wavePts.length - 1].pCenter.u, wavePts[wavePts.length - 1].pCenter.v);
+    ctx.closePath();
+    ctx.fill();
+
+    // E. Draw Vertical Ey Wave (Purple sinusoid on vertical plane)
+    if (eyAmp > 0.02) {
+      ctx.strokeStyle = "rgba(192, 132, 252, 0.85)";
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      wavePts.forEach((pt, i) => {
+        if (i === 0) ctx.moveTo(pt.pY.u, pt.pY.v); else ctx.lineTo(pt.pY.u, pt.pY.v);
+      });
+      ctx.stroke();
+
+      // Faint fill to center line
+      ctx.fillStyle = "rgba(192, 132, 252, 0.08)";
+      ctx.beginPath();
+      ctx.moveTo(wavePts[0].pCenter.u, wavePts[0].pCenter.v);
+      wavePts.forEach(pt => ctx.lineTo(pt.pY.u, pt.pY.v));
+      ctx.lineTo(wavePts[wavePts.length - 1].pCenter.u, wavePts[wavePts.length - 1].pCenter.v);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // F. Draw 3D Radial Electric Field Vector Spokes
+    const spokeStep = 14;
+    for (let i = 8; i < nPts; i += spokeStep) {
+      const pt = wavePts[i];
+      ctx.strokeStyle = "rgba(52, 211, 153, 0.40)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(pt.pCenter.u, pt.pCenter.v);
+      ctx.lineTo(pt.pComp.u, pt.pComp.v);
+      ctx.stroke();
+    }
+
+    // G. Draw 3D Resultant Composite Corkscrew Wave / Helix
+    ctx.strokeStyle = "#34d399";
+    ctx.lineWidth = 3.2;
+    ctx.beginPath();
+    wavePts.forEach((pt, i) => {
+      if (i === 0) ctx.moveTo(pt.pComp.u, pt.pComp.v); else ctx.lineTo(pt.pComp.u, pt.pComp.v);
+    });
+    ctx.stroke();
+
+    // H. Observation Plane at Z = 1.0 (Far end)
+    const pObsC = proj3D(0, 0, 1.0);
+    const pObsTL = proj3D(-1.25, 1.25, 1.0);
+    const pObsTR = proj3D(1.25, 1.25, 1.0);
+    const pObsBR = proj3D(1.25, -1.25, 1.0);
+    const pObsBL = proj3D(-1.25, -1.25, 1.0);
+
+    ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+    ctx.strokeStyle = "#475569";
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(pObsTL.u, pObsTL.v);
+    ctx.lineTo(pObsTR.u, pObsTR.v);
+    ctx.lineTo(pObsBR.u, pObsBR.v);
+    ctx.lineTo(pObsBL.u, pObsBL.v);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Crosshairs on Observation Plane
+    const pAxH1 = proj3D(-1.1, 0, 1.0);
+    const pAxH2 = proj3D(1.1, 0, 1.0);
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.4)";
+    ctx.beginPath(); ctx.moveTo(pAxH1.u, pAxH1.v); ctx.lineTo(pAxH2.u, pAxH2.v); ctx.stroke();
+
+    const pAxV1 = proj3D(0, -1.1, 1.0);
+    const pAxV2 = proj3D(0, 1.1, 1.0);
+    ctx.beginPath(); ctx.moveTo(pAxV1.u, pAxV1.v); ctx.lineTo(pAxV2.u, pAxV2.v); ctx.stroke();
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "8px monospace";
+    ctx.fillText("Ex", pAxH2.u + 4, pAxH2.v);
+    ctx.fillText("Ey", pAxV2.u - 5, pAxV2.v - 4);
+
+    // Dotted Polarization Envelope Trace on Observation Plane
+    ctx.strokeStyle = metrics.isCircular ? "#34d399" : metrics.isLinear ? "#38bdf8" : "#fbbf24";
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    const envPts = 48;
+    for (let k = 0; k <= envPts; k++) {
+      const alpha = (k / envPts) * 2.0 * Math.PI;
+      const exT = exAmp * Math.cos(alpha);
+      const eyT = eyAmp * Math.cos(alpha + deltaRad);
+      const p = proj3D(exT, eyT, 1.0);
+      if (k === 0) ctx.moveTo(p.u, p.v); else ctx.lineTo(p.u, p.v);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Rotating Field Vector on Observation Plane at Z = 1.0
+    const lastPt = wavePts[wavePts.length - 1];
+    ctx.strokeStyle = "#f59e0b";
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(pObsC.u, pObsC.v);
+    ctx.lineTo(lastPt.pComp.u, lastPt.pComp.v);
+    ctx.stroke();
+
+    // Glowing Tip Particle
+    ctx.fillStyle = "#fde047";
+    ctx.shadowColor = "#f59e0b";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(lastPt.pComp.u, lastPt.pComp.v, 4.5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Header Label at Observation Plane
+    ctx.fillStyle = "#f1f5f9";
+    ctx.font = "bold 10px monospace";
+    ctx.fillText("觀測截面 (Observation Plane)", pObsTL.u - 10, pObsTL.v - 8);
+    ctx.fillStyle = metrics.isCircular ? "#34d399" : metrics.isLinear ? "#38bdf8" : "#fbbf24";
+    ctx.fillText(metrics.classification, pObsTL.u - 10, pObsTL.v + 8);
+  }
+
+  // 3. Draw Sub-Card 1: Field at Observation Point (#polarObsTimeCanvas)
+  const cTime = document.getElementById("polarObsTimeCanvas");
+  if (cTime) {
+    const ctx = cTime.getContext("2d");
+    const w = cTime.width, h = cTime.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+
+    const padL = 36, padR = 16, padT = 16, padB = 16;
+    const pw = w - padL - padR, ph = h - padT - padB;
+    const midY = padT + ph / 2;
+    const vScale = ph * 0.42;
+
+    // Center Zero Line
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+    ctx.beginPath(); ctx.moveTo(padL, midY); ctx.lineTo(w - padR, midY); ctx.stroke();
+
+    // 2 periods
+    const nPts = 160;
+    // Ex wave (Cyan)
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.6; ctx.beginPath();
+    for (let i = 0; i <= nPts; i++) {
+      const t = (i / nPts) * 4.0 * Math.PI;
+      const v = exAmp * Math.cos(t);
+      const x = padL + (i / nPts) * pw;
+      const y = midY - v * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Ey wave (Purple)
+    if (eyAmp > 0.02) {
+      ctx.strokeStyle = "#c084fc"; ctx.lineWidth = 1.6; ctx.beginPath();
+      for (let i = 0; i <= nPts; i++) {
+        const t = (i / nPts) * 4.0 * Math.PI;
+        const v = eyAmp * Math.cos(t + deltaRad);
+        const x = padL + (i / nPts) * pw;
+        const y = midY - v * vScale;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // Total |E| Magnitude (Green)
+    ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2.2; ctx.beginPath();
+    for (let i = 0; i <= nPts; i++) {
+      const t = (i / nPts) * 4.0 * Math.PI;
+      const vx = exAmp * Math.cos(t);
+      const vy = eyAmp * Math.cos(t + deltaRad);
+      const vMag = Math.sqrt(vx * vx + vy * vy);
+      const x = padL + (i / nPts) * pw;
+      const y = midY - vMag * vScale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Current Time Flow Cursor
+    const currT = (flowPhase % (4.0 * Math.PI)) / (4.0 * Math.PI);
+    const curX = padL + currT * pw;
+    ctx.strokeStyle = "rgba(251, 191, 36, 0.6)"; ctx.setLineDash([2, 2]);
+    ctx.beginPath(); ctx.moveTo(curX, padT); ctx.lineTo(curX, h - padB); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Y Axis Labels
+    ctx.fillStyle = "#64748b"; ctx.font = "8px monospace";
+    ctx.fillText("+E0", 6, padT + 8);
+    ctx.fillText(" 0", 12, midY + 3);
+    ctx.fillText("-E0", 6, h - padB);
+  }
+
+  // 4. Draw Sub-Card 2: Polarization Trace (#polarLissajousCanvas)
+  const cLiss = document.getElementById("polarLissajousCanvas");
+  if (cLiss) {
+    const ctx = cLiss.getContext("2d");
+    const w = cLiss.width, h = cLiss.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+
+    const cx = w / 2, cy = h / 2;
+    const rScale = 40.0;
+
+    // Crosshair axes
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+    ctx.beginPath(); ctx.moveTo(cx - 50, cy); ctx.lineTo(cx + 50, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy - 50); ctx.lineTo(cx, cy + 50); ctx.stroke();
+
+    // Unit circle (Reference standard)
+    ctx.strokeStyle = "rgba(52, 211, 153, 0.25)";
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath(); ctx.arc(cx, cy, rScale, 0, 2 * Math.PI); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Polarization Trace
+    const traceColor = metrics.isCircular ? "#34d399" : metrics.isLinear ? "#38bdf8" : "#fbbf24";
+    ctx.strokeStyle = traceColor;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    const nTrace = 64;
+    for (let k = 0; k <= nTrace; k++) {
+      const a = (k / nTrace) * 2.0 * Math.PI;
+      const x = cx + exAmp * Math.cos(a) * rScale;
+      const y = cy - eyAmp * Math.cos(a + deltaRad) * rScale;
+      if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Current Field Vector Dot
+    const curVx = exAmp * Math.cos(flowPhase);
+    const curVy = eyAmp * Math.cos(flowPhase + deltaRad);
+    const curPx = cx + curVx * rScale;
+    const curPy = cy - curVy * rScale;
+
+    ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2.0;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(curPx, curPy); ctx.stroke();
+
+    ctx.fillStyle = "#fde047";
+    ctx.beginPath(); ctx.arc(curPx, curPy, 4, 0, 2 * Math.PI); ctx.fill();
+
+    ctx.fillStyle = "#64748b"; ctx.font = "8px monospace";
+    ctx.fillText("Ex", w - 16, cy + 10);
+    ctx.fillText("Ey", cx + 4, 12);
+  }
+
+  // 5. Draw Sub-Card 3: Satellite-Aircraft Link Loss vs Heading (#polarLinkLossCanvas)
+  const cLoss = document.getElementById("polarLinkLossCanvas");
+  if (cLoss) {
+    const ctx = cLoss.getContext("2d");
+    const w = cLoss.width, h = cLoss.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#090d16"; ctx.fillRect(0, 0, w, h);
+
+    const padL = 36, padR = 20, padT = 16, padB = 22;
+    const pw = w - padL - padR, ph = h - padT - padB;
+
+    function lossToY(lossDb) {
+      // 0 dB at padT, -30 dB at padT + ph
+      const clamped = Math.max(-30.0, Math.min(0.0, lossDb));
+      return padT + (Math.abs(clamped) / 30.0) * ph;
+    }
+
+    // Grid dB lines
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.15)";
+    [0, -10, -20, -30].forEach(db => {
+      const y = lossToY(db);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      ctx.fillStyle = "#64748b"; ctx.font = "8px monospace";
+      ctx.fillText(`${db}dB`, 4, y + 3);
+    });
+
+    // Heading X ticks (0, 45, 90, 135, 180 deg)
+    [0, 45, 90, 135, 180].forEach(deg => {
+      const x = padL + (deg / 180.0) * pw;
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + ph); ctx.stroke();
+      ctx.fillStyle = "#64748b"; ctx.font = "8px monospace";
+      ctx.fillText(`${deg}°`, x - 6, h - 8);
+    });
+
+    // Curve A: Linear Polarization Link (cos^2 theta with -30dB null at 90 deg)
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    const nH = 100;
+    for (let i = 0; i <= nH; i++) {
+      const deg = (i / nH) * 180.0;
+      const rad = (deg * Math.PI) / 180.0;
+      const factor = Math.max(0.001, Math.pow(Math.cos(rad), 2));
+      const db = 10.0 * Math.log10(factor);
+      const x = padL + (i / nH) * pw;
+      const y = lossToY(db);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Curve B: Circular Polarization Link (0 dB constant line across all headings!)
+    ctx.strokeStyle = "#c084fc";
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(padL, lossToY(0));
+    ctx.lineTo(w - padR, lossToY(0));
+    ctx.stroke();
+
+    // Current Aircraft Heading Indicator
+    const curHeadX = padL + ((headingDeg % 180.0) / 180.0) * pw;
+    const linLossFactor = Math.max(0.001, Math.pow(Math.cos((headingDeg * Math.PI) / 180.0), 2));
+    const linLossDb = 10.0 * Math.log10(linLossFactor);
+    const linY = lossToY(linLossDb);
+    const circY = lossToY(0);
+
+    // Vertical dashed marker line
+    ctx.strokeStyle = "rgba(251, 191, 36, 0.6)";
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath(); ctx.moveTo(curHeadX, padT); ctx.lineTo(curHeadX, padT + ph); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Purple dot on circular line
+    ctx.fillStyle = "#c084fc";
+    ctx.beginPath(); ctx.arc(curHeadX, circY, 4, 0, 2 * Math.PI); ctx.fill();
+
+    // Cyan dot on linear line
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(curHeadX, linY, 4, 0, 2 * Math.PI); ctx.fill();
+
+    // Text label at linear drop
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "bold 9px monospace";
+    ctx.fillText(`${linLossDb.toFixed(1)} dB`, curHeadX + 6, linY + 3);
+
+    // Update Bottom Verdict Text
+    const verdictEl = document.getElementById("polarLinkVerdict");
+    if (verdictEl) {
+      verdictEl.innerHTML = `✈️ 飛機航向 <b>${headingDeg.toFixed(0)}°</b>：線極化通訊衰減 <b class="text-rose-400">${linLossDb.toFixed(1)} dB</b> · 圓極化鏈路 <b class="text-emerald-400">0.0 dB</b> (無損鎖定，翻滾不中斷)`;
+    }
+  }
+}
+
 // --- 9.3 Die Area Breakdown & Silicon Floorplan ---
 function drawDieAreaFloorplan() {
   const nodeKey = state.node_key || "28nm_hpc";
@@ -4687,7 +5307,8 @@ function initApp() {
     tab7: document.getElementById("tabContent7"),
     tab8: document.getElementById("tabContent8"),
     tab9: document.getElementById("tabContent9"),
-    tab10: document.getElementById("tabContent10")
+    tab10: document.getElementById("tabContent10"),
+    tab11: document.getElementById("tabContent11")
   };
 
   const SESSION_TABS = {
@@ -4696,8 +5317,8 @@ function initApp() {
     vco: ["tab3", "tab2", "tab8", "tab4"],
     mixer: ["tab3", "tab2", "tab10", "tab9", "tab8", "tab4"],
     switch: ["tab3", "tab2", "tab8", "tab4"],
-    antenna: ["tab3", "tab2", "tab4"],
-    link: ["tab5", "tab10", "tab9", "tab7", "tab8", "tab4"],
+    antenna: ["tab3", "tab2", "tab11", "tab4"],
+    link: ["tab5", "tab11", "tab10", "tab9", "tab7", "tab8", "tab4"],
     match: ["tab6", "tab10", "tab4"],
     filter: ["tab10", "tab6", "tab4"]
   };
@@ -4724,6 +5345,7 @@ function initApp() {
     else if (target === "tab8") drawPvtCorners();
     else if (target === "tab9") drawLinearityAndThermal();
     else if (target === "tab10") drawFilterAndSignalSimulator();
+    else if (target === "tab11") drawAntennaPolarizationSimulator();
   }
 
   function updateTabsForSession(sessionName) {
@@ -5216,6 +5838,112 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
   });
   updateFilterAnimButtonUI();
 
+  // Antenna Polarization Controls & Presets
+  const btnPolarAnimToggle = document.getElementById("btnPolarAnimToggle");
+  const iconPolarAnim = document.getElementById("iconPolarAnim");
+  const lblPolarAnim = document.getElementById("lblPolarAnim");
+
+  function updatePolarAnimButtonUI() {
+    if (!btnPolarAnimToggle || !lblPolarAnim || !iconPolarAnim) return;
+    if (state.polar_anim_playing) {
+      btnPolarAnimToggle.className = "px-2.5 py-1 text-[11px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all flex items-center gap-1 shadow-sm";
+      iconPolarAnim.textContent = "⏸️";
+      lblPolarAnim.textContent = "3D 流動中 (Live 3D)";
+    } else {
+      btnPolarAnimToggle.className = "px-2.5 py-1 text-[11px] font-bold rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all flex items-center gap-1 shadow-sm";
+      iconPolarAnim.textContent = "▶️";
+      lblPolarAnim.textContent = "已暫停 (Paused)";
+    }
+  }
+
+  btnPolarAnimToggle?.addEventListener("click", () => {
+    state.polar_anim_playing = !state.polar_anim_playing;
+    updatePolarAnimButtonUI();
+    if (!state.polar_anim_playing) {
+      drawAntennaPolarizationSimulator();
+    }
+  });
+  updatePolarAnimButtonUI();
+
+  const sliderEy = document.getElementById("sliderPolarEyRatio");
+  const sliderPhase = document.getElementById("sliderPolarPhaseDiff");
+  const sliderHead = document.getElementById("sliderPolarAircraftHeading");
+
+  function syncPolarSliders() {
+    if (sliderEy) sliderEy.value = state.polar_ey_ratio;
+    if (sliderPhase) sliderPhase.value = state.polar_phase_diff;
+    if (sliderHead) sliderHead.value = state.polar_aircraft_heading;
+  }
+
+  function highlightPolarPreset(activeId) {
+    ["btnPolarPresetRhcp", "btnPolarPresetLhcp", "btnPolarPresetLinearH", "btnPolarPresetLinearSlant", "btnPolarPresetElliptical"].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      if (id === activeId) {
+        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition-all";
+      } else {
+        btn.className = "px-2 py-0.5 text-[10px] font-medium rounded text-slate-400 hover:text-slate-200 border border-transparent transition-all";
+      }
+    });
+  }
+
+  sliderEy?.addEventListener("input", (e) => {
+    state.polar_ey_ratio = parseFloat(e.target.value);
+    highlightPolarPreset(null);
+    drawAntennaPolarizationSimulator();
+  });
+
+  sliderPhase?.addEventListener("input", (e) => {
+    state.polar_phase_diff = parseFloat(e.target.value);
+    highlightPolarPreset(null);
+    drawAntennaPolarizationSimulator();
+  });
+
+  sliderHead?.addEventListener("input", (e) => {
+    state.polar_aircraft_heading = parseFloat(e.target.value);
+    drawAntennaPolarizationSimulator();
+  });
+
+  document.getElementById("btnPolarPresetRhcp")?.addEventListener("click", () => {
+    state.polar_ey_ratio = 1.0;
+    state.polar_phase_diff = 90.0;
+    syncPolarSliders();
+    highlightPolarPreset("btnPolarPresetRhcp");
+    drawAntennaPolarizationSimulator();
+  });
+
+  document.getElementById("btnPolarPresetLhcp")?.addEventListener("click", () => {
+    state.polar_ey_ratio = 1.0;
+    state.polar_phase_diff = -90.0;
+    syncPolarSliders();
+    highlightPolarPreset("btnPolarPresetLhcp");
+    drawAntennaPolarizationSimulator();
+  });
+
+  document.getElementById("btnPolarPresetLinearH")?.addEventListener("click", () => {
+    state.polar_ey_ratio = 0.0;
+    state.polar_phase_diff = 0.0;
+    syncPolarSliders();
+    highlightPolarPreset("btnPolarPresetLinearH");
+    drawAntennaPolarizationSimulator();
+  });
+
+  document.getElementById("btnPolarPresetLinearSlant")?.addEventListener("click", () => {
+    state.polar_ey_ratio = 1.0;
+    state.polar_phase_diff = 0.0;
+    syncPolarSliders();
+    highlightPolarPreset("btnPolarPresetLinearSlant");
+    drawAntennaPolarizationSimulator();
+  });
+
+  document.getElementById("btnPolarPresetElliptical")?.addEventListener("click", () => {
+    state.polar_ey_ratio = 0.65;
+    state.polar_phase_diff = 45.0;
+    syncPolarSliders();
+    highlightPolarPreset("btnPolarPresetElliptical");
+    drawAntennaPolarizationSimulator();
+  });
+
   let lastFilterAnimTimestamp = 0;
   function runFilterAnimationLoop(timestamp) {
     if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
@@ -5229,6 +5957,14 @@ ${(d.freq * 1.2).toFixed(3)}   -12.80   -216.0     ${(d.gainDb - 2.8).toFixed(2)
         if (state.filter_anim_phase > 10000.0) state.filter_anim_phase = state.filter_anim_phase % 1000.0;
         drawFilterAndSignalSimulator();
       }
+
+      const isPolarTabActive = state.activeTab === "tab11";
+      if (state.polar_anim_playing && isPolarTabActive) {
+        state.polar_anim_phase = (state.polar_anim_phase || 0.0) + dt * (state.polar_anim_speed || 2.5);
+        if (state.polar_anim_phase > 10000.0) state.polar_anim_phase = state.polar_anim_phase % 1000.0;
+        drawAntennaPolarizationSimulator();
+      }
+
       window.requestAnimationFrame(runFilterAnimationLoop);
     }
   }

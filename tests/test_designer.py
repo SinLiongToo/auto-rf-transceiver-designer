@@ -232,5 +232,24 @@ class TestPADesigner(unittest.TestCase):
         self.assertGreater(f0_bpf.gain_db, -2.0)
         self.assertLess(f0_bsf.gain_db, -25.0)
 
+    def test_antenna_polarization_and_link(self):
+        from pa_engine import AntennaPolarizationSimulator
+        # 1. RHCP Circular Polarization (Ex=1, Ey=1, delta=90 deg)
+        rhcp = AntennaPolarizationSimulator.analyze_polarization(ex_amp=1.0, ey_amp=1.0, phase_diff_deg=90.0)
+        self.assertTrue(rhcp.is_circular)
+        self.assertLessEqual(rhcp.axial_ratio_db, 0.1)
+        self.assertEqual(rhcp.classification, "Circular (RHCP)")
+
+        # 2. Linear Polarization (Ey=0)
+        lin = AntennaPolarizationSimulator.analyze_polarization(ex_amp=1.0, ey_amp=0.0, phase_diff_deg=0.0)
+        self.assertTrue(lin.is_linear)
+        self.assertGreaterEqual(lin.axial_ratio_db, 30.0)
+
+        # 3. Satellite-to-Aircraft Link Mismatch (at heading 66 degrees)
+        link66 = AntennaPolarizationSimulator.calculate_link_loss_vs_heading(66.0)
+        self.assertAlmostEqual(link66.circular_loss_db, 0.0, places=1)
+        self.assertAlmostEqual(link66.linear_loss_db, -7.8, delta=0.5)  # -7.8 dB ~ -8.0 dB (PLF = cos^2(66 deg))
+        self.assertGreater(link66.link_margin_advantage_db, 7.0)
+
 if __name__ == "__main__":
     unittest.main()

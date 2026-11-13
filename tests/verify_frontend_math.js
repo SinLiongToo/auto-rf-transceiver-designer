@@ -20,6 +20,8 @@ const mockCanvas = {
     lineTo: () => {},
     stroke: () => {},
     strokeRect: () => {},
+    roundRect: () => {},
+    createLinearGradient: () => ({ addColorStop: () => {} }),
     arc: () => {},
     fill: () => {},
     fillText: () => {},
@@ -206,7 +208,26 @@ try {
     console.log(`[PASS] Filter & Signal I/O Simulator (${ft}, N=3): LF_Gain=${hLf.magDb.toFixed(1)}dB, HF_Gain=${hHf.magDb.toFixed(1)}dB`);
   });
 
-  console.log('\n[ALL FRONTEND 7-SESSION & 8-ADVANCED-FEATURE CHECKS PASSED]');
+  // Verify Antenna Polarization & 3D Wave Simulator (Tab 11)
+  const polConfigs = [
+    { name: 'RHCP', ey: 1.0, d: 90.0, expectCirc: true },
+    { name: 'LHCP', ey: 1.0, d: -90.0, expectCirc: true },
+    { name: 'Linear H', ey: 0.0, d: 0.0, expectLin: true },
+    { name: 'Linear 45deg', ey: 1.0, d: 0.0, expectLin: true },
+    { name: 'Elliptical', ey: 0.65, d: 45.0, expectCirc: false }
+  ];
+  polConfigs.forEach(cfg => {
+    state.polar_ey_ratio = cfg.ey;
+    state.polar_phase_diff = cfg.d;
+    state.polar_aircraft_heading = 66.0;
+    const m = calculatePolarizationMetrics(1.0, cfg.ey, cfg.d);
+    if (cfg.expectCirc && !m.isCircular) throw new Error(`Expected circular for ${cfg.name}`);
+    if (cfg.expectLin && !m.isLinear) throw new Error(`Expected linear for ${cfg.name}`);
+    drawAntennaPolarizationSimulator();
+    console.log(`[PASS] Antenna Polarization Simulator (${cfg.name}): AR=${m.arDb.toFixed(1)}dB, Class=${m.classification}`);
+  });
+
+  console.log('\n[ALL FRONTEND 7-SESSION & 9-ADVANCED-FEATURE CHECKS PASSED]');
 } catch (e) {
   console.error('[FAIL] Frontend verification failed:', e);
   process.exit(1);

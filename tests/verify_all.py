@@ -281,6 +281,25 @@ def run_verification():
         f"LF Out={hp_res.signal_components[0].vout_amp_v}V, HF Out={hp_res.signal_components[2].vout_amp_v}V"
     )
 
+    # ------------------------------------------------------------
+    # STAGE 9: Antenna Polarization & Satellite-to-Aircraft Link Audit
+    # ------------------------------------------------------------
+    print("\n[STAGE 9] Antenna Polarization & Satellite-to-Aircraft Link Audit:")
+    from pa_engine import AntennaPolarizationSimulator
+    rhcp_state = AntennaPolarizationSimulator.analyze_polarization(ex_amp=1.0, ey_amp=1.0, phase_diff_deg=90.0)
+    report.assert_test(
+        rhcp_state.is_circular and rhcp_state.axial_ratio_db <= 0.1,
+        "Circular Polarization Synthesis: Ex=Ey & Delta=90° yields RHCP with AR <= 0.1 dB",
+        f"AR={rhcp_state.axial_ratio_db:.2f}dB, Classification={rhcp_state.classification}"
+    )
+
+    link_66 = AntennaPolarizationSimulator.calculate_link_loss_vs_heading(66.0)
+    report.assert_test(
+        abs(link_66.circular_loss_db) < 0.01 and -8.5 <= link_66.linear_loss_db <= -7.5,
+        "Satellite-to-Aircraft PLF: Circular is 0 dB lossless, Linear loses ~8.0 dB at 66° heading",
+        f"Circular Loss={link_66.circular_loss_db:.1f}dB, Linear Loss={link_66.linear_loss_db:.1f}dB"
+    )
+
     return report.summary()
 
 if __name__ == "__main__":
